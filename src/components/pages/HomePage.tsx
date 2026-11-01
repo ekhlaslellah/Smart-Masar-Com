@@ -589,19 +589,19 @@ export const HomePage: React.FC = () => {
             </div>
 
             <p className="text-xs sm:text-sm text-slate-700 leading-relaxed mb-5">
-              انضم إلى بيئة عمل محفزة؛ يتوفر حالياً شاغر{' '}
-              <strong className="text-[#0A192F]">{featuredJob?.titleAr || 'محاسب عام'}</strong>{' '}
-              في القسم المالي مع التقديم المباشر عبر الاستمارة الإلكترونية.
+              انضم إلى بيئة عمل محفزة؛ تتوفر شواغر نشطة تشمل{' '}
+              <strong className="text-[#0A192F]">محاسب عام</strong> و{' '}
+              <strong className="text-[#0A192F]">أخصائي موارد بشرية</strong> مع التقديم المباشر عبر رابط Google Forms المعتمد.
             </p>
 
-            {/* Featured Vacancy Highlight Box */}
+            {/* Featured Vacancies Highlight Box */}
             <div className="rounded-2xl bg-white border border-[#BFDBFE] p-3.5 mb-6 flex items-center justify-between gap-3">
               <div>
                 <div className="text-xs font-black text-[#0A192F]">
-                  {featuredJob?.titleAr || 'محاسب عام (Accountant)'}
+                  محاسب عام (Accountant) • أخصائي موارد بشرية (HR Specialist)
                 </div>
                 <div className="text-[11px] text-slate-600 mt-0.5">
-                  {featuredJob?.departmentNameAr || 'القسم المالي'} • {featuredJob?.employmentTypeAr || 'دوام كامل'}
+                  المالية والمحاسبة (عمّان) • الموارد البشرية (العقبة)
                 </div>
               </div>
               <span className="px-2.5 py-1 rounded-lg bg-[#EBF4FE] text-[#2563EB] text-[11px] font-bold shrink-0">

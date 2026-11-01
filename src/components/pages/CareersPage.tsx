@@ -104,7 +104,18 @@ export const CareersPage: React.FC = () => {
 
       {/* Main Content Area */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        {/* Vacancy Selector Tabs / Cards (Shown when multiple vacancies exist) */}
+        {/* Educational Fictional Disclaimer */}
+        <div className="p-4 sm:p-5 rounded-2xl bg-[#F0F6FD] border border-[#BFDBFE] text-xs text-[#0A192F] flex items-start gap-3 shadow-2xs">
+          <ShieldCheck className="w-5 h-5 text-[#2563EB] shrink-0 mt-0.5" />
+          <div className="leading-relaxed">
+            <strong className="font-bold text-[#0A192F] block mb-0.5">
+              تنويه تعليمي (نماذج شواغر لأغراض المشروع التدريبي):
+            </strong>
+            الشواغر الوظيفية المعروضة في هذه الصفحة هي نماذج محاكاة افتراضية لأغراض المشروع التعليمي والتدريبي لشركة سمارت مسار (Smart Masar). تم ربط زري التقديم لكلا الشاغرين باستمارة التقديم الرسمية المعتمدة عبر رابط Google Forms الخارجي المباشر.
+          </div>
+        </div>
+
+        {/* Vacancy Selector Tabs / Cards (Shown when vacancies exist) */}
         {jobs.length > 0 && (
           <section className="space-y-3">
             <div className="flex items-center justify-between">
@@ -112,59 +123,90 @@ export const CareersPage: React.FC = () => {
                 <span className="w-2.5 h-2.5 rounded-full bg-[#2563EB]" />
                 <span>الشواغر الوظيفية المتاحة ({jobs.length})</span>
               </h2>
-              <span className="text-xs text-slate-500">اختر الوظيفة لمعاينة تفاصيلها والتقديم</span>
+              <span className="text-xs text-slate-500">اختر الوظيفة لمعاينة تفاصيلها والتقديم المباشر</span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
               {jobs.map((job) => {
                 const isSelected = job.id === currentJob?.id;
                 return (
-                  <button
+                  <div
                     key={job.id}
-                    type="button"
-                    onClick={() => setSelectedJobId(job.id)}
-                    className={`p-4 rounded-2xl text-right transition-all border cursor-pointer flex flex-col justify-between gap-3 ${
+                    className={`p-5 rounded-2xl text-right transition-all border flex flex-col justify-between gap-4 ${
                       isSelected
                         ? 'bg-[#EBF4FE] border-[#2563EB] shadow-md ring-2 ring-[#2563EB]/20'
                         : 'bg-white hover:bg-slate-50 border-[#CBD5E1] shadow-2xs'
                     }`}
                   >
                     <div>
-                      <div className="flex items-center justify-between gap-2 mb-2">
+                      <div className="flex items-center justify-between gap-2 mb-2.5">
                         <span
-                          className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${
+                          className={`text-[11px] font-bold px-2.5 py-0.5 rounded-md ${
                             job.status === 'active'
-                              ? 'bg-emerald-100 text-emerald-800'
+                              ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
                               : 'bg-slate-200 text-slate-700'
                           }`}
                         >
-                          {job.status === 'active' ? 'متاح للتقديم' : 'مغلق'}
+                          {job.status === 'active' ? 'متاح للتقديم • Open' : 'مغلق'}
                         </span>
-                        <span className="text-[11px] font-bold text-[#2563EB]">
+                        <span className="text-xs font-bold text-[#2563EB] bg-[#F0F6FD] px-2.5 py-0.5 rounded-md border border-[#BFDBFE]">
                           {job.departmentNameAr}
                         </span>
                       </div>
 
                       <h3
-                        className={`text-sm sm:text-base font-black ${
+                        className={`text-base sm:text-lg font-black ${
                           isSelected ? 'text-[#2563EB]' : 'text-[#0A192F]'
                         }`}
                       >
                         {job.titleAr}
                       </h3>
-                      <p className="text-[11px] text-slate-500 font-mono mt-0.5" dir="ltr">
+                      <p className="text-xs text-slate-500 font-mono mt-0.5" dir="ltr">
                         {job.titleEn}
+                      </p>
+
+                      <p className="text-xs text-slate-600 line-clamp-2 mt-2 leading-relaxed">
+                        {job.summaryAr}
                       </p>
                     </div>
 
-                    <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-[11px] text-slate-500">
-                      <span className="flex items-center gap-1">
-                        <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                        <span>{job.locationAr}</span>
-                      </span>
-                      <span className="font-semibold text-[#2563EB]">عرض التفاصيل ←</span>
+                    <div className="space-y-3 pt-3 border-t border-slate-200/80">
+                      <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500">
+                        <span className="flex items-center gap-1.5">
+                          <MapPin className="w-3.5 h-3.5 text-[#2563EB]" />
+                          <span className="font-medium text-slate-700">{job.locationAr}</span>
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5 text-[#2563EB]" />
+                          <span>{job.employmentTypeAr}</span>
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedJobId(job.id)}
+                          className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer text-center ${
+                            isSelected
+                              ? 'bg-[#2563EB] text-white shadow-xs'
+                              : 'bg-white hover:bg-slate-100 text-[#0A192F] border border-[#CBD5E1]'
+                          }`}
+                        >
+                          {isSelected ? '✓ تفاصيل الشاغر معروضة أدناه' : 'معاينة شروط الشاغر'}
+                        </button>
+                        <a
+                          href={job.googleFormsUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="py-2 px-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all inline-flex items-center gap-1.5 shrink-0 shadow-xs cursor-pointer"
+                          title="الانتقال المباشر لنموذج التقديم عبر Google Forms"
+                        >
+                          <span>قدّم الآن</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                      </div>
                     </div>
-                  </button>
+                  </div>
                 );
               })}
             </div>
@@ -227,7 +269,7 @@ export const CareersPage: React.FC = () => {
                   rel="noopener noreferrer"
                   className="px-6 py-3.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-center border border-[#00D2FF]/40 cursor-pointer"
                 >
-                  <span>تقديم الطلب الآن (Apply Now)</span>
+                  <span>قدّم الآن (Apply Now)</span>
                   <ExternalLink className="w-4 h-4" />
                 </a>
               </div>
@@ -359,7 +401,11 @@ export const CareersPage: React.FC = () => {
                   >
                     <div className="flex items-center gap-2">
                       <FileSpreadsheet className="w-4 h-4 text-[#2563EB]" />
-                      <span>المهارات التخصصية والفنية المتقدمة</span>
+                      <span>
+                        {currentJob.departmentId === 'finance'
+                          ? 'المهارات المحاسبية والمالية المتقدمة'
+                          : 'المهارات المهنية والتنظيمية المطلوبة'}
+                      </span>
                     </div>
                     {openSections.accountingSkills ? (
                       <ChevronUp className="w-4 h-4 text-slate-500" />
@@ -450,7 +496,7 @@ export const CareersPage: React.FC = () => {
                           rel="noopener noreferrer"
                           className="px-6 py-3.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs sm:text-sm font-bold rounded-xl shadow-md transition-all inline-flex items-center gap-2 cursor-pointer border border-[#00D2FF]/40"
                         >
-                          <span>فتح استمارة التقديم على Google Forms</span>
+                          <span>قدّم الآن عبر استمارة Google Forms الرسمية ↗</span>
                           <ExternalLink className="w-4 h-4" />
                         </a>
                       </div>

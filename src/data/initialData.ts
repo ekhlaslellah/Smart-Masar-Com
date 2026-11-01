@@ -312,7 +312,7 @@ export const INITIAL_JOBS: JobVacancy[] = [
     employmentTypeAr: 'دوام كامل (مكتبي / هجين)',
     locationAr: 'المقر الرئيسي — عمّان',
     experienceLevelAr: 'سنتان إلى 4 سنوات خبرة',
-    googleFormsUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSc-placeholder-smart-masar-accountant-form/viewform',
+    googleFormsUrl: 'https://forms.gle/ZKfYUcUxoW6YgcKw6',
     summaryAr: 'تبحث شركة سمارت مسار عن محاسب محترف وموثوق للانضمام إلى قسم المالية والمحاسبة، للمساهمة في إدارة العمليات المحاسبية اليومية، إعداد التقارير المالية الدقيقة، ومتابعة المطابقات البنكية وتطوير الإجراءات المالية الرقمية المتطابقة مع الأنظمة المحاسبية الحديثة.',
     responsibilitiesAr: [
       'تسجيل القيود المحاسبية اليومية ومراجعة فواتير المشتريات والمبيعات بدقة عالية.',
@@ -339,8 +339,47 @@ export const INITIAL_JOBS: JobVacancy[] = [
       'إلمام ببرامج مثل QuickBooks أو Odoo أو Zoho Books أو أي نظام مالي مؤسسي معتمد.',
       'الاستعداد للتعامل مع برمجيات التحول الرقمي والأتمتة المالية الداخلية لشركة سمارت مسار.'
     ],
-    applicationInstructionsAr: 'يرجى من المهتمين والمستوفين للشروط الضغط على زر "تقديم الطلب الآن" بالأسفل وتعبئة نموذج التقديم الرسمي عبر Google Forms مع إرفاق السيرة الذاتية المحدثة. سيتم التواصل مع المرشحين المؤهلين لترتيب المقابلات بعد انتهاء فترة الفرز الأولي.',
+    applicationInstructionsAr: 'يرجى من المهتمين والمستوفين للشروط الضغط على زر "قدّم الآن / Apply Now" بالأسفل لفتح استمارة التقديم الرسمية المعتمدة عبر الرابط الخارجي (Google Forms) مع إرفاق السيرة الذاتية المحدثة. سيتم التواصل مع المرشحين المؤهلين لترتيب المقابلات.',
     postedDate: '2026-10-15',
+  },
+  {
+    id: 'job-hr-specialist-02',
+    titleAr: 'أخصائي موارد بشرية – HR Specialist',
+    titleEn: 'Human Resources Specialist (HR Specialist)',
+    departmentId: 'hr',
+    departmentNameAr: 'الموارد البشرية',
+    status: 'active',
+    employmentTypeAr: 'دوام كامل — Full-Time',
+    locationAr: 'العقبة، الأردن — Aqaba, Jordan',
+    experienceLevelAr: 'سنة إلى 3 سنوات خبرة',
+    googleFormsUrl: 'https://forms.gle/ZKfYUcUxoW6YgcKw6',
+    summaryAr: 'دعم عمليات الاستقطاب والتوظيف، تهيئة الموظفين الجدد، إدارة السجلات والملفات الوظيفية، متابعة إدارة الأداء، تنسيق البرامج التدريبية، والعمليات اليومية لشؤون الموارد البشرية (Support recruitment, onboarding, employee records, performance management, training coordination, and daily HR operations).',
+    responsibilitiesAr: [
+      'دعم عمليات استقطاب المواهب وفرز السير الذاتية وتنسيق مقابلات التوظيف (Support recruitment).',
+      'متابعة إجراءات تهيئة الموظفين الجدد وإدماجهم في بيئة وثقافة العمل (Onboarding).',
+      'إدارة وتحديث سجلات وملفات الموظفين وقواعد البيانات الإدارية بدقة وسرية تامة (Employee records).',
+      'مساندة عمليات إدارة الأداء والمتابعة الدورية لمؤشرات التقييم الوظيفي (Performance management).',
+      'تنسيق الأنشطة والبرامج التدريبية والتطويرية وورش العمل للكوادر (Training coordination).',
+      'تنفيذ ومتابعة المعاملات الإدارية اليومية وشؤون الموظفين والإجازات والمراسلات الداخلية (Daily HR operations).'
+    ],
+    qualificationsAr: [
+      'درجة البكالوريوس في الموارد البشرية، إدارة الأعمال، أو تخصص ذي صلة (Bachelor’s degree in Human Resources, Business Administration, or a related field).',
+      'مهارات تواصل وتنظيم وتنسيق ممتازة (Good communication and organizational skills).',
+      'إتقان العمل على حزمة برامج مايكروسوفت أوفيس (Proficiency in Microsoft Office).',
+      'فهم ومعرفة أساسية بعمليات التوظيف وممارسات إدارة الموارد البشرية (Basic understanding of recruitment and HR processes).'
+    ],
+    accountingSkillsAr: [
+      'مهارات تنظيمية عالية وإدارة الأولويات وتنسيق المقابلات والجداول الزمنية.',
+      'مهارات تواصل مهني متميزة باللغتين العربية والإنجليزية.',
+      'اللباقة والدبلوماسية والقدرة على التعامل مع استفسارات الكوادر بسرية واحترافية عالية.'
+    ],
+    softwareExperienceAr: [
+      'إتقان متقدم لبرامج Microsoft Office (خاصة Excel وWord وPowerPoint وOutlook).',
+      'معرفة جيدة بنماذج الاستبيانات والتقييم السحابية وتطبيقات Google Workspace.',
+      'الاستعداد للعمل على أنظمة شؤون الموظفين السحابية (HRIS / HRMS) وأدوات تتبع طلبات التوظيف (ATS).'
+    ],
+    applicationInstructionsAr: 'يرجى من المهتمين والمستوفين للشروط الضغط على زر "قدّم الآن / Apply Now" بالأسفل لفتح استمارة التقديم الرسمية المعتمدة على Google Forms، وتعبئة البيانات المطلوبة وإرفاق السيرة الذاتية. سيتم مراجعة الطلبات والتواصل مع المرشحين المؤهلين.',
+    postedDate: '2026-11-01',
   },
 ];
 
@@ -380,7 +419,7 @@ export const INITIAL_COMPANY_PROFILE: CompanyProfile = {
   phone: '+962 6 500 0000',
   locationAr: 'مجمع واحة التقنية، عمّان — المملكة الأردنية الهاشمية',
   workingHoursAr: 'الأحد – الخميس: 8:30 صباحاً – 5:00 مساءً',
-  googleFormsPlaceholderUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSc-placeholder-smart-masar-accountant-form/viewform',
+  googleFormsPlaceholderUrl: 'https://forms.gle/ZKfYUcUxoW6YgcKw6',
   logo_url: '/assets/aistudio/D666B97C-619E-459D-8A6A-33BEDB06BB76_d5572475.png',
   logo_file_id: '',
   logo_alt_ar: 'شعار شركة سمارت مسار - Smart Masar',

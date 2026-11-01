@@ -17,14 +17,19 @@ import {
 import { DEFAULT_SHEETDB_ENDPOINT } from '../services/apiService';
 
 test('Static Hosting Bundle & Security Verification Suite', async (t) => {
-  await t.test('1. Preserves all 6 founding employees, 6 departments, 7 pages, and Accountant job vacancy', () => {
+  await t.test('1. Preserves all 6 founding employees, 6 departments, 7 pages, and Accountant + HR Specialist vacancies', () => {
     assert.equal(INITIAL_COMPANY_PROFILE.nameEn, 'Smart Masar');
     assert.equal(INITIAL_COMPANY_PROFILE.taglineAr, 'نبتكر اليوم لنصنع فرص الغد');
     assert.equal(INITIAL_EMPLOYEES.length, 6);
     assert.equal(INITIAL_DEPARTMENTS.length, 6);
     assert.equal(INITIAL_PAGES.length, 7);
-    assert.equal(INITIAL_JOBS.length, 1);
+    assert.equal(INITIAL_JOBS.length, 2);
     assert.equal(INITIAL_JOBS[0].id, 'job-accountant-01');
+    assert.equal(INITIAL_JOBS[0].googleFormsUrl, 'https://forms.gle/ZKfYUcUxoW6YgcKw6');
+    assert.equal(INITIAL_JOBS[1].id, 'job-hr-specialist-02');
+    assert.equal(INITIAL_JOBS[1].titleEn, 'Human Resources Specialist (HR Specialist)');
+    assert.equal(INITIAL_JOBS[1].departmentId, 'hr');
+    assert.equal(INITIAL_JOBS[1].googleFormsUrl, 'https://forms.gle/ZKfYUcUxoW6YgcKw6');
   });
 
   await t.test('2. Preserves SheetDB public read endpoint configuration', () => {

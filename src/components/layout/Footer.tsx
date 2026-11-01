@@ -77,7 +77,7 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <Link to="/careers" className="hover:text-[#00D2FF] transition-colors">
-                  فرص العمل وشاغر المحاسب
+                  فرص العمل والشواغر الوظيفية
                 </Link>
               </li>
               <li>
