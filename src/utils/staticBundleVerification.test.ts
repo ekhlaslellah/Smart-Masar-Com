@@ -81,4 +81,84 @@ test('Static Hosting Bundle & Security Verification Suite', async (t) => {
       );
     }
   });
+
+  await t.test('5. Verifies public visitor components contain zero ZIP/HTML download buttons, deployment sections, or /admin links', () => {
+    const publicFiles = [
+      'src/components/layout/Navbar.tsx',
+      'src/components/layout/Footer.tsx',
+      'src/components/layout/MobileBottomNav.tsx',
+      'src/components/pages/HomePage.tsx',
+      'src/components/pages/AboutPage.tsx',
+      'src/components/pages/ServicesPage.tsx',
+      'src/components/pages/TeamPage.tsx',
+      'src/components/pages/OrgChartPage.tsx',
+      'src/components/pages/CareersPage.tsx',
+      'src/components/pages/ContactPage.tsx',
+      'src/components/common/EmployeeModal.tsx',
+    ];
+
+    const forbiddenVisitorStrings = [
+      'حزمة النشر والاستضافة الخارجية',
+      'ملفات النشر (ZIP)',
+      'حزمة النشر الجاهزة (ZIP + README)',
+      'تحميل ملف HTML المستقل الموحد',
+      'تحميل ملفات الاستضافة الجاهزة (ZIP)',
+      '/api/download-static-zip',
+      '/api/download-html',
+      'StaticExportModal',
+      'to="/admin',
+      "to='/admin",
+      'رابط الصورة المسجل (Image URL)',
+    ];
+
+    for (const relPath of publicFiles) {
+      const src = fs.readFileSync(path.resolve(relPath), 'utf8');
+      for (const forbidden of forbiddenVisitorStrings) {
+        assert.equal(
+          src.includes(forbidden),
+          false,
+          `${relPath} must not contain "${forbidden}" in visitor interface`
+        );
+      }
+    }
+  });
+
+  await t.test('6. Verifies Footer retains company info, page links, services links, and contact details', () => {
+    const footerSrc = fs.readFileSync(path.resolve('src/components/layout/Footer.tsx'), 'utf8');
+    assert.ok(footerSrc.includes('صفحات الموقع'), 'Footer must include site pages section');
+    assert.ok(footerSrc.includes('خدماتنا والحلول الذكية'), 'Footer must include services section');
+    assert.ok(footerSrc.includes('المقر وقنوات الاتصال'), 'Footer must include contact info section');
+    assert.ok(footerSrc.includes('/about'), 'Footer must link to /about');
+    assert.ok(footerSrc.includes('/services'), 'Footer must link to /services');
+    assert.ok(footerSrc.includes('/team'), 'Footer must link to /team');
+    assert.ok(footerSrc.includes('/organization'), 'Footer must link to /organization');
+    assert.ok(footerSrc.includes('/careers'), 'Footer must link to /careers');
+    assert.ok(footerSrc.includes('/contact'), 'Footer must link to /contact');
+  });
+
+  await t.test('7. Verifies AdminLayout and server.ts enforce real authentication gate on /admin', () => {
+    const adminLayoutSrc = fs.readFileSync(
+      path.resolve('src/components/admin/AdminLayout.tsx'),
+      'utf8'
+    );
+    assert.ok(
+      adminLayoutSrc.includes("authStatus === 'unauthenticated'"),
+      'AdminLayout must block unauthenticated access with a login gate'
+    );
+    assert.ok(
+      adminLayoutSrc.includes('verifyAdminKeyOnServer'),
+      'AdminLayout must verify admin credentials against the server'
+    );
+
+    const serverSrc = fs.readFileSync(path.resolve('server.ts'), 'utf8');
+    assert.equal(
+      serverSrc.includes('!isCustomKeyConfigured ||'),
+      false,
+      'server.ts must not auto-authenticate unauthenticated requests'
+    );
+    assert.ok(
+      serverSrc.includes("app.post('/api/admin/auth/logout'"),
+      'server.ts must provide a logout endpoint to clear the admin session'
+    );
+  });
 });

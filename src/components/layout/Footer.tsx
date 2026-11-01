@@ -3,25 +3,21 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { Logo } from '../common/Logo';
-import { StaticExportModal } from '../common/StaticExportModal';
 import {
   Mail,
   Phone,
   MapPin,
   ShieldAlert,
-  Settings,
-  ArrowUpRight,
-  FolderArchive,
-  FileCode2,
+  Sparkles,
+  Clock,
 } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   const { profile } = useApp();
-  const [exportModalOpen, setExportModalOpen] = useState(false);
 
   return (
     <footer className="bg-[#0A192F] text-white border-t border-[#1E3A8A] mt-auto">
@@ -51,7 +47,7 @@ export const Footer: React.FC = () => {
           {/* Col 2: Navigation Links */}
           <div className="space-y-3">
             <h4 className="text-sm font-bold text-white tracking-wide border-b border-[#1E3A8A] pb-2">
-              صفحات المنصة والتنقل
+              صفحات الموقع
             </h4>
             <ul className="space-y-2 text-xs sm:text-sm text-slate-300">
               <li>
@@ -92,7 +88,46 @@ export const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Col 3: Contact & Headquarters */}
+          {/* Col 3: Services & Solutions */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-bold text-white tracking-wide border-b border-[#1E3A8A] pb-2">
+              خدماتنا والحلول الذكية
+            </h4>
+            <ul className="space-y-2.5 text-xs sm:text-sm text-slate-300">
+              <li>
+                <Link to="/services" className="hover:text-[#00D2FF] transition-colors flex items-center gap-2">
+                  <Sparkles className="w-3.5 h-3.5 text-[#00D2FF] shrink-0" />
+                  <span>حلول الذكاء الاصطناعي وتعلم الآلة</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/services" className="hover:text-[#00D2FF] transition-colors flex items-center gap-2">
+                  <Sparkles className="w-3.5 h-3.5 text-[#00D2FF] shrink-0" />
+                  <span>تطوير البرمجيات والمنصات السحابية</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/services" className="hover:text-[#00D2FF] transition-colors flex items-center gap-2">
+                  <Sparkles className="w-3.5 h-3.5 text-[#00D2FF] shrink-0" />
+                  <span>استشارات التحول الرقمي المؤسسي</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/services" className="hover:text-[#00D2FF] transition-colors flex items-center gap-2">
+                  <Sparkles className="w-3.5 h-3.5 text-[#00D2FF] shrink-0" />
+                  <span>أتمتة العمليات والإجراءات الذكية</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/careers" className="hover:text-[#00D2FF] transition-colors flex items-center gap-2">
+                  <Sparkles className="w-3.5 h-3.5 text-[#00D2FF] shrink-0" />
+                  <span>بوابة الاستقطاب والفرص الوظيفية</span>
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Col 4: Contact & Headquarters */}
           <div className="space-y-3">
             <h4 className="text-sm font-bold text-white tracking-wide border-b border-[#1E3A8A] pb-2">
               المقر وقنوات الاتصال
@@ -104,48 +139,20 @@ export const Footer: React.FC = () => {
               </div>
               <div className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 text-[#00D2FF] shrink-0" />
-                <span dir="ltr">{profile.email}</span>
+                <a href={`mailto:${profile.email}`} className="hover:text-[#00D2FF] transition-colors" dir="ltr">
+                  {profile.email}
+                </a>
               </div>
               <div className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-[#00D2FF] shrink-0" />
-                <span dir="ltr">{profile.phone}</span>
+                <a href={`tel:${profile.phone}`} className="hover:text-[#00D2FF] transition-colors" dir="ltr">
+                  {profile.phone}
+                </a>
               </div>
-            </div>
-          </div>
-
-          {/* Col 4: Static Hosting Package & Separated Admin Link */}
-          <div className="space-y-3">
-            <h4 className="text-sm font-bold text-white tracking-wide border-b border-[#1E3A8A] pb-2">
-              حزمة النشر والاستضافة الخارجية
-            </h4>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              تحميل النسخة الإنتاجية الجاهزة للرفع على أي استضافة تدعم HTML وCSS وJavaScript بدون الحاجة إلى Google Cloud Billing.
-            </p>
-            <button
-              type="button"
-              onClick={() => setExportModalOpen(true)}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-bold rounded-lg transition-colors shadow-md border border-[#00D2FF]/40 w-full cursor-pointer"
-            >
-              <FolderArchive className="w-4 h-4 text-[#00D2FF]" />
-              <span>حزمة النشر الجاهزة (ZIP + README)</span>
-            </button>
-            <a
-              href="/api/download-html"
-              download="smart-masar.html"
-              className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#10203B] hover:bg-[#1E3A8A] text-[#00D2FF] text-xs font-bold rounded-lg transition-colors border border-[#00D2FF]/30 w-full"
-            >
-              <FileCode2 className="w-4 h-4" />
-              <span>تحميل ملف HTML المستقل الموحد</span>
-            </a>
-            <div className="pt-1 border-t border-[#1E3A8A]/60">
-              <Link
-                to="/admin"
-                className="inline-flex items-center justify-center gap-1.5 text-[11px] text-slate-400 hover:text-[#00D2FF] transition-colors w-full py-1"
-              >
-                <Settings className="w-3.5 h-3.5" />
-                <span>بوابة الإدارة المستقلة (/admin)</span>
-                <ArrowUpRight className="w-3.5 h-3.5" />
-              </Link>
+              <div className="flex items-start gap-2.5">
+                <Clock className="w-4 h-4 text-[#00D2FF] shrink-0 mt-0.5" />
+                <span>{profile.workingHoursAr}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -156,16 +163,12 @@ export const Footer: React.FC = () => {
             جميع الحقوق محفوظة &copy; {new Date().getFullYear()} شركة سمارت مسار (Smart Masar) — مشروع تعليمي تجريبي.
           </div>
           <div className="flex items-center gap-3 text-slate-400">
-            <span>Arial Typography</span>
+            <span>{profile.taglineAr}</span>
             <span>·</span>
-            <span>Multi-Page Architecture</span>
-            <span>·</span>
-            <span dir="ltr">Road S Identity</span>
+            <span dir="ltr">{profile.taglineEn}</span>
           </div>
         </div>
       </div>
-
-      <StaticExportModal isOpen={exportModalOpen} onClose={() => setExportModalOpen(false)} />
     </footer>
   );
 };

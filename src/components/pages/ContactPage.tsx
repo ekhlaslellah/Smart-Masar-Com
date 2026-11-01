@@ -187,7 +187,7 @@ export const ContactPage: React.FC = () => {
                   </p>
                 </div>
                 <span className="text-[11px] font-bold text-[#2563EB] bg-[#EBF4FE] border border-[#BFDBFE] px-2.5 py-1 rounded-full">
-                  Direct Mailto Dispatch
+                  مراسلة بريدية مباشرة
                 </span>
               </div>
 
@@ -198,7 +198,7 @@ export const ContactPage: React.FC = () => {
                     <h3 className="text-sm font-bold">تم تحويل بيانات الرسالة إلى تطبيق بريدك</h3>
                   </div>
                   <p className="text-xs text-slate-700 leading-relaxed">
-                    تم إنشاء رابط المراسلة وتوجيهه إلى برنامج البريد الخاص بك للتأكيد والإرسال إلى <strong dir="ltr">{profile.email}</strong> بدون محاكاة تسليم غير حقيقية على الخادم الثابت.
+                    تم تجهيز رسالتك وتوجيهها إلى برنامج البريد الإلكتروني الخاص بك للتأكيد والإرسال المباشر إلى <strong dir="ltr">{profile.email}</strong>.
                   </p>
                   <div className="pt-2 flex items-center gap-3">
                     <button

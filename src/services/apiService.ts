@@ -403,6 +403,21 @@ export async function verifyAdminKeyOnServer(adminKey: string): Promise<{
 }
 
 /**
+ * Logs out the current administrator session and clears the server HttpOnly cookie.
+ */
+export async function logoutAdminSession(): Promise<void> {
+  runtimeBackendConfig.adminApiKey = '';
+  try {
+    await fetch('/api/admin/auth/logout', {
+      method: 'POST',
+      credentials: 'same-origin',
+    });
+  } catch {
+    // Ignore network error on logout
+  }
+}
+
+/**
  * Queries SheetDB & Google Drive status via server-authenticated endpoint.
  */
 export async function fetchSheetDbDiagnostics(adminKey: string): Promise<{

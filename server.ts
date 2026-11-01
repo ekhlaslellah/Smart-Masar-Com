@@ -1021,15 +1021,19 @@ async function startServer() {
 
   /**
    * POST /api/admin/auth/session
-   * Establishes a server-verified HttpOnly admin session cookie without exposing secrets to the client.
+   * Checks whether the client already holds a valid server-verified HttpOnly admin session cookie,
+   * or verifies a provided adminKey. Never auto-authenticates unauthenticated requests.
    */
   app.post('/api/admin/auth/session', (req: Request, res: Response) => {
     const { adminKey } = req.body || {};
     const expectedKey = db.backendMeta.adminKey || DEFAULT_ADMIN_KEY;
-    const isCustomKeyConfigured = Boolean(process.env.SMART_MASAR_ADMIN_KEY);
+    const cookies = parseCookies(req.headers.cookie);
+    const hasValidCookie =
+      Boolean(cookies.sm_admin_session) &&
+      cookies.sm_admin_session === SERVER_SESSION_TOKEN;
 
     if (
-      !isCustomKeyConfigured ||
+      hasValidCookie ||
       (adminKey && String(adminKey).trim() === expectedKey.trim())
     ) {
       res.setHeader(
@@ -1049,10 +1053,25 @@ async function startServer() {
       return;
     }
 
-    res.status(401).json({
+    res.status(200).json({
       success: false,
       authenticated: false,
-      error: 'يرجى إدخال مفتاح صلاحية المسؤول المعتمد على الخادم.',
+      error: 'يرجى تسجيل الدخول باستخدام مفتاح صلاحية المسؤول المعتمد للوصول إلى لوحة الإدارة.',
+    });
+  });
+
+  /**
+   * POST /api/admin/auth/logout
+   * Clears the HttpOnly admin session cookie.
+   */
+  app.post('/api/admin/auth/logout', (_req: Request, res: Response) => {
+    res.setHeader(
+      'Set-Cookie',
+      'sm_admin_session=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0'
+    );
+    res.json({
+      success: true,
+      authenticated: false,
     });
   });
 

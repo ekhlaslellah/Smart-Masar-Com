@@ -6,7 +6,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import { Logo } from '../common/Logo';
-import { StaticExportModal } from '../common/StaticExportModal';
 import {
   Menu,
   X,
@@ -18,13 +17,10 @@ import {
   PhoneCall,
   Home,
   ChevronLeft,
-  Download,
-  FolderArchive,
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
-  const [exportModalOpen, setExportModalOpen] = useState(false);
   const location = useLocation();
 
   // Close mobile drawer on route change
@@ -97,15 +93,13 @@ export const Navbar: React.FC = () => {
                 );
               })}
 
-              <button
-                type="button"
-                onClick={() => setExportModalOpen(true)}
-                className="mr-2 px-3 py-2 text-xs font-bold rounded-xl bg-[#13284C] hover:bg-[#1E3A8A] text-[#00D2FF] border border-[#00D2FF]/40 transition-colors flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
-                title="تحميل ملفات النشر للاستضافة الخارجية (ZIP / HTML)"
+              <Link
+                to="/careers"
+                className="mr-2 px-4 py-2 text-xs font-bold rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white border border-[#00D2FF]/40 transition-colors flex items-center gap-1.5 whitespace-nowrap shadow-xs"
               >
-                <Download className="w-3.5 h-3.5" />
-                <span>ملفات النشر (ZIP)</span>
-              </button>
+                <Briefcase className="w-3.5 h-3.5 text-[#00D2FF]" />
+                <span>فرص التوظيف</span>
+              </Link>
             </nav>
 
             {/* Mobile Drawer Trigger (Hamburger Button Only) */}
@@ -158,44 +152,31 @@ export const Navbar: React.FC = () => {
                 </button>
               </div>
 
-              {/* Quick Actions Bar */}
-              <div className="p-3 bg-[#0D1F3D] border-b border-[#1E3A8A] space-y-2">
+              {/* Visitor Quick Actions Bar */}
+              <div className="p-3 bg-[#0D1F3D] border-b border-[#1E3A8A]">
                 <div className="grid grid-cols-2 gap-2">
                   <Link
                     to="/careers"
                     onClick={() => setMobileDrawerOpen(false)}
-                    className="flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg bg-[#2563EB] text-white text-[11px] font-bold shadow-xs hover:bg-[#1D4ED8] transition-colors"
+                    className="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-lg bg-[#2563EB] text-white text-[11px] font-bold shadow-xs hover:bg-[#1D4ED8] transition-colors"
                   >
                     <Briefcase className="w-3.5 h-3.5 text-[#00D2FF]" />
-                    <span>شاغر المحاسب</span>
+                    <span>فرص العمل والتوظيف</span>
                   </Link>
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMobileDrawerOpen(false);
-                      setExportModalOpen(true);
-                    }}
-                    className="flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg bg-[#1E3A8A] text-[#00D2FF] text-[11px] font-bold border border-[#00D2FF]/30 hover:bg-[#2563EB] hover:text-white transition-colors cursor-pointer"
+                  <Link
+                    to="/contact"
+                    onClick={() => setMobileDrawerOpen(false)}
+                    className="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-lg bg-[#1E3A8A] text-[#00D2FF] text-[11px] font-bold border border-[#00D2FF]/30 hover:bg-[#2563EB] hover:text-white transition-colors"
                   >
-                    <FolderArchive className="w-3.5 h-3.5" />
-                    <span>حزمة النشر (ZIP)</span>
-                  </button>
+                    <PhoneCall className="w-3.5 h-3.5" />
+                    <span>تواصل معنا</span>
+                  </Link>
                 </div>
-
-                <a
-                  href="/api/download-static-zip"
-                  download="smart-masar-static-hosting.zip"
-                  onClick={() => setMobileDrawerOpen(false)}
-                  className="flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg bg-[#14284B] text-[#00D2FF] text-[11px] font-bold border border-[#00D2FF]/20 hover:bg-[#1E3A8A] transition-colors"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  <span>تحميل ملفات الاستضافة الجاهزة (ZIP)</span>
-                </a>
               </div>
 
               {/* Navigation Links list */}
-              <div className="p-3 space-y-1.5 overflow-y-auto max-h-[calc(100vh-220px)]">
+              <div className="p-3 space-y-1.5 overflow-y-auto max-h-[calc(100vh-200px)]">
                 <p className="text-[11px] font-bold text-slate-400 px-2 py-1">
                   صفحات المنصة والتنقل:
                 </p>
@@ -247,9 +228,6 @@ export const Navbar: React.FC = () => {
           </div>
         </div>
       )}
-
-      {/* Static Hosting & Export Modal */}
-      <StaticExportModal isOpen={exportModalOpen} onClose={() => setExportModalOpen(false)} />
     </>
   );
 };

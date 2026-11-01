@@ -6,7 +6,7 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { EmployeeAvatar } from './EmployeeAvatar';
-import { X, Building2, Mail, ShieldAlert, GitFork, Link as LinkIcon } from 'lucide-react';
+import { X, Building2, Mail, ShieldAlert, GitFork } from 'lucide-react';
 
 export const EmployeeModal: React.FC = () => {
   const { selectedEmployee, setSelectedEmployee, departments, employees } = useApp();
@@ -63,7 +63,7 @@ export const EmployeeModal: React.FC = () => {
             <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-3 text-xs text-amber-900">
               <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
               <div>
-                <strong>تنويه تنظيمي:</strong> هذا العضو من الكوادر التأسيسية المسجلة، والمسمى الوظيفي والمهام المحددة حالياً "قيد التعيين" ضمن مشروع الهيكلة التدريبية لحين اعتماد التوزيع النهائي في لوحة الإدارة.
+                <strong>تنويه تنظيمي:</strong> هذا العضو من الكوادر التأسيسية المسجلة، والمسمى الوظيفي والمهام المحددة حالياً "قيد التعيين" ضمن مشروع الهيكلة التدريبية لحين اعتماد التوزيع النهائي للمهام.
               </div>
             </div>
           )}
@@ -93,16 +93,6 @@ export const EmployeeModal: React.FC = () => {
                 <span>{selectedEmployee.email || 'team@smartmasar.edu'}</span>
               </div>
             </div>
-
-            {selectedEmployee.avatarUrl && (
-              <div className="p-3.5 rounded-2xl border border-[#E2E8F0] bg-[#F0F6FD] sm:col-span-2">
-                <span className="text-[11px] text-slate-500 block mb-1">رابط الصورة المسجل (Image URL)</span>
-                <div className="flex items-center gap-1.5 text-xs text-slate-700 truncate" dir="ltr">
-                  <LinkIcon className="w-3.5 h-3.5 text-[#2563EB] shrink-0" />
-                  <span className="truncate">{selectedEmployee.avatarUrl}</span>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Bio section if available */}
@@ -114,8 +104,8 @@ export const EmployeeModal: React.FC = () => {
               </p>
             </div>
           ) : (
-            <div className="text-xs text-slate-400 p-3 bg-[#F0F6FD] rounded-2xl border border-dashed border-[#CBD5E1]">
-              لم يتم تدوين نبذة إضافية لهذا الموظف (يمكن تعديل النبذة عبر لوحة الإدارة).
+            <div className="text-xs text-slate-500 p-3 bg-[#F0F6FD] rounded-2xl border border-dashed border-[#CBD5E1]">
+              عضو في الكادر التأسيسي لشركة سمارت مسار ضمن الهيكل التنظيمي المعتمد.
             </div>
           )}
 

@@ -78,7 +78,7 @@ export const TeamPage: React.FC = () => {
         <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#BFDBFE] shadow-sm flex items-start gap-3.5 text-xs text-[#0A192F]">
           <ShieldAlert className="w-5 h-5 text-[#2563EB] shrink-0 mt-0.5" />
           <div className="leading-relaxed">
-            <strong className="font-bold text-[#2563EB]">إيضاح تنظيمي:</strong> تضم هذه الصفحة أسماء الكوادر التأسيسية الستة المعتمدة. الدكتور أحمد العابد في منصب المدير العام، وتظهر بقية الكوادر حالياً بحالة "قيد التعيين" ضمن مشروع الهيكلة التدريبية لحين اعتماد وتوزيع المهام النهائية في لوحة الإدارة.
+            <strong className="font-bold text-[#2563EB]">إيضاح تنظيمي:</strong> تضم هذه الصفحة أسماء الكوادر التأسيسية الستة المعتمدة. الدكتور أحمد العابد في منصب المدير العام، وتظهر بقية الكوادر حالياً بحالة "قيد التعيين" ضمن مشروع الهيكلة التدريبية لحين اعتماد التوزيع النهائي للمسميات والمهام.
           </div>
         </div>
 

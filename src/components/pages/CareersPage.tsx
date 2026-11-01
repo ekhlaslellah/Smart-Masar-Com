@@ -21,11 +21,9 @@ import {
   HelpCircle,
   ChevronDown,
   ChevronUp,
-  Settings,
   ChevronLeft,
   MapPin,
   Clock,
-  Plus,
 } from 'lucide-react';
 
 export const CareersPage: React.FC = () => {
@@ -96,15 +94,8 @@ export const CareersPage: React.FC = () => {
               </p>
             </div>
 
-            {/* Quick Admin Action & Optional Page Hero Image */}
+            {/* Optional Page Hero Image */}
             <div className="shrink-0 flex flex-col items-end gap-4">
-              <Link
-                to="/admin/jobs"
-                className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-[#00D2FF] border border-[#00D2FF]/40 text-xs font-bold transition-all flex items-center gap-2 shadow-sm"
-              >
-                <Plus className="w-4 h-4 text-[#00D2FF]" />
-                <span>إضافة / إدارة الشواغر</span>
-              </Link>
               <PageHeroImage pageId="page-careers" />
             </div>
           </div>
@@ -239,15 +230,6 @@ export const CareersPage: React.FC = () => {
                   <span>تقديم الطلب الآن (Apply Now)</span>
                   <ExternalLink className="w-4 h-4" />
                 </a>
-
-                <Link
-                  to="/admin/jobs"
-                  className="px-4 py-3 bg-white hover:bg-slate-50 text-[#0A192F] border border-[#CBD5E1] text-xs font-bold rounded-xl transition-colors flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer"
-                  title="تعديل رابط Google Forms والشاغر"
-                >
-                  <Settings className="w-3.5 h-3.5 text-[#2563EB]" />
-                  <span>تعديل الشاغر بالإدارة</span>
-                </Link>
               </div>
             </div>
 
@@ -258,19 +240,7 @@ export const CareersPage: React.FC = () => {
                 <span>آلية التقديم الرقمية عبر استمارة Google Forms:</span>
               </div>
               <p className="text-slate-600 leading-relaxed">
-                يتم التقديم لهذا الشاغر عبر <strong>نموذج Google Forms المعتمد</strong> لضمان سلاسة وسرعة معالجة الطلبات. الرابط المباشر للتقديم:
-                <br />
-                <code
-                  className="inline-block mt-1.5 p-1.5 bg-white border border-[#CBD5E1] rounded-lg text-[11px] text-[#0A192F] break-all select-all font-mono"
-                  dir="ltr"
-                >
-                  {currentJob.googleFormsUrl}
-                </code>
-                {isPlaceholderUrl && (
-                  <span className="block mt-1 font-semibold text-amber-800">
-                    (رابط تجريبي معتمد — يمكن للمسؤول تحديثه إلى رابط الاستمارة الفعلي عبر لوحة الإدارة).
-                  </span>
-                )}
+                يتم استقبال طلبات التوظيف لهذا الشاغر إلكترونياً عبر <strong>نموذج Google Forms الرسمي المعتمد</strong> لدى قسم الموارد البشرية لضمان دقة وسرعة فرز الطلبات ومراجعة المؤهلات المهنية.
               </p>
             </div>
 
