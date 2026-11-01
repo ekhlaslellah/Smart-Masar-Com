@@ -1,0 +1,397 @@
+{
+  "profile": {
+    "nameAr": "سمارت مسار",
+    "nameEn": "Smart Masar",
+    "taglineAr": "نبتكر اليوم لنصنع فرص الغد",
+    "taglineEn": "Technology • AI • Innovation",
+    "industryAr": "الذكاء الاصطناعي، الحلول البرمجية، والتحول الرقمي",
+    "industryEn": "Artificial Intelligence, Software Solutions & Digital Transformation",
+    "visionAr": "أن نكون من الشركات الرائدة في تطوير حلول تقنية ذكية تسهّل الأعمال وتصنع فرصًا جديدة.",
+    "missionAr": "مساعدة الأفراد والمؤسسات على تطوير أعمالهم من خلال التكنولوجيا والذكاء الاصطناعي.",
+    "valuesAr": [
+      {
+        "titleAr": "الابتكار المستمر",
+        "descriptionAr": "نستكشف أحدث آفاق الذكاء الاصطناعي والحلول الذكية لتقديم منتجات تقنية متميزة تسبق تطلعات السوق.",
+        "icon": "Lightbulb"
+      },
+      {
+        "titleAr": "المصداقية والشفافية",
+        "descriptionAr": "نلتزم بأعلى معايير النزاهة والوضوح مع عملائنا وفريق عملنا في جميع مراحل التطوير والتعاون.",
+        "icon": "ShieldCheck"
+      },
+      {
+        "titleAr": "روح التعاون والمشاركة",
+        "descriptionAr": "نؤمن بأن الإنجازات الكبرى تولد من تضافر العقول وتبادل الخبرات داخل بيئة داعمة ومحفزة.",
+        "icon": "Users"
+      },
+      {
+        "titleAr": "التطوير والتعلم الدائم",
+        "descriptionAr": "نستثمر في طاقات كادرنا البشري ونشجع البحث التجريبي واكتساب المهارات التكنولوجية الصاعدة.",
+        "icon": "TrendingUp"
+      }
+    ],
+    "aboutDescriptionAr": "شركة سمارت مسار (Smart Masar) هي شركة تقنية رائدة متخصصة في ابتكار حلول الذكاء الاصطناعي، تطوير البرمجيات السحابية، وقيادة برامج التحول الرقمي الشامل للمؤسسات. نجمع بين الرؤية الاستراتيجية والخبرة الهندسية المتقدمة لتمكين قطاعات الأعمال من الاستفادة القصوى من ثورة البيانات والأتمتة الذكية.",
+    "email": "info@smartmasar.edu",
+    "phone": "+962 6 500 0000",
+    "locationAr": "مجمع واحة التقنية، عمّان — المملكة الأردنية الهاشمية",
+    "workingHoursAr": "الأحد – الخميس: 8:30 صباحاً – 5:00 مساءً",
+    "googleFormsPlaceholderUrl": "https://docs.google.com/forms/d/e/1FAIpQLSc-placeholder-smart-masar-accountant-form/viewform",
+    "logo_url": "/assets/aistudio/D666B97C-619E-459D-8A6A-33BEDB06BB76_d5572475.png",
+    "logo_file_id": "",
+    "logo_alt_ar": "شعار شركة سمارت مسار - Smart Masar",
+    "drive_folder_id": ""
+  },
+  "departments": [
+    {
+      "id": "exec",
+      "nameAr": "الإدارة العامة والتنفيذية",
+      "nameEn": "Executive Management",
+      "iconName": "Building2",
+      "badgeBg": "#101B32"
+    },
+    {
+      "id": "tech",
+      "nameAr": "التكنولوجيا والذكاء الاصطناعي",
+      "nameEn": "Technology & AI",
+      "iconName": "Cpu",
+      "badgeBg": "#203B65"
+    },
+    {
+      "id": "finance",
+      "nameAr": "المالية والمحاسبة",
+      "nameEn": "Finance & Accounting",
+      "iconName": "CircleDollarSign",
+      "badgeBg": "#2563EB"
+    },
+    {
+      "id": "hr",
+      "nameAr": "الموارد البشرية",
+      "nameEn": "Human Resources",
+      "iconName": "Users",
+      "badgeBg": "#203B65"
+    },
+    {
+      "id": "marketing",
+      "nameAr": "التسويق والاتصال المؤسسي",
+      "nameEn": "Marketing & Communications",
+      "iconName": "Megaphone",
+      "badgeBg": "#2563EB"
+    },
+    {
+      "id": "ops",
+      "nameAr": "العمليات والإدارة التشغيلية",
+      "nameEn": "Operations & Administration",
+      "iconName": "Layers",
+      "badgeBg": "#101B32"
+    }
+  ],
+  "employees": [
+    {
+      "id": "emp-ahmed-alabed",
+      "nameAr": "د. أحمد العابد",
+      "nameEn": "Dr. Ahmed Alabed",
+      "jobTitleAr": "المدير العام",
+      "jobTitleEn": "General Manager",
+      "departmentId": "exec",
+      "managerId": null,
+      "avatarUrl": "",
+      "image_url": "",
+      "image_file_id": "",
+      "image_alt_ar": "صورة د. أحمد العابد - المدير العام",
+      "initials": "د.أ",
+      "bioAr": "المدير العام لشركة سمارت مسار، يقود التوجه الاستراتيجي وتطوير حلول التحول الرقمي والذكاء الاصطناعي.",
+      "email": "gm@smartmasar.edu",
+      "isConfirmedPosition": true,
+      "order": 1
+    },
+    {
+      "id": "emp-shorouq-alsharafat",
+      "nameAr": "شروق الشرفات",
+      "nameEn": "Shorouq Alsharafat",
+      "jobTitleAr": "قيد التعيين",
+      "jobTitleEn": "Position to be assigned",
+      "departmentId": "tech",
+      "managerId": "emp-ahmed-alabed",
+      "avatarUrl": "",
+      "image_url": "",
+      "image_file_id": "",
+      "image_alt_ar": "صورة شروق الشرفات",
+      "initials": "ش.ش",
+      "bioAr": "",
+      "email": "shorouq@smartmasar.edu",
+      "isConfirmedPosition": false,
+      "order": 2
+    },
+    {
+      "id": "emp-ikram-alsharafat",
+      "nameAr": "إكرام الشرفات",
+      "nameEn": "Ikram Alsharafat",
+      "jobTitleAr": "قيد التعيين",
+      "jobTitleEn": "Position to be assigned",
+      "departmentId": "finance",
+      "managerId": "emp-ahmed-alabed",
+      "avatarUrl": "",
+      "image_url": "",
+      "image_file_id": "",
+      "image_alt_ar": "صورة إكرام الشرفات",
+      "initials": "إ.ش",
+      "bioAr": "",
+      "email": "ikram@smartmasar.edu",
+      "isConfirmedPosition": false,
+      "order": 3
+    },
+    {
+      "id": "emp-ekhlaslellah-sh",
+      "nameAr": "إخلاص لله الشرفات",
+      "nameEn": "Ekhlaslellah Sh",
+      "jobTitleAr": "قيد التعيين",
+      "jobTitleEn": "Position to be assigned",
+      "departmentId": "hr",
+      "managerId": "emp-ahmed-alabed",
+      "avatarUrl": "",
+      "image_url": "",
+      "image_file_id": "",
+      "image_alt_ar": "صورة إخلاص لله الشرفات",
+      "initials": "إ.ل",
+      "bioAr": "",
+      "email": "ekhlaslellah@smartmasar.edu",
+      "isConfirmedPosition": false,
+      "order": 4
+    },
+    {
+      "id": "emp-haneen-alkasaji",
+      "nameAr": "حنين الكساسبة",
+      "nameEn": "Haneen Alkasaji",
+      "jobTitleAr": "قيد التعيين",
+      "jobTitleEn": "Position to be assigned",
+      "departmentId": "marketing",
+      "managerId": "emp-ahmed-alabed",
+      "avatarUrl": "",
+      "image_url": "",
+      "image_file_id": "",
+      "image_alt_ar": "صورة حنين الكساسبة",
+      "initials": "ح.ك",
+      "bioAr": "",
+      "email": "haneen@smartmasar.edu",
+      "isConfirmedPosition": false,
+      "order": 5
+    },
+    {
+      "id": "emp-amani-akram",
+      "nameAr": "أماني أكرم",
+      "nameEn": "Amani Akram",
+      "jobTitleAr": "قيد التعيين",
+      "jobTitleEn": "Position to be assigned",
+      "departmentId": "ops",
+      "managerId": "emp-ahmed-alabed",
+      "avatarUrl": "",
+      "image_url": "",
+      "image_file_id": "",
+      "image_alt_ar": "صورة أماني أكرم",
+      "initials": "أ.أ",
+      "bioAr": "",
+      "email": "amani@smartmasar.edu",
+      "isConfirmedPosition": false,
+      "order": 6
+    }
+  ],
+  "jobs": [
+    {
+      "id": "job-accountant-01",
+      "titleAr": "محاسب عام – Accountant",
+      "titleEn": "Accountant",
+      "departmentId": "finance",
+      "departmentNameAr": "المالية والمحاسبة",
+      "status": "active",
+      "employmentTypeAr": "دوام كامل (مكتبي / هجين)",
+      "locationAr": "المقر الرئيسي — عمّان",
+      "experienceLevelAr": "سنتان إلى 4 سنوات خبرة",
+      "googleFormsUrl": "https://docs.google.com/forms/d/e/1FAIpQLSc-placeholder-smart-masar-accountant-form/viewform",
+      "summaryAr": "تبحث شركة سمارت مسار عن محاسب محترف وموثوق للانضمام إلى قسم المالية والمحاسبة، للمساهمة في إدارة العمليات المحاسبية اليومية، إعداد التقارير المالية الدقيقة، ومتابعة المطابقات البنكية وتطوير الإجراءات المالية الرقمية المتطابقة مع الأنظمة المحاسبية الحديثة.",
+      "responsibilitiesAr": [
+        "تسجيل القيود المحاسبية اليومية ومراجعة فواتير المشتريات والمبيعات بدقة عالية.",
+        "إجراء المطابقات البنكية ومطابقة حسابات العملاء والموردين بشكل دوري.",
+        "المشاركة في إعداد القوائم المالية الشهرية وميزان المراجعة وتقارير التدفق النقدي.",
+        "متابعة الحسابات المدينة والدائنة والتحصيلات والتسويات المالية.",
+        "التعاون مع المدقق المالي الخارجي وتجهيز الوثائق والمستندات الداعمة.",
+        "تطبيق الضوابط المحاسبية الداخلية وتوثيق الإجراءات المالية وفق معايير المحاسبة الدولية."
+      ],
+      "qualificationsAr": [
+        "شهادة البكالوريوس في المحاسبة أو العلوم المالية والمصرفية من جامعة معترف بها.",
+        "خبرة عملية لا تقل عن سنتين في المحاسبة المالية والتسجيل الدفتري والإلكتروني.",
+        "معرفة تامة بالمعايير المحاسبية الدولية (IFRS) واللوائح الضريبية المعمول بها.",
+        "دقة متناهية في التدقيق والأرقام ومهارات تنظيمية عالية.",
+        "القدرة على العمل بروح الفريق والالتزام بأعلى معايير النزاهة والسرية المهنية."
+      ],
+      "accountingSkillsAr": [
+        "إتقان متقدم لبرنامج Microsoft Excel (الدوال المحاسبية المتقدمة، Pivot Tables، VLOOKUP/XLOOKUP، وتحليل البيانات المالية).",
+        "القدرة على إعداد وتصميم جداول الإهلاك والتقارير التحليلية وجداول التدفقات النقدية.",
+        "فهم عميق لدورة المحاسبة الكاملة من قيود اليومية حتى إقفال الميزانية السنوية."
+      ],
+      "softwareExperienceAr": [
+        "خبرة سابقة في استخدام الأنظمة المحاسبية الشائعة وبرمجيات تخطيط الموارد (ERP).",
+        "إلمام ببرامج مثل QuickBooks أو Odoo أو Zoho Books أو أي نظام مالي مؤسسي معتمد.",
+        "الاستعداد للتعامل مع برمجيات التحول الرقمي والأتمتة المالية الداخلية لشركة سمارت مسار."
+      ],
+      "applicationInstructionsAr": "يرجى من المهتمين والمستوفين للشروط الضغط على زر \"تقديم الطلب الآن\" بالأسفل وتعبئة نموذج التقديم الرسمي عبر Google Forms مع إرفاق السيرة الذاتية المحدثة. سيتم التواصل مع المرشحين المؤهلين لترتيب المقابلات بعد انتهاء فترة الفرز الأولي.",
+      "postedDate": "2026-10-15"
+    }
+  ],
+  "services": [
+    {
+      "id": "ai-solutions",
+      "titleAr": "حلول الذكاء الاصطناعي",
+      "titleEn": "Artificial Intelligence Solutions",
+      "shortDescAr": "تطوير نماذج ذكاء اصطناعي مخصصة، أنظمة التنبؤ وتحليل البيانات الضخمة، وحلول معالجة اللغة الطبيعية للارتقاء بإنتاجية الأعمال.",
+      "featuresAr": [
+        "نماذج تعلم آلي مخصصة لاحتياجات المؤسسات",
+        "تحليلات تنبؤية للقرارات المالية والتشغيلية",
+        "مساعدات ذكية وأتمتة خدمة العملاء",
+        "معالجة الوثائق واستخراج البيانات آلياً"
+      ],
+      "iconName": "Cpu",
+      "image_url": "",
+      "image_file_id": "",
+      "image_alt_ar": "حلول الذكاء الاصطناعي في سمارت مسار"
+    },
+    {
+      "id": "software-dev",
+      "titleAr": "تطوير البرمجيات والأنظمة",
+      "titleEn": "Software Development",
+      "shortDescAr": "هندسة منصات ويب وتطبيقات سحابية فائقة الأداء وفق أحدث المعايير البرمجية لتلبية متطلبات المشاريع الريادية والشركات.",
+      "featuresAr": [
+        "بناء تطبيقات الويب الحديثة وحلول السحابية",
+        "تكامل واجهات البرمجة APIs وتوحيد الأنظمة",
+        "بنية تحتية مرنة وقابلة للتوسع الفوري",
+        "معايير أمان عالية وضمان استمرارية التشغيل"
+      ],
+      "iconName": "Code",
+      "image_url": "",
+      "image_file_id": "",
+      "image_alt_ar": "تطوير البرمجيات والأنظمة السحابية"
+    },
+    {
+      "id": "digital-transformation",
+      "titleAr": "التحول الرقمي المؤسسي",
+      "titleEn": "Digital Transformation",
+      "shortDescAr": "استراتيجيات شاملة لرقمنة بيئة العمل والانتقال من الإجراءات التقليدية إلى بيئات رقمية متكاملة ترفع كفاءة الأداء التشغيلي.",
+      "featuresAr": [
+        "دراسة وتحليل فجوات التحول الرقمي الحالية",
+        "خارطة طريق تنفيذية للتحديث التكنولوجي",
+        "إدارة التغيير وتأهيل الكوادر البشرية",
+        "ربط القنوات الرقمية وتحسين تجربة المستفيدين"
+      ],
+      "iconName": "Share2",
+      "image_url": "",
+      "image_file_id": "",
+      "image_alt_ar": "استراتيجيات التحول الرقمي المؤسسي"
+    },
+    {
+      "id": "process-automation",
+      "titleAr": "أتمتة العمليات التشغيلية (RPA)",
+      "titleEn": "Business Process Automation",
+      "shortDescAr": "أتمتة المهام الروتينية وسير المعاملات الإدارية والمالية لتقليل التكاليف التشغيلية والتخلص التام من الأخطاء البشرية.",
+      "featuresAr": [
+        "أتمتة تدفقات الفواتير والمطابقات الحسابية",
+        "إدارة دورات الموافقات الإدارية الذكية",
+        "أرشفة رقمية وتتبع تلقائي للمستندات",
+        "تقارير فورية ومؤشرات قياس الأداء KPI"
+      ],
+      "iconName": "Sliders",
+      "image_url": "",
+      "image_file_id": "",
+      "image_alt_ar": "أتمتة العمليات التشغيلية والإدارية"
+    }
+  ],
+  "pages": [
+    {
+      "id": "home",
+      "slug": "/",
+      "titleAr": "الرئيسية — سمارت مسار",
+      "titleEn": "Homepage",
+      "subtitleAr": "نبتكر اليوم لنصنع فرص الغد",
+      "hero_image_url": "",
+      "hero_image_file_id": "",
+      "hero_image_alt_ar": "صورة الواجهة الرئيسية لشركة سمارت مسار"
+    },
+    {
+      "id": "about",
+      "slug": "/about",
+      "titleAr": "عن الشركة (من نحن)",
+      "titleEn": "About Smart Masar",
+      "subtitleAr": "نبتكر الحلول الذكية لنصنع آفاق الغد",
+      "hero_image_url": "/uploads/sm-pages-about-1793485279116.jpg",
+      "hero_image_file_id": "sm-pages-about-1793485279116",
+      "hero_image_alt_ar": "صورة بانر صفحة من نحن"
+    },
+    {
+      "id": "services",
+      "slug": "/services",
+      "titleAr": "خدماتنا التقنية",
+      "titleEn": "Technology Services",
+      "subtitleAr": "حلول متقدمة في الذكاء الاصطناعي وهندسة التحول الرقمي",
+      "hero_image_url": "",
+      "hero_image_file_id": "",
+      "hero_image_alt_ar": "صورة بانر صفحة الخدمات التقنية"
+    },
+    {
+      "id": "team",
+      "slug": "/team",
+      "titleAr": "فريق العمل والكوادر",
+      "titleEn": "Our Team",
+      "subtitleAr": "فريق العمل والكوادر التأسيسية",
+      "hero_image_url": "",
+      "hero_image_file_id": "",
+      "hero_image_alt_ar": "صورة بانر صفحة فريق العمل"
+    },
+    {
+      "id": "organization",
+      "slug": "/organization",
+      "titleAr": "الهيكل التنظيمي التفاعلي",
+      "titleEn": "Organization Chart",
+      "subtitleAr": "الهيكل التنظيمي لشركة سمارت مسار",
+      "hero_image_url": "",
+      "hero_image_file_id": "",
+      "hero_image_alt_ar": "صورة بانر صفحة الهيكل التنظيمي"
+    },
+    {
+      "id": "careers",
+      "slug": "/careers",
+      "titleAr": "فرص العمل والتوظيف",
+      "titleEn": "Careers & Vacancies",
+      "subtitleAr": "فرص العمل وبناء المسار المهني مع سمارت مسار",
+      "hero_image_url": "",
+      "hero_image_file_id": "",
+      "hero_image_alt_ar": "صورة بانر صفحة الوظائف والشواغر"
+    },
+    {
+      "id": "contact",
+      "slug": "/contact",
+      "titleAr": "تواصل معنا",
+      "titleEn": "Contact Us",
+      "subtitleAr": "تواصل مع إدارة سمارت مسار",
+      "hero_image_url": "",
+      "hero_image_file_id": "",
+      "hero_image_alt_ar": "صورة بانر صفحة التواصل"
+    }
+  ],
+  "backendMeta": {
+    "webAppUrl": "",
+    "sheetDbUrl": "https://sheetdb.io/api/v1/gnn52l70oflrp",
+    "driveFolderId": "",
+    "adminKey": "sm_masar_admin_secret_2026",
+    "lastSheetDbStatus": "متصل بـ SheetDB (ملف \"مؤسسة Masar Smart\") — الأوراق الحالية في الملف: [الورقة1]. الأوراق الست المطلوبة (Team, Services, Pages, SiteSettings, Departments, Jobs) غير مهيأة بعد؛ يرجى تشغيل دالة initialSetup() مرة واحدة في Google Apps Script لإنشاء الأوراق الست وعناوين الأعمدة تلقائياً.",
+    "externalSource": "server_db_awaiting_sheet_init",
+    "availableSheets": [
+      "الورقة1"
+    ],
+    "missingRequiredSheets": [
+      "Team",
+      "Services",
+      "Pages",
+      "SiteSettings",
+      "Departments",
+      "Jobs"
+    ]
+  }
+}

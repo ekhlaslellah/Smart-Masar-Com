@@ -1,0 +1,2329 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Masar | سمارت مسار — ملف الموقع الكامل المستقل</title>
+  <meta name="description" content="سمارت مسار (Smart Masar) — نبتكر اليوم لنصنع فرص الغد. ملف HTML متكامل ومستقل يعمل مباشرة في أي متصفح.">
+  <link rel="icon" type="image/png" href="/assets/aistudio/D666B97C-619E-459D-8A6A-33BEDB06BB76_d5572475.png">
+  <style>
+    :root {
+      --navy-primary: #0A192F;
+      --navy-secondary: #10203B;
+      --navy-card: #14284B;
+      --blue-royal: #2563EB;
+      --blue-hover: #1D4ED8;
+      --cyan-electric: #00D2FF;
+      --cyan-soft: #61C5F3;
+      --blue-ice: #F0F6FD;
+      --slate-50: #F8FAFC;
+      --slate-100: #F1F5F9;
+      --slate-200: #E2E8F0;
+      --slate-300: #CBD5E1;
+      --slate-600: #475569;
+      --slate-700: #334155;
+      --slate-800: #1E293B;
+      --white: #FFFFFF;
+      --soft-violet: #7C5CDE;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(10, 25, 47, 0.1), 0 4px 6px -4px rgba(10, 25, 47, 0.1);
+      --shadow-xl: 0 20px 25px -5px rgba(10, 25, 47, 0.15), 0 8px 10px -6px rgba(10, 25, 47, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif !important;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: var(--blue-ice);
+      color: var(--slate-800);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.6;
+      padding-bottom: 70px;
+    }
+
+    @media (min-width: 768px) {
+      body {
+        padding-bottom: 0;
+      }
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      cursor: pointer;
+      font-family: Arial, sans-serif !important;
+      border: none;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* Top Utility Notice */
+    .edu-banner {
+      background: linear-gradient(90deg, #0A192F, #10203B);
+      color: #CBD5E1;
+      font-size: 12px;
+      padding: 6px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(0, 210, 255, 0.2);
+    }
+
+    .edu-banner-badge {
+      background: rgba(0, 210, 255, 0.15);
+      color: var(--cyan-electric);
+      border: 1px solid rgba(0, 210, 255, 0.3);
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-weight: bold;
+      font-size: 11px;
+    }
+
+    /* Header */
+    header {
+      background: var(--white);
+      border-bottom: 1px solid var(--slate-200);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: 0 2px 10px rgba(10, 25, 47, 0.04);
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+    }
+
+    /* Logo Styling */
+    .brand-logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .road-s-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      direction: ltr;
+    }
+
+    .road-s-svg {
+      width: 44px;
+      height: 50px;
+      filter: drop-shadow(0 2px 4px rgba(37, 99, 235, 0.25));
+    }
+
+    .brand-wordmark {
+      font-weight: 900;
+      font-size: 22px;
+      letter-spacing: -0.5px;
+      color: var(--navy-primary);
+      line-height: 1.1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-wordmark-en {
+      font-family: Arial, sans-serif !important;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      color: var(--navy-primary);
+    }
+
+    .brand-wordmark-en span {
+      color: var(--blue-royal);
+    }
+
+    .brand-tagline-sub {
+      font-size: 10px;
+      font-weight: normal;
+      color: var(--slate-600);
+      letter-spacing: 0.5px;
+      margin-top: 1px;
+    }
+
+    /* Navigation Links */
+    .nav-desktop {
+      display: none;
+      align-items: center;
+      gap: 4px;
+    }
+
+    @media (min-width: 992px) {
+      .nav-desktop {
+        display: flex;
+      }
+    }
+
+    .nav-btn {
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: bold;
+      color: var(--slate-700);
+      background: transparent;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid transparent;
+    }
+
+    .nav-btn:hover {
+      background: var(--blue-ice);
+      color: var(--blue-royal);
+    }
+
+    .nav-btn.active {
+      background: #EFF6FF;
+      color: var(--blue-royal);
+      border-color: #BFDBFE;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .download-html-btn {
+      background: linear-gradient(135deg, var(--navy-primary), var(--blue-royal));
+      color: var(--white);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+    }
+
+    .download-html-btn:hover {
+      background: linear-gradient(135deg, var(--blue-royal), var(--navy-secondary));
+      transform: translateY(-1px);
+    }
+
+    .menu-toggle-btn {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: var(--slate-100);
+      border: 1px solid var(--slate-200);
+    }
+
+    @media (min-width: 992px) {
+      .menu-toggle-btn {
+        display: none;
+      }
+    }
+
+    .menu-toggle-btn span {
+      display: block;
+      width: 20px;
+      height: 2px;
+      background: var(--navy-primary);
+      border-radius: 2px;
+      transition: 0.3s;
+    }
+
+    /* Mobile Drawer */
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 25, 47, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .drawer-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      width: 320px;
+      max-width: 85vw;
+      background: var(--navy-primary);
+      color: var(--white);
+      z-index: 101;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .drawer.open {
+      transform: translateX(0);
+    }
+
+    .drawer-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #071324;
+    }
+
+    .drawer-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: var(--cyan-electric);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .drawer-close {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--white);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .drawer-content {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .drawer-nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      color: #E2E8F0;
+      font-weight: bold;
+      font-size: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.2s;
+    }
+
+    .drawer-nav-item:hover, .drawer-nav-item.active {
+      background: linear-gradient(90deg, rgba(37, 99, 235, 0.3), rgba(0, 210, 255, 0.15));
+      border-color: rgba(0, 210, 255, 0.4);
+      color: var(--cyan-electric);
+    }
+
+    .drawer-footer {
+      padding: 16px 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      background: #071324;
+      font-size: 12px;
+      color: #94A3B8;
+      text-align: center;
+    }
+
+    /* Page Views */
+    .page-view {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .page-view.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* HERO SECTION */
+    .hero-section {
+      background: linear-gradient(135deg, var(--navy-primary) 0%, #10254C 50%, var(--navy-primary) 100%);
+      color: var(--white);
+      padding: 48px 0 64px 0;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 3px solid var(--blue-royal);
+    }
+
+    .hero-glow-1 {
+      position: absolute;
+      top: -100px;
+      right: -100px;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(0, 210, 255, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-glow-2 {
+      position: absolute;
+      bottom: -150px;
+      left: -100px;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(124, 92, 222, 0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 36px;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    @media (min-width: 992px) {
+      .hero-grid {
+        grid-template-columns: 1.15fr 0.85fr;
+      }
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      background: rgba(0, 210, 255, 0.1);
+      border: 1px solid rgba(0, 210, 255, 0.3);
+      color: var(--cyan-electric);
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .hero-title {
+      font-size: 32px;
+      font-weight: 900;
+      line-height: 1.25;
+      margin-bottom: 16px;
+      color: var(--white);
+    }
+
+    @media (min-width: 768px) {
+      .hero-title {
+        font-size: 42px;
+      }
+    }
+
+    .hero-title span {
+      background: linear-gradient(135deg, var(--cyan-electric), #38BDF8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-slogan {
+      font-size: 20px;
+      font-weight: bold;
+      color: #93C5FD;
+      margin-bottom: 16px;
+      border-right: 4px solid var(--cyan-electric);
+      padding-right: 12px;
+    }
+
+    .hero-desc {
+      font-size: 15px;
+      color: #CBD5E1;
+      margin-bottom: 28px;
+      line-height: 1.7;
+      max-width: 580px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--blue-royal), #1D4ED8);
+      color: var(--white);
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 15px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #1D4ED8, #1E40AF);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--white);
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 15px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: var(--cyan-electric);
+      color: var(--cyan-electric);
+    }
+
+    /* Hero Visual Card */
+    .hero-visual-card {
+      background: rgba(20, 40, 75, 0.65);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 210, 255, 0.25);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      position: relative;
+    }
+
+    .hero-logo-banner {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .hero-stat-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      text-align: center;
+    }
+
+    .stat-pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 12px 8px;
+      border-radius: 12px;
+    }
+
+    .stat-num {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--cyan-electric);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .stat-lbl {
+      font-size: 11px;
+      color: #94A3B8;
+      font-weight: bold;
+    }
+
+    /* Section Styles */
+    .section-py {
+      padding: 48px 0;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 680px;
+      margin: 0 auto 36px auto;
+    }
+
+    .section-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      background: #DBEAFE;
+      color: var(--blue-royal);
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .section-title {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--navy-primary);
+      margin-bottom: 12px;
+    }
+
+    .section-desc {
+      font-size: 15px;
+      color: var(--slate-600);
+      line-height: 1.6;
+    }
+
+    /* 4 Nav Cards on Homepage */
+    .nav-cards-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    @media (min-width: 640px) {
+      .nav-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .nav-cards-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .feature-nav-card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 24px;
+      border: 1px solid var(--slate-200);
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .feature-nav-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--blue-royal), var(--cyan-electric));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .feature-nav-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-xl);
+      border-color: #BFDBFE;
+    }
+
+    .feature-nav-card:hover::before {
+      opacity: 1;
+    }
+
+    .card-icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: #EFF6FF;
+      color: var(--blue-royal);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--navy-primary);
+      margin-bottom: 8px;
+    }
+
+    .card-text {
+      font-size: 13px;
+      color: var(--slate-600);
+      line-height: 1.5;
+      margin-bottom: 16px;
+      flex-grow: 1;
+    }
+
+    .card-action-link {
+      font-size: 13px;
+      font-weight: bold;
+      color: var(--blue-royal);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Services Grid */
+    .services-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    @media (min-width: 768px) {
+      .services-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .service-box {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 28px;
+      border: 1px solid var(--slate-200);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: all 0.25s ease;
+    }
+
+    .service-box:hover {
+      border-color: var(--blue-royal);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .service-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .service-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #10203B, #2563EB);
+      color: var(--cyan-electric);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .service-title-wrap h3 {
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--navy-primary);
+    }
+
+    .service-title-wrap span {
+      font-size: 12px;
+      color: var(--slate-600);
+      direction: ltr;
+      display: block;
+      margin-top: 2px;
+    }
+
+    .service-features-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+      padding-top: 12px;
+      border-top: 1px solid var(--slate-100);
+    }
+
+    .service-features-list li {
+      font-size: 13px;
+      color: var(--slate-700);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .check-bullet {
+      color: var(--blue-royal);
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    /* Team Grid */
+    .team-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    @media (min-width: 640px) {
+      .team-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .team-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .team-member-card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 24px;
+      border: 1px solid var(--slate-200);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: all 0.25s ease;
+      cursor: pointer;
+    }
+
+    .team-member-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+      border-color: #93C5FD;
+    }
+
+    .member-avatar {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--navy-primary), var(--blue-royal));
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: bold;
+      border: 3px solid var(--white);
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+      margin-bottom: 14px;
+    }
+
+    .member-name {
+      font-size: 17px;
+      font-weight: bold;
+      color: var(--navy-primary);
+      margin-bottom: 4px;
+    }
+
+    .member-role {
+      font-size: 13px;
+      font-weight: bold;
+      color: var(--blue-royal);
+      margin-bottom: 8px;
+    }
+
+    .member-dept-tag {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      background: var(--slate-100);
+      color: var(--slate-700);
+      margin-bottom: 12px;
+    }
+
+    .member-bio {
+      font-size: 12px;
+      color: var(--slate-600);
+      line-height: 1.5;
+    }
+
+    /* Org Chart Hierarchy */
+    .org-chart-wrap {
+      background: var(--white);
+      border-radius: 18px;
+      padding: 32px 20px;
+      border: 1px solid var(--slate-200);
+      box-shadow: var(--shadow-sm);
+      overflow-x: auto;
+    }
+
+    .org-root-node {
+      max-width: 320px;
+      margin: 0 auto 36px auto;
+      background: linear-gradient(135deg, var(--navy-primary), #1E3A8A);
+      color: var(--white);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      border: 2px solid var(--cyan-electric);
+      box-shadow: 0 10px 20px rgba(10, 25, 47, 0.25);
+      position: relative;
+    }
+
+    .org-root-node::after {
+      content: '';
+      position: absolute;
+      bottom: -36px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 36px;
+      background: var(--blue-royal);
+    }
+
+    .org-depts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 10px;
+    }
+
+    .org-dept-card {
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: 14px;
+      padding: 18px 14px;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .org-dept-card:hover {
+      background: #EFF6FF;
+      border-color: var(--blue-royal);
+    }
+
+    .dept-icon-mini {
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .dept-card-title {
+      font-size: 14px;
+      font-weight: bold;
+      color: var(--navy-primary);
+      margin-bottom: 4px;
+    }
+
+    .dept-card-emp {
+      font-size: 12px;
+      color: var(--slate-600);
+    }
+
+    /* Career Card */
+    .job-card-hero {
+      background: var(--white);
+      border-radius: 18px;
+      border: 2px solid #BFDBFE;
+      box-shadow: var(--shadow-lg);
+      padding: 32px 24px;
+      margin-bottom: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .job-card-hero::before {
+      content: 'فرصة توظيف نشطة';
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      background: #DCFCE7;
+      color: #166534;
+      font-size: 11px;
+      font-weight: bold;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      border: 1px solid #86EFAC;
+    }
+
+    .job-title {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--navy-primary);
+      margin-bottom: 12px;
+    }
+
+    .job-meta-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .job-pill {
+      background: var(--slate-100);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: bold;
+      color: var(--slate-700);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .job-section-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: var(--navy-primary);
+      margin: 20px 0 10px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .job-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--slate-700);
+    }
+
+    .job-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      line-height: 1.5;
+    }
+
+    .job-list li::before {
+      content: '•';
+      color: var(--blue-royal);
+      font-weight: bold;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 25, 47, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-window {
+      background: var(--white);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 580px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--slate-200);
+      padding: 24px;
+      position: relative;
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      background: var(--slate-100);
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 16px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--slate-600);
+    }
+
+    /* Contact Form */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 28px;
+    }
+
+    @media (min-width: 840px) {
+      .contact-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .contact-info-card {
+      background: linear-gradient(135deg, var(--navy-primary), #10254C);
+      color: var(--white);
+      border-radius: 18px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .contact-icon-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(0, 210, 255, 0.15);
+      border: 1px solid rgba(0, 210, 255, 0.3);
+      color: var(--cyan-electric);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .contact-form-card {
+      background: var(--white);
+      border-radius: 18px;
+      padding: 32px;
+      border: 1px solid var(--slate-200);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: bold;
+      color: var(--slate-700);
+      margin-bottom: 6px;
+    }
+
+    .form-input, .form-textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--slate-300);
+      font-size: 14px;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    .form-input:focus, .form-textarea:focus {
+      border-color: var(--blue-royal);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    /* Footer */
+    footer {
+      background: var(--navy-primary);
+      color: #94A3B8;
+      padding: 48px 0 24px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      margin-top: auto;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 32px;
+      margin-bottom: 40px;
+    }
+
+    @media (min-width: 768px) {
+      .footer-grid {
+        grid-template-columns: 2fr 1fr 1fr;
+      }
+    }
+
+    .footer-heading {
+      color: var(--white);
+      font-size: 15px;
+      font-weight: bold;
+      margin-bottom: 16px;
+      border-right: 3px solid var(--cyan-electric);
+      padding-right: 10px;
+    }
+
+    .footer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .footer-links a {
+      color: #CBD5E1;
+      font-size: 13px;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--cyan-electric);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    @media (min-width: 640px) {
+      .footer-bottom {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+    }
+
+    /* Mobile Bottom Navigation Bar (like JOR Tech reference) */
+    .mobile-bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: rgba(10, 25, 47, 0.96);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(0, 210, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 45;
+      padding: 0 8px;
+    }
+
+    @media (min-width: 768px) {
+      .mobile-bottom-nav {
+        display: none;
+      }
+    }
+
+    .bottom-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      color: #94A3B8;
+      font-size: 10px;
+      font-weight: bold;
+      padding: 6px 10px;
+      border-radius: 8px;
+      transition: all 0.2s;
+      flex: 1;
+    }
+
+    .bottom-nav-item.active {
+      color: var(--cyan-electric);
+    }
+
+    .bottom-nav-item span.icon {
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Educational Notice -->
+  <div class="edu-banner">
+    <div class="container" style="display: flex; align-items: center; justify-content: space-between;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="edu-banner-badge">مشروع تعليمي نموذجي</span>
+        <span>Smart Masar | سمارت مسار — نسخة ملف HTML المستقلة بالكامل</span>
+      </div>
+      <div style="direction: ltr; font-size: 11px; color: #94A3B8;">
+        Technology • AI • Innovation
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <!-- Brand Logo with approved Road-S Concept -->
+        <a href="#home" class="brand-logo-wrap" onclick="switchPage('home'); return false;">
+          <div class="road-s-logo">
+            <!-- Road-S SVG Logo -->
+            <svg class="road-s-svg" viewBox="0 0 54 62" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Smart Masar Road S">
+              <defs>
+                <linearGradient id="roadGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#00D2FF" />
+                  <stop offset="50%" stop-color="#2563EB" />
+                  <stop offset="100%" stop-color="#7C5CDE" />
+                </linearGradient>
+                <linearGradient id="growthGrad1" x1="0%" y1="100%" x2="0%" y2="0%">
+                  <stop offset="0%" stop-color="#2563EB" />
+                  <stop offset="100%" stop-color="#00D2FF" />
+                </linearGradient>
+              </defs>
+              <!-- Growth Chart Pillars -->
+              <rect x="22" y="4" width="4" height="10" rx="1.5" fill="url(#growthGrad1)" />
+              <rect x="28" y="2" width="4.5" height="12" rx="1.5" fill="url(#growthGrad1)" />
+              <rect x="34.5" y="0" width="5" height="14" rx="1.5" fill="url(#growthGrad1)" />
+              <!-- Road-S Track -->
+              <path d="M44 16C44 9 37 5 27 5C17 5 11 10.5 11 18C11 26 19 29.5 27 32C35 34.5 43 38 43 47C43 55 36 60 26 60C14 60 8 54 8 46" stroke="#0A192F" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M44 16C44 9 37 5 27 5C17 5 11 10.5 11 18C11 26 19 29.5 27 32C35 34.5 43 38 43 47C43 55 36 60 26 60C14 60 8 54 8 46" stroke="url(#roadGrad1)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M44 16C44 9 37 5 27 5C17 5 11 10.5 11 18C11 26 19 29.5 27 32C35 34.5 43 38 43 47C43 55 36 60 26 60C14 60 8 54 8 46" stroke="#FFFFFF" stroke-width="1.6" stroke-dasharray="2.5 3" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <div class="brand-wordmark">
+              <!-- Exactly "mart Masar" after the road S - Never duplicate the letter S -->
+              <div class="brand-wordmark-en">mart <span>Masar</span></div>
+              <div style="font-size: 13px; font-weight: bold; color: var(--navy-secondary); direction: rtl;">سمارت مسار</div>
+            </div>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation -->
+        <nav class="nav-desktop">
+          <button class="nav-btn active" id="btn-nav-home" onclick="switchPage('home')">الرئيسية</button>
+          <button class="nav-btn" id="btn-nav-about" onclick="switchPage('about')">من نحن</button>
+          <button class="nav-btn" id="btn-nav-services" onclick="switchPage('services')">خدماتنا</button>
+          <button class="nav-btn" id="btn-nav-team" onclick="switchPage('team')">فريق العمل</button>
+          <button class="nav-btn" id="btn-nav-organization" onclick="switchPage('organization')">الهيكل التنظيمي</button>
+          <button class="nav-btn" id="btn-nav-careers" onclick="switchPage('careers')">الوظائف</button>
+          <button class="nav-btn" id="btn-nav-contact" onclick="switchPage('contact')">تواصل معنا</button>
+        </nav>
+
+        <!-- Right Side Header Actions -->
+        <div class="header-actions">
+          <button class="download-html-btn" onclick="downloadCurrentHtmlFile()" title="تنزيل نسخة ملف HTML لجهازك">
+            <span>تحميل ملف HTML</span>
+            <span>📥</span>
+          </button>
+          <button class="menu-toggle-btn" onclick="toggleDrawer()" aria-label="فتح القائمة">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Drawer (Inspired by JOR Tech reference with Smart Masar styling) -->
+  <div class="drawer-overlay" id="drawer-overlay" onclick="toggleDrawer()"></div>
+  <aside class="drawer" id="mobile-drawer">
+    <div class="drawer-header">
+      <div class="drawer-title">
+        <span>📍</span>
+        <span>قائمة سمارت مسار</span>
+      </div>
+      <button class="drawer-close" onclick="toggleDrawer()">✕</button>
+    </div>
+    <div class="drawer-content">
+      <button class="drawer-nav-item active" id="btn-mob-home" onclick="switchPage('home'); toggleDrawer();">
+        <span>الرئيسية</span>
+        <span>🏠</span>
+      </button>
+      <button class="drawer-nav-item" id="btn-mob-about" onclick="switchPage('about'); toggleDrawer();">
+        <span>من نحن</span>
+        <span>🏢</span>
+      </button>
+      <button class="drawer-nav-item" id="btn-mob-services" onclick="switchPage('services'); toggleDrawer();">
+        <span>خدماتنا التقنية</span>
+        <span>⚙️</span>
+      </button>
+      <button class="drawer-nav-item" id="btn-mob-team" onclick="switchPage('team'); toggleDrawer();">
+        <span>فريق العمل</span>
+        <span>👥</span>
+      </button>
+      <button class="drawer-nav-item" id="btn-mob-organization" onclick="switchPage('organization'); toggleDrawer();">
+        <span>الهيكل التنظيمي</span>
+        <span>📊</span>
+      </button>
+      <button class="drawer-nav-item" id="btn-mob-careers" onclick="switchPage('careers'); toggleDrawer();">
+        <span>الوظائف والشواغر</span>
+        <span>💼</span>
+      </button>
+      <button class="drawer-nav-item" id="btn-mob-contact" onclick="switchPage('contact'); toggleDrawer();">
+        <span>تواصل معنا</span>
+        <span>📞</span>
+      </button>
+
+      <div style="margin-top: 20px; padding: 14px; background: rgba(0, 210, 255, 0.08); border: 1px solid rgba(0, 210, 255, 0.2); border-radius: 12px; text-align: center;">
+        <div style="font-size: 13px; font-weight: bold; color: var(--cyan-electric); margin-bottom: 6px;">حفظ الملف محلياً</div>
+        <p style="font-size: 11px; color: #94A3B8; margin-bottom: 10px;">يمكنك تنزيل هذا الملف وتشغيله أوفلاين في أي وقت بدون خادم.</p>
+        <button onclick="downloadCurrentHtmlFile()" style="width: 100%; padding: 8px; border-radius: 8px; background: var(--blue-royal); color: white; font-weight: bold; font-size: 12px;">تحميل الملف الآن 💾</button>
+      </div>
+    </div>
+    <div class="drawer-footer">
+      <div>سمارت مسار | Smart Masar</div>
+      <div style="font-size: 10px; color: #64748B; margin-top: 4px;">نبتكر اليوم لنصنع فرص الغد</div>
+    </div>
+  </aside>
+
+  <!-- ============================================================== -->
+  <!-- 1. HOMEPAGE VIEW -->
+  <!-- ============================================================== -->
+  <main class="page-view active" id="view-home">
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-glow-1"></div>
+      <div class="hero-glow-2"></div>
+      <div class="container">
+        <div class="hero-grid">
+          <div>
+            <div class="hero-badge">
+              <span>🚀</span>
+              <span>الذكاء الاصطناعي والتحول الرقمي المتقدم</span>
+            </div>
+            <h1 class="hero-title">
+              شركة <span>سمارت مسار</span> للحلول التقنية والابتكار
+            </h1>
+            <div class="hero-slogan">
+              نبتكر اليوم لنصنع فرص الغد
+            </div>
+            <p class="hero-desc">
+              نطور منظومات برمجية ذكية ونقود مبادرات التحول الرقمي وأتمتة العمليات للمؤسسات والشركات، لتمكين قطاعات الأعمال من الاستفادة القصوى من ثورة البيانات والذكاء الاصطناعي.
+            </p>
+            <div class="hero-actions">
+              <button class="btn-primary" onclick="switchPage('services')">
+                <span>استكشف حلولنا التقنية</span>
+                <span>←</span>
+              </button>
+              <button class="btn-secondary" onclick="switchPage('careers')">
+                <span>الشواغر الوظيفية (محاسب عام)</span>
+                <span>💼</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Hero Visual Card with Stats -->
+          <div class="hero-visual-card">
+            <div class="hero-logo-banner">
+              <div style="display: flex; align-items: center; gap: 14px; direction: ltr;">
+                <svg width="48" height="56" viewBox="0 0 54 62" fill="none">
+                  <path d="M44 16C44 9 37 5 27 5C17 5 11 10.5 11 18C11 26 19 29.5 27 32C35 34.5 43 38 43 47C43 55 36 60 26 60C14 60 8 54 8 46" stroke="#0A192F" stroke-width="8" stroke-linecap="round" />
+                  <path d="M44 16C44 9 37 5 27 5C17 5 11 10.5 11 18C11 26 19 29.5 27 32C35 34.5 43 38 43 47C43 55 36 60 26 60C14 60 8 54 8 46" stroke="url(#roadGrad1)" stroke-width="5" stroke-linecap="round" />
+                  <path d="M44 16C44 9 37 5 27 5C17 5 11 10.5 11 18C11 26 19 29.5 27 32C35 34.5 43 38 43 47C43 55 36 60 26 60C14 60 8 54 8 46" stroke="#FFFFFF" stroke-width="1.6" stroke-dasharray="2 3" stroke-linecap="round" />
+                </svg>
+                <div style="text-align: left;">
+                  <div style="font-size: 24px; font-weight: 900; color: #0A192F; line-height: 1;">mart <span style="color: #2563EB;">Masar</span></div>
+                  <div style="font-size: 13px; color: #0A192F; font-weight: bold; margin-top: 2px;">مسار الذكي</div>
+                  <div style="font-size: 9px; color: #64748B; letter-spacing: 0.5px;">Technology • AI • Innovation</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="hero-stat-row">
+              <div class="stat-pill">
+                <div class="stat-num">6</div>
+                <div class="stat-lbl">أقسام مؤسسية</div>
+              </div>
+              <div class="stat-pill">
+                <div class="stat-num">4+</div>
+                <div class="stat-lbl">حلول ذكية</div>
+              </div>
+              <div class="stat-pill">
+                <div class="stat-num">100%</div>
+                <div class="stat-lbl">أمان وسرعة</div>
+              </div>
+            </div>
+
+            <div style="margin-top: 18px; padding: 12px; background: rgba(0, 210, 255, 0.08); border-radius: 12px; border: 1px solid rgba(0, 210, 255, 0.2); font-size: 12px; color: #E2E8F0; text-align: center;">
+              💡 <strong>رؤيتنا:</strong> أن نكون من الشركات الرائدة في تطوير حلول تقنية ذكية تسهّل الأعمال وتصنع فرصاً جديدة.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 Main Navigation Cards -->
+    <section class="section-py">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-badge">بوابات الشركة الرئيسية</span>
+          <h2 class="section-title">استكشف مساراتنا المؤسسية</h2>
+          <p class="section-desc">تنقل بسلاسة بين بوابات الموقع وتعرف على حلولنا التقنية، قياداتنا، وهيكل العمل.</p>
+        </div>
+
+        <div class="nav-cards-grid">
+          <!-- Card 1: Services -->
+          <div class="feature-nav-card" onclick="switchPage('services')">
+            <div>
+              <div class="card-icon-box">⚙️</div>
+              <h3 class="card-title">الخدمات والحلول</h3>
+              <p class="card-text">حلول الذكاء الاصطناعي، البرمجيات السحابية، وأتمتة العمليات التشغيلية (RPA) بدقة عالية.</p>
+            </div>
+            <div class="card-action-link">
+              <span>عرض الخدمات التقنية</span>
+              <span>←</span>
+            </div>
+          </div>
+
+          <!-- Card 2: Team -->
+          <div class="feature-nav-card" onclick="switchPage('team')">
+            <div>
+              <div class="card-icon-box">👥</div>
+              <h3 class="card-title">فريق العمل</h3>
+              <p class="card-text">الكوادر البشرية والقيادات التأسيسية التي تقود استراتيجية التطوير والابتكار في سمارت مسار.</p>
+            </div>
+            <div class="card-action-link">
+              <span>التعرف على الفريق</span>
+              <span>←</span>
+            </div>
+          </div>
+
+          <!-- Card 3: Organization -->
+          <div class="feature-nav-card" onclick="switchPage('organization')">
+            <div>
+              <div class="card-icon-box">📊</div>
+              <h3 class="card-title">الهيكل التنظيمي</h3>
+              <p class="card-text">خريطة تفاعلية توضح العلاقات الإدارية وتوزيع الأقسام من الإدارة التنفيذية إلى الأقسام التشغيلية.</p>
+            </div>
+            <div class="card-action-link">
+              <span>استعراض الهيكل</span>
+              <span>←</span>
+            </div>
+          </div>
+
+          <!-- Card 4: Careers -->
+          <div class="feature-nav-card" onclick="switchPage('careers')">
+            <div>
+              <div class="card-icon-box">💼</div>
+              <h3 class="card-title">الوظائف والفرص</h3>
+              <p class="card-text">شاغر وظيفي نشط (محاسب عام – Accountant) مع متطلبات الوظيفة وطريقة التقديم المباشرة.</p>
+            </div>
+            <div class="card-action-link">
+              <span>التقديم على الوظيفة</span>
+              <span>←</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================================================== -->
+  <!-- 2. ABOUT US VIEW -->
+  <!-- ============================================================== -->
+  <section class="page-view" id="view-about">
+    <div style="background: var(--navy-primary); color: white; padding: 40px 0; border-bottom: 2px solid var(--blue-royal);">
+      <div class="container">
+        <span class="section-badge" style="background: rgba(0,210,255,0.15); color: var(--cyan-electric); border: 1px solid rgba(0,210,255,0.3);">عن سمارت مسار</span>
+        <h1 style="font-size: 32px; font-weight: 900; margin-top: 8px;">من نحن ورؤيتنا المستقبلية</h1>
+        <p style="color: #94A3B8; font-size: 14px; margin-top: 6px;">نبتكر اليوم لنصنع فرص الغد — Technology • AI • Innovation</p>
+      </div>
+    </div>
+
+    <div class="container section-py">
+      <div style="display: grid; grid-template-columns: 1fr; gap: 32px;">
+        <div style="background: white; border-radius: 18px; padding: 32px; border: 1px solid var(--slate-200); box-shadow: var(--shadow-sm);">
+          <h2 style="font-size: 22px; font-weight: bold; color: var(--navy-primary); margin-bottom: 14px;">نبذة تعريفية عن الشركة</h2>
+          <p style="font-size: 15px; color: var(--slate-700); line-height: 1.8; margin-bottom: 20px;">
+            شركة سمارت مسار (Smart Masar) هي شركة تقنية رائدة متخصصة في ابتكار حلول الذكاء الاصطناعي، تطوير البرمجيات السحابية، وقيادة برامج التحول الرقمي الشامل للمؤسسات. نجمع بين الرؤية الاستراتيجية والخبرة الهندسية المتقدمة لتمكين قطاعات الأعمال من الاستفادة القصوى من ثورة البيانات والأتمتة الذكية.
+          </p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+            <div style="background: #F0F6FD; padding: 20px; border-radius: 14px; border-right: 4px solid var(--blue-royal);">
+              <h3 style="font-size: 16px; font-weight: bold; color: var(--navy-primary); margin-bottom: 6px;">🎯 رؤيتنا</h3>
+              <p style="font-size: 13px; color: var(--slate-600);">أن نكون من الشركات الرائدة في تطوير حلول تقنية ذكية تسهّل الأعمال وتصنع فرصاً جديدة للمجتمع والمؤسسات.</p>
+            </div>
+            <div style="background: #F0F6FD; padding: 20px; border-radius: 14px; border-right: 4px solid var(--cyan-soft);">
+              <h3 style="font-size: 16px; font-weight: bold; color: var(--navy-primary); margin-bottom: 6px;">🚀 رسالتنا</h3>
+              <p style="font-size: 13px; color: var(--slate-600);">مساعدة الأفراد والمؤسسات على تطوير أعمالهم ومضاعفة إنتاجيتهم من خلال التكنولوجيا والذكاء الاصطناعي الحديث.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Core Values -->
+        <div>
+          <h2 style="font-size: 22px; font-weight: bold; color: var(--navy-primary); margin-bottom: 18px; text-align: center;">قيمنا المؤسسية الجوهرية</h2>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+            <div style="background: white; padding: 22px; border-radius: 14px; border: 1px solid var(--slate-200); text-align: center;">
+              <div style="font-size: 30px; margin-bottom: 10px;">💡</div>
+              <h4 style="font-size: 16px; font-weight: bold; color: var(--navy-primary); margin-bottom: 6px;">الابتكار المستمر</h4>
+              <p style="font-size: 12px; color: var(--slate-600); line-height: 1.6;">نستكشف أحدث آفاق الذكاء الاصطناعي لتقديم منتجات تقنية تسبق تطلعات السوق.</p>
+            </div>
+            <div style="background: white; padding: 22px; border-radius: 14px; border: 1px solid var(--slate-200); text-align: center;">
+              <div style="font-size: 30px; margin-bottom: 10px;">🛡️</div>
+              <h4 style="font-size: 16px; font-weight: bold; color: var(--navy-primary); margin-bottom: 6px;">المصداقية والشفافية</h4>
+              <p style="font-size: 12px; color: var(--slate-600); line-height: 1.6;">نلتزم بأعلى معايير النزاهة والوضوح مع عملائنا وفريق عملنا في جميع خطواتنا.</p>
+            </div>
+            <div style="background: white; padding: 22px; border-radius: 14px; border: 1px solid var(--slate-200); text-align: center;">
+              <div style="font-size: 30px; margin-bottom: 10px;">🤝</div>
+              <h4 style="font-size: 16px; font-weight: bold; color: var(--navy-primary); margin-bottom: 6px;">روح التعاون والمشاركة</h4>
+              <p style="font-size: 12px; color: var(--slate-600); line-height: 1.6;">نؤمن بأن الإنجازات الكبرى تولد من تضافر العقول وتبادل الخبرات في بيئة محفزة.</p>
+            </div>
+            <div style="background: white; padding: 22px; border-radius: 14px; border: 1px solid var(--slate-200); text-align: center;">
+              <div style="font-size: 30px; margin-bottom: 10px;">📈</div>
+              <h4 style="font-size: 16px; font-weight: bold; color: var(--navy-primary); margin-bottom: 6px;">التطوير والتعلم الدائم</h4>
+              <p style="font-size: 12px; color: var(--slate-600); line-height: 1.6;">نستثمر في طاقات كادرنا البشري ونشجع البحث التجريبي واكتساب المهارات الصاعدة.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- 3. SERVICES VIEW -->
+  <!-- ============================================================== -->
+  <section class="page-view" id="view-services">
+    <div style="background: var(--navy-primary); color: white; padding: 40px 0; border-bottom: 2px solid var(--blue-royal);">
+      <div class="container">
+        <span class="section-badge" style="background: rgba(0,210,255,0.15); color: var(--cyan-electric); border: 1px solid rgba(0,210,255,0.3);">حلولنا التكنولوجية</span>
+        <h1 style="font-size: 32px; font-weight: 900; margin-top: 8px;">الخدمات التقنية والتحول الذكي</h1>
+        <p style="color: #94A3B8; font-size: 14px; margin-top: 6px;">حلول متقدمة في الذكاء الاصطناعي وهندسة المنصات الرقمية</p>
+      </div>
+    </div>
+
+    <div class="container section-py">
+      <div class="services-grid">
+        <!-- Service 1 -->
+        <div class="service-box">
+          <div class="service-top">
+            <div class="service-icon">🤖</div>
+            <div class="service-title-wrap">
+              <h3>حلول الذكاء الاصطناعي</h3>
+              <span>Artificial Intelligence Solutions</span>
+            </div>
+          </div>
+          <p style="font-size: 14px; color: var(--slate-600); line-height: 1.6;">
+            تطوير نماذج ذكاء اصطناعي مخصصة، أنظمة التنبؤ وتحليل البيانات الضخمة، وحلول معالجة اللغة الطبيعية للارتقاء بإنتاجية الأعمال.
+          </p>
+          <ul class="service-features-list">
+            <li><span class="check-bullet">✓</span> نماذج تعلم آلي مخصصة لاحتياجات المؤسسات</li>
+            <li><span class="check-bullet">✓</span> تحليلات تنبؤية للقرارات المالية والتشغيلية</li>
+            <li><span class="check-bullet">✓</span> مساعدات ذكية وأتمتة خدمة العملاء</li>
+            <li><span class="check-bullet">✓</span> معالجة الوثائق واستخراج البيانات آلياً</li>
+          </ul>
+        </div>
+
+        <!-- Service 2 -->
+        <div class="service-box">
+          <div class="service-top">
+            <div class="service-icon">💻</div>
+            <div class="service-title-wrap">
+              <h3>تطوير البرمجيات والأنظمة</h3>
+              <span>Software Development</span>
+            </div>
+          </div>
+          <p style="font-size: 14px; color: var(--slate-600); line-height: 1.6;">
+            هندسة منصات ويب وتطبيقات سحابية فائقة الأداء وفق أحدث المعايير البرمجية لتلبية متطلبات المشاريع الريادية والشركات.
+          </p>
+          <ul class="service-features-list">
+            <li><span class="check-bullet">✓</span> بناء تطبيقات الويب الحديثة وحلول السحابية</li>
+            <li><span class="check-bullet">✓</span> تكامل واجهات البرمجة APIs وتوحيد الأنظمة</li>
+            <li><span class="check-bullet">✓</span> بنية تحتية مرنة وقابلة للتوسع الفوري</li>
+            <li><span class="check-bullet">✓</span> معايير أمان عالية وضمان استمرارية التشغيل</li>
+          </ul>
+        </div>
+
+        <!-- Service 3 -->
+        <div class="service-box">
+          <div class="service-top">
+            <div class="service-icon">🔄</div>
+            <div class="service-title-wrap">
+              <h3>التحول الرقمي المؤسسي</h3>
+              <span>Digital Transformation</span>
+            </div>
+          </div>
+          <p style="font-size: 14px; color: var(--slate-600); line-height: 1.6;">
+            استراتيجيات شاملة لرقمنة بيئة العمل والانتقال من الإجراءات التقليدية إلى بيئات رقمية متكاملة ترفع كفاءة الأداء التشغيلي.
+          </p>
+          <ul class="service-features-list">
+            <li><span class="check-bullet">✓</span> دراسة وتحليل فجوات التحول الرقمي الحالية</li>
+            <li><span class="check-bullet">✓</span> خارطة طريق تنفيذية للتحديث التكنولوجي</li>
+            <li><span class="check-bullet">✓</span> إدارة التغيير وتأهيل الكوادر البشرية</li>
+            <li><span class="check-bullet">✓</span> ربط القنوات الرقمية وتحسين تجربة المستفيدين</li>
+          </ul>
+        </div>
+
+        <!-- Service 4 -->
+        <div class="service-box">
+          <div class="service-top">
+            <div class="service-icon">⚡</div>
+            <div class="service-title-wrap">
+              <h3>أتمتة العمليات التشغيلية (RPA)</h3>
+              <span>Business Process Automation</span>
+            </div>
+          </div>
+          <p style="font-size: 14px; color: var(--slate-600); line-height: 1.6;">
+            أتمتة المهام الروتينية وسير المعاملات الإدارية والمالية لتقليل التكاليف التشغيلية والتخلص التام من الأخطاء البشرية.
+          </p>
+          <ul class="service-features-list">
+            <li><span class="check-bullet">✓</span> أتمتة تدفقات الفواتير والمطابقات الحسابية</li>
+            <li><span class="check-bullet">✓</span> إدارة دورات الموافقات الإدارية الذكية</li>
+            <li><span class="check-bullet">✓</span> أرشفة رقمية وتتبع تلقائي للمستندات</li>
+            <li><span class="check-bullet">✓</span> تقارير فورية ومؤشرات قياس الأداء KPI</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- 4. TEAM VIEW -->
+  <!-- ============================================================== -->
+  <section class="page-view" id="view-team">
+    <div style="background: var(--navy-primary); color: white; padding: 40px 0; border-bottom: 2px solid var(--blue-royal);">
+      <div class="container">
+        <span class="section-badge" style="background: rgba(0,210,255,0.15); color: var(--cyan-electric); border: 1px solid rgba(0,210,255,0.3);">فريق العمل</span>
+        <h1 style="font-size: 32px; font-weight: 900; margin-top: 8px;">الكوادر البشرية والقيادات</h1>
+        <p style="color: #94A3B8; font-size: 14px; margin-top: 6px;">كفاءات متميزة تقود التحول والابتكار التقني في سمارت مسار</p>
+      </div>
+    </div>
+
+    <div class="container section-py">
+      <div class="team-grid">
+        <!-- Emp 1 -->
+        <div class="team-member-card" onclick="openMemberModal('د. أحمد العابد', 'المدير العام', 'الإدارة العامة والتنفيذية', 'gm@smartmasar.edu', 'المدير العام لشركة سمارت مسار، يقود التوجه الاستراتيجي وتطوير حلول التحول الرقمي والذكاء الاصطناعي.')">
+          <div class="member-avatar">د.أ</div>
+          <h3 class="member-name">د. أحمد العابد</h3>
+          <div class="member-role">المدير العام (General Manager)</div>
+          <span class="member-dept-tag">الإدارة العامة والتنفيذية</span>
+          <p class="member-bio">يقود التوجه الاستراتيجي وتطوير حلول التحول الرقمي والذكاء الاصطناعي.</p>
+        </div>
+
+        <!-- Emp 2 -->
+        <div class="team-member-card" onclick="openMemberModal('شروق الشرفات', 'قيد التعيين', 'التكنولوجيا والذكاء الاصطناعي', 'shorouq@smartmasar.edu', 'كادر قسم التكنولوجيا والذكاء الاصطناعي.')">
+          <div class="member-avatar" style="background: linear-gradient(135deg, #2563EB, #00D2FF);">ش.ش</div>
+          <h3 class="member-name">شروق الشرفات</h3>
+          <div class="member-role">قيد التعيين (Tech & AI)</div>
+          <span class="member-dept-tag">التكنولوجيا والذكاء الاصطناعي</span>
+          <p class="member-bio">عضو فريق تطوير المنظومات البرمجية والحلول الذكية.</p>
+        </div>
+
+        <!-- Emp 3 -->
+        <div class="team-member-card" onclick="openMemberModal('إكرام الشرفات', 'قيد التعيين', 'المالية والمحاسبة', 'ikram@smartmasar.edu', 'كادر قسم المالية والمحاسبة.')">
+          <div class="member-avatar" style="background: linear-gradient(135deg, #10203B, #7C5CDE);">إ.ش</div>
+          <h3 class="member-name">إكرام الشرفات</h3>
+          <div class="member-role">قيد التعيين (Finance)</div>
+          <span class="member-dept-tag">المالية والمحاسبة</span>
+          <p class="member-bio">متابعة العمليات المالية والمطابقات الحسابية المؤسسية.</p>
+        </div>
+
+        <!-- Emp 4 -->
+        <div class="team-member-card" onclick="openMemberModal('إخلاص لله الشرفات', 'قيد التعيين', 'الموارد البشرية', 'ekhlaslellah@smartmasar.edu', 'كادر قسم الموارد البشرية.')">
+          <div class="member-avatar" style="background: linear-gradient(135deg, #2563EB, #10203B);">إ.ل</div>
+          <h3 class="member-name">إخلاص لله الشرفات</h3>
+          <div class="member-role">قيد التعيين (Human Resources)</div>
+          <span class="member-dept-tag">الموارد البشرية</span>
+          <p class="member-bio">إدارة استقطاب المواهب وتطوير الكوادر المؤسسية.</p>
+        </div>
+
+        <!-- Emp 5 -->
+        <div class="team-member-card" onclick="openMemberModal('حنين الكساسبة', 'قيد التعيين', 'التسويق والاتصال المؤسسي', 'haneen@smartmasar.edu', 'كادر قسم التسويق والاتصال.')">
+          <div class="member-avatar" style="background: linear-gradient(135deg, #7C5CDE, #2563EB);">ح.ك</div>
+          <h3 class="member-name">حنين الكساسبة</h3>
+          <div class="member-role">قيد التعيين (Marketing)</div>
+          <span class="member-dept-tag">التسويق والاتصال المؤسسي</span>
+          <p class="member-bio">قيادة الحملات التسويقية والاتصال المؤسسي الرقمي.</p>
+        </div>
+
+        <!-- Emp 6 -->
+        <div class="team-member-card" onclick="openMemberModal('أماني أكرم', 'قيد التعيين', 'العمليات والإدارة التشغيلية', 'amani@smartmasar.edu', 'كادر قسم العمليات.')">
+          <div class="member-avatar" style="background: linear-gradient(135deg, #0A192F, #00D2FF);">أ.أ</div>
+          <h3 class="member-name">أماني أكرم</h3>
+          <div class="member-role">قيد التعيين (Operations)</div>
+          <span class="member-dept-tag">العمليات والإدارة التشغيلية</span>
+          <p class="member-bio">تنظيم الإجراءات التشغيلية اليومية وسير المعاملات.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- 5. ORGANIZATION CHART VIEW -->
+  <!-- ============================================================== -->
+  <section class="page-view" id="view-organization">
+    <div style="background: var(--navy-primary); color: white; padding: 40px 0; border-bottom: 2px solid var(--blue-royal);">
+      <div class="container">
+        <span class="section-badge" style="background: rgba(0,210,255,0.15); color: var(--cyan-electric); border: 1px solid rgba(0,210,255,0.3);">الهيكل الإداري</span>
+        <h1 style="font-size: 32px; font-weight: 900; margin-top: 8px;">الهيكل التنظيمي التفاعلي</h1>
+        <p style="color: #94A3B8; font-size: 14px; margin-top: 6px;">توزيع الصلاحيات الإدارية والعلاقات الوظيفية في شركة سمارت مسار</p>
+      </div>
+    </div>
+
+    <div class="container section-py">
+      <div class="org-chart-wrap">
+        <!-- General Manager Node -->
+        <div class="org-root-node">
+          <div style="font-size: 11px; background: rgba(0,210,255,0.2); color: var(--cyan-electric); display: inline-block; padding: 2px 8px; border-radius: 9999px; margin-bottom: 6px; font-weight: bold;">قمة الهيكل الإداري</div>
+          <h3 style="font-size: 18px; font-weight: 900;">د. أحمد العابد</h3>
+          <div style="font-size: 13px; color: #93C5FD; font-weight: bold;">المدير العام — General Manager</div>
+          <div style="font-size: 11px; color: #CBD5E1; margin-top: 4px;">الإدارة العامة والتنفيذية</div>
+        </div>
+
+        <!-- 5 Reporting Departments -->
+        <div class="org-depts-grid">
+          <div class="org-dept-card">
+            <div class="dept-icon-mini">💻</div>
+            <div class="dept-card-title">التكنولوجيا والذكاء الاصطناعي</div>
+            <div class="dept-card-emp">شروق الشرفات (قيد التعيين)</div>
+          </div>
+          <div class="org-dept-card">
+            <div class="dept-icon-mini">💰</div>
+            <div class="dept-card-title">المالية والمحاسبة</div>
+            <div class="dept-card-emp">إكرام الشرفات (قيد التعيين)</div>
+          </div>
+          <div class="org-dept-card">
+            <div class="dept-icon-mini">👥</div>
+            <div class="dept-card-title">الموارد البشرية</div>
+            <div class="dept-card-emp">إخلاص لله الشرفات (قيد التعيين)</div>
+          </div>
+          <div class="org-dept-card">
+            <div class="dept-icon-mini">📢</div>
+            <div class="dept-card-title">التسويق والاتصال المؤسسي</div>
+            <div class="dept-card-emp">حنين الكساسبة (قيد التعيين)</div>
+          </div>
+          <div class="org-dept-card">
+            <div class="dept-icon-mini">⚙️</div>
+            <div class="dept-card-title">العمليات والإدارة التشغيلية</div>
+            <div class="dept-card-emp">أماني أكرم (قيد التعيين)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- 6. CAREERS VIEW -->
+  <!-- ============================================================== -->
+  <section class="page-view" id="view-careers">
+    <div style="background: var(--navy-primary); color: white; padding: 40px 0; border-bottom: 2px solid var(--blue-royal);">
+      <div class="container">
+        <span class="section-badge" style="background: rgba(0,210,255,0.15); color: var(--cyan-electric); border: 1px solid rgba(0,210,255,0.3);">الوظائف والتوظيف</span>
+        <h1 style="font-size: 32px; font-weight: 900; margin-top: 8px;">فرص العمل وبناء المسار المهني</h1>
+        <p style="color: #94A3B8; font-size: 14px; margin-top: 6px;">انضم إلى فريق سمارت مسار وساهم في بناء مستقبل التكنولوجيا</p>
+      </div>
+    </div>
+
+    <div class="container section-py">
+      <div class="job-card-hero">
+        <h2 class="job-title">محاسب عام – Accountant</h2>
+        
+        <div class="job-meta-pills">
+          <span class="job-pill">🏢 قسم المالية والمحاسبة</span>
+          <span class="job-pill">⏰ دوام كامل (مكتبي / هجين)</span>
+          <span class="job-pill">📍 المقر الرئيسي — عمّان</span>
+          <span class="job-pill">🎓 خبرة سنتين إلى 4 سنوات</span>
+        </div>
+
+        <p style="font-size: 14px; color: var(--slate-700); line-height: 1.7; margin-bottom: 20px;">
+          تبحث شركة سمارت مسار عن محاسب محترف وموثوق للانضمام إلى قسم المالية والمحاسبة، للمساهمة في إدارة العمليات المحاسبية اليومية، إعداد التقارير المالية الدقيقة، ومتابعة المطابقات البنكية وتطوير الإجراءات المالية الرقمية المتطابقة مع الأنظمة المحاسبية الحديثة.
+        </p>
+
+        <!-- Responsibilities -->
+        <h3 class="job-section-title">📋 المسؤوليات والمهام الوظيفية</h3>
+        <ul class="job-list">
+          <li>تسجيل القيود المحاسبية اليومية ومراجعة فواتير المشتريات والمبيعات بدقة عالية.</li>
+          <li>إجراء المطابقات البنكية ومطابقة حسابات العملاء والموردين بشكل دوري.</li>
+          <li>المشاركة في إعداد القوائم المالية الشهرية وميزان المراجعة وتقارير التدفق النقدي.</li>
+          <li>متابعة الحسابات المدينة والدائنة والتحصيلات والتسويات المالية.</li>
+          <li>التعاون مع المدقق المالي الخارجي وتجهيز الوثائق والمستندات الداعمة.</li>
+          <li>تطبيق الضوابط المحاسبية الداخلية وتوثيق الإجراءات المالية وفق معايير المحاسبة الدولية.</li>
+        </ul>
+
+        <!-- Qualifications -->
+        <h3 class="job-section-title">🎓 المؤهلات والشروط المطلوبة</h3>
+        <ul class="job-list">
+          <li>شهادة البكالوريوس في المحاسبة أو العلوم المالية والمصرفية من جامعة معترف بها.</li>
+          <li>خبرة عملية لا تقل عن سنتين في المحاسبة المالية والتسجيل الدفتري والإلكتروني.</li>
+          <li>معرفة تامة بالمعايير المحاسبية الدولية (IFRS) واللوائح الضريبية المعمول بها.</li>
+          <li>دقة متناهية في التدقيق والأرقام ومهارات تنظيمية عالية.</li>
+          <li>القدرة على العمل بروح الفريق والالتزام بأعلى معايير النزاهة والسرية المهنية.</li>
+        </ul>
+
+        <!-- Accounting Software -->
+        <h3 class="job-section-title">📊 المهارات المحاسبية وبرمجيات ERP</h3>
+        <ul class="job-list">
+          <li>إتقان متقدم لبرنامج Microsoft Excel (الدوال المحاسبية المتقدمة، Pivot Tables، VLOOKUP/XLOOKUP).</li>
+          <li>خبرة سابقة في استخدام الأنظمة المحاسبية وبرمجيات تخطيط الموارد (QuickBooks، Odoo، أو Zoho Books).</li>
+          <li>فهم عميق لدورة المحاسبة الكاملة من قيود اليومية حتى إقفال الميزانية السنوية.</li>
+        </ul>
+
+        <!-- Action Box -->
+        <div style="margin-top: 28px; padding: 20px; background: #F8FAFC; border-radius: 14px; border: 1px solid var(--slate-200); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px;">
+          <div>
+            <div style="font-size: 15px; font-weight: bold; color: var(--navy-primary);">جاهز للتقديم على الشاغر؟</div>
+            <div style="font-size: 12px; color: var(--slate-600);">يرجى تجهيز سيرتك الذاتية وتعبئة طلب التوظيف الرسمي.</div>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn-primary" onclick="openJobApplyModal()">
+              <span>تقديم الطلب الآن</span>
+              <span>📝</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- 7. CONTACT VIEW -->
+  <!-- ============================================================== -->
+  <section class="page-view" id="view-contact">
+    <div style="background: var(--navy-primary); color: white; padding: 40px 0; border-bottom: 2px solid var(--blue-royal);">
+      <div class="container">
+        <span class="section-badge" style="background: rgba(0,210,255,0.15); color: var(--cyan-electric); border: 1px solid rgba(0,210,255,0.3);">تواصل معنا</span>
+        <h1 style="font-size: 32px; font-weight: 900; margin-top: 8px;">يسعدنا تواصلكم واستفساراتكم</h1>
+        <p style="color: #94A3B8; font-size: 14px; margin-top: 6px;">فريق سمارت مسار متاح للإجابة عن جميع الاستفسارات والشراكات التقنية</p>
+      </div>
+    </div>
+
+    <div class="container section-py">
+      <div class="contact-grid">
+        <!-- Info Card -->
+        <div class="contact-info-card">
+          <div>
+            <div style="font-size: 20px; font-weight: bold; color: var(--cyan-electric); margin-bottom: 8px;">شركة سمارت مسار</div>
+            <p style="font-size: 13px; color: #CBD5E1; line-height: 1.6;">
+              المركز الرئيسي لخدمات التحول الرقمي وحلول الذكاء الاصطناعي في المملكة الأردنية الهاشمية.
+            </p>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 18px;">
+            <div class="contact-item">
+              <div class="contact-icon-box">📍</div>
+              <div>
+                <div style="font-size: 11px; color: #94A3B8;">العنوان والمقر:</div>
+                <div style="font-size: 14px; font-weight: bold;">مجمع واحة التقنية، عمّان — المملكة الأردنية الهاشمية</div>
+              </div>
+            </div>
+
+            <div class="contact-item">
+              <div class="contact-icon-box">✉️</div>
+              <div>
+                <div style="font-size: 11px; color: #94A3B8;">البريد الإلكتروني المعتمد:</div>
+                <div style="font-size: 14px; font-weight: bold; direction: ltr; text-align: right;">info@smartmasar.edu</div>
+              </div>
+            </div>
+
+            <div class="contact-item">
+              <div class="contact-icon-box">⏰</div>
+              <div>
+                <div style="font-size: 11px; color: #94A3B8;">أوقات الدوام الرسمي:</div>
+                <div style="font-size: 14px; font-weight: bold;">الأحد – الخميس: 8:30 صباحاً – 5:00 مساءً</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="padding: 12px; background: rgba(0, 210, 255, 0.1); border-radius: 10px; font-size: 11px; color: #E2E8F0;">
+            ℹ️ ملاحظة: هذا نموذج تعليمي يحاكي بيئة الشركات الرقمية، ولا يمثل سجلاً تجارياً حقيقياً.
+          </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="contact-form-card">
+          <h3 style="font-size: 20px; font-weight: bold; color: var(--navy-primary); margin-bottom: 16px;">أرسل لنا رسالة مباشرة</h3>
+          <form id="contact-form" onsubmit="handleContactSubmit(event)">
+            <div class="form-group">
+              <label class="form-label" for="contact-name">الاسم الكامل *</label>
+              <input type="text" id="contact-name" class="form-input" placeholder="مثال: محمد أحمد" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="contact-email">البريد الإلكتروني *</label>
+              <input type="email" id="contact-email" class="form-input" placeholder="name@domain.com" required style="direction: ltr; text-align: right;">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="contact-subject">موضوع الاستفسار *</label>
+              <select id="contact-subject" class="form-input" required>
+                <option value="حلول الذكاء الاصطناعي">استفسار عن حلول الذكاء الاصطناعي</option>
+                <option value="التحول الرقمي">طلب دراسة التحول الرقمي</option>
+                <option value="شواغر التوظيف">استفسار بخصوص شواغر التوظيف</option>
+                <option value="شراكات أعمال">شراكات الأعمال والتعاون المؤسسي</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="contact-message">نص الرسالة *</label>
+              <textarea id="contact-message" class="form-textarea" rows="4" placeholder="اكتب تفاصيل استفسارك هنا..." required></textarea>
+            </div>
+            <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;">
+              <span>إرسال الرسالة</span>
+              <span>✉️</span>
+            </button>
+          </form>
+          <div id="contact-feedback" style="display: none; margin-top: 14px; padding: 12px; border-radius: 10px; font-size: 13px; text-align: center;"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- MODALS -->
+  <!-- ============================================================== -->
+  <!-- 1. Member Modal -->
+  <div class="modal-backdrop" id="member-modal" onclick="closeModals()">
+    <div class="modal-window" onclick="event.stopPropagation()">
+      <button class="modal-close-btn" onclick="closeModals()">✕</button>
+      <div style="text-align: center; margin-bottom: 20px;">
+        <div id="modal-emp-avatar" class="member-avatar" style="margin: 0 auto 12px auto;">د.أ</div>
+        <h3 id="modal-emp-name" style="font-size: 20px; font-weight: bold; color: var(--navy-primary);">الاسم</h3>
+        <div id="modal-emp-role" style="font-size: 14px; font-weight: bold; color: var(--blue-royal); margin-top: 2px;">المسمى الوظيفي</div>
+        <div id="modal-emp-dept" class="member-dept-tag" style="margin-top: 8px;">القسم</div>
+      </div>
+      <div style="background: var(--slate-50); border-radius: 12px; padding: 16px; margin-bottom: 16px; border: 1px solid var(--slate-200);">
+        <div style="font-size: 12px; font-weight: bold; color: var(--slate-600); margin-bottom: 4px;">النبذة المهنية:</div>
+        <p id="modal-emp-bio" style="font-size: 13px; color: var(--slate-700); line-height: 1.6;">النبذة</p>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--slate-600); padding: 8px 12px; background: var(--slate-100); border-radius: 8px;">
+        <span>البريد المعتمد:</span>
+        <strong id="modal-emp-email" style="direction: ltr;">email@smartmasar.edu</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Job Application Modal -->
+  <div class="modal-backdrop" id="job-apply-modal" onclick="closeModals()">
+    <div class="modal-window" onclick="event.stopPropagation()">
+      <button class="modal-close-btn" onclick="closeModals()">✕</button>
+      <div style="text-align: center; margin-bottom: 20px;">
+        <div style="font-size: 36px; margin-bottom: 8px;">📝</div>
+        <h3 style="font-size: 20px; font-weight: bold; color: var(--navy-primary);">طلب التقديم على شاغر محاسب عام</h3>
+        <p style="font-size: 13px; color: var(--slate-600); margin-top: 4px;">شركة سمارت مسار — قسم المالية والمحاسبة</p>
+      </div>
+
+      <div style="background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 12px; padding: 16px; margin-bottom: 20px;">
+        <div style="font-size: 13px; font-weight: bold; color: var(--blue-royal); margin-bottom: 6px;">طريقة التقديم الرسمية:</div>
+        <p style="font-size: 12px; color: var(--slate-700); line-height: 1.6; margin-bottom: 12px;">
+          يتم استقبال وتوثيق طلبات التوظيف الرسمية عبر نموذج Google Forms المخصص للشاغر لفرز السير الذاتية ومراجعة المؤهلات المحاسبية.
+        </p>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSc-placeholder-smart-masar-accountant-form/viewform" target="_blank" rel="noopener noreferrer" style="display: block; width: 100%; text-align: center; padding: 10px; background: var(--blue-royal); color: white; border-radius: 8px; font-weight: bold; font-size: 13px;">
+          الانتقال إلى نموذج Google Forms الرسمي ↗
+        </a>
+      </div>
+
+      <div style="border-top: 1px solid var(--slate-200); padding-top: 16px;">
+        <div style="font-size: 13px; font-weight: bold; color: var(--navy-primary); margin-bottom: 10px;">أو سجل اهتمامك المبدئي بالشاغر:</div>
+        <form onsubmit="handleJobInterestSubmit(event)">
+          <div class="form-group">
+            <label class="form-label">الاسم الرباعي *</label>
+            <input type="text" class="form-input" required placeholder="الاسم الكامل">
+          </div>
+          <div class="form-group">
+            <label class="form-label">البريد الإلكتروني *</label>
+            <input type="email" class="form-input" required placeholder="name@domain.com" style="direction: ltr; text-align: right;">
+          </div>
+          <div class="form-group">
+            <label class="form-label">سنوات الخبرة المحاسبية *</label>
+            <select class="form-input" required>
+              <option value="سنتان">سنتان خبرة</option>
+              <option value="3 سنوات">3 سنوات خبرة</option>
+              <option value="4 سنوات فأكثر">4 سنوات فأكثر</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;">
+            <span>تأكيد تسجيل الاهتمام</span>
+            <span>✓</span>
+          </button>
+        </form>
+        <div id="job-interest-feedback" style="display: none; margin-top: 10px; font-size: 12px; text-align: center; color: #166534; background: #DCFCE7; padding: 10px; border-radius: 8px;">
+          ✓ تم تسجيل اهتمامك بنجاح! يرجى إكمال نموذج Google Forms لضمان الفرز النهائي.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <!-- Footer Logo with Road-S -->
+          <div class="road-s-logo" style="margin-bottom: 12px;">
+            <svg width="34" height="40" viewBox="0 0 54 62" fill="none">
+              <path d="M44 16C44 9 37 5 27 5C17 5 11 10.5 11 18C11 26 19 29.5 27 32C35 34.5 43 38 43 47C43 55 36 60 26 60C14 60 8 54 8 46" stroke="#00D2FF" stroke-width="7" stroke-linecap="round" />
+              <path d="M44 16C44 9 37 5 27 5C17 5 11 10.5 11 18C11 26 19 29.5 27 32C35 34.5 43 38 43 47C43 55 36 60 26 60C14 60 8 54 8 46" stroke="#FFFFFF" stroke-width="1.6" stroke-dasharray="2 3" stroke-linecap="round" />
+            </svg>
+            <div class="brand-wordmark" style="color: white;">
+              <div class="brand-wordmark-en" style="color: white;">mart <span style="color: var(--cyan-electric);">Masar</span></div>
+              <div style="font-size: 12px; color: #94A3B8; direction: rtl;">سمارت مسار</div>
+            </div>
+          </div>
+          <p style="font-size: 13px; color: #94A3B8; line-height: 1.7; max-width: 380px;">
+            نبتكر اليوم لنصنع فرص الغد. شركة تقنية متخصصة في الذكاء الاصطناعي، الحلول البرمجية، وهندسة التحول الرقمي المؤسسي.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">روابط الموقع</h4>
+          <ul class="footer-links">
+            <li><a href="#home" onclick="switchPage('home'); return false;">الرئيسية</a></li>
+            <li><a href="#about" onclick="switchPage('about'); return false;">من نحن</a></li>
+            <li><a href="#services" onclick="switchPage('services'); return false;">خدماتنا التقنية</a></li>
+            <li><a href="#team" onclick="switchPage('team'); return false;">فريق العمل</a></li>
+            <li><a href="#organization" onclick="switchPage('organization'); return false;">الهيكل التنظيمي</a></li>
+            <li><a href="#careers" onclick="switchPage('careers'); return false;">شاغر محاسب عام</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">ملف الموقع</h4>
+          <div style="font-size: 12px; color: #94A3B8; line-height: 1.6; margin-bottom: 14px;">
+            هذا الملف مستقل بالكامل (Standalone HTML). يمكنك حفظه وتشغيله مباشرة دون إنترنت أو سيرفر.
+          </div>
+          <button onclick="downloadCurrentHtmlFile()" style="background: rgba(0,210,255,0.15); border: 1px solid rgba(0,210,255,0.3); color: var(--cyan-electric); padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: bold; width: 100%;">
+            تنزيل نسخة الملف (HTML) 📥
+          </button>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>جميع الحقوق محفوظة © 2026 شركة سمارت مسار (Smart Masar)</div>
+        <div style="color: #64748B;">مشروع تعليمي محاكي — Technology • AI • Innovation</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Mobile Bottom Navigation (JOR Tech Inspired) -->
+  <nav class="mobile-bottom-nav">
+    <button class="bottom-nav-item active" id="btn-bottom-home" onclick="switchPage('home')">
+      <span class="icon">🏠</span>
+      <span>الرئيسية</span>
+    </button>
+    <button class="bottom-nav-item" id="btn-bottom-services" onclick="switchPage('services')">
+      <span class="icon">⚙️</span>
+      <span>الخدمات</span>
+    </button>
+    <button class="bottom-nav-item" id="btn-bottom-team" onclick="switchPage('team')">
+      <span class="icon">👥</span>
+      <span>الفريق</span>
+    </button>
+    <button class="bottom-nav-item" id="btn-bottom-careers" onclick="switchPage('careers')">
+      <span class="icon">💼</span>
+      <span>الوظائف</span>
+    </button>
+    <button class="bottom-nav-item" id="btn-bottom-contact" onclick="switchPage('contact')">
+      <span class="icon">📞</span>
+      <span>تواصل</span>
+    </button>
+  </nav>
+
+  <!-- Interactive JavaScript Logic -->
+  <script>
+    const PAGES = ['home', 'about', 'services', 'team', 'organization', 'careers', 'contact'];
+
+    function switchPage(pageId) {
+      if (!PAGES.includes(pageId)) pageId = 'home';
+
+      // 1. Switch visible view
+      document.querySelectorAll('.page-view').forEach(view => {
+        view.classList.remove('active');
+      });
+      const targetView = document.getElementById('view-' + pageId);
+      if (targetView) {
+        targetView.classList.add('active');
+      }
+
+      // 2. Update Desktop nav buttons
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      const activeNavBtn = document.getElementById('btn-nav-' + pageId);
+      if (activeNavBtn) activeNavBtn.classList.add('active');
+
+      // 3. Update Mobile drawer buttons
+      document.querySelectorAll('.drawer-nav-item').forEach(btn => btn.classList.remove('active'));
+      const activeMobBtn = document.getElementById('btn-mob-' + pageId);
+      if (activeMobBtn) activeMobBtn.classList.add('active');
+
+      // 4. Update Bottom bar
+      document.querySelectorAll('.bottom-nav-item').forEach(btn => btn.classList.remove('active'));
+      const activeBottomBtn = document.getElementById('btn-bottom-' + pageId);
+      if (activeBottomBtn) activeBottomBtn.classList.add('active');
+
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.location.hash = pageId;
+    }
+
+    // Toggle Mobile Drawer
+    function toggleDrawer() {
+      const drawer = document.getElementById('mobile-drawer');
+      const overlay = document.getElementById('drawer-overlay');
+      const isOpen = drawer.classList.contains('open');
+
+      if (isOpen) {
+        drawer.classList.remove('open');
+        overlay.classList.remove('open');
+      } else {
+        drawer.classList.add('open');
+        overlay.classList.add('open');
+      }
+    }
+
+    // Modal Operations
+    function openMemberModal(name, role, dept, email, bio) {
+      document.getElementById('modal-emp-name').innerText = name;
+      document.getElementById('modal-emp-role').innerText = role;
+      document.getElementById('modal-emp-dept').innerText = dept;
+      document.getElementById('modal-emp-email').innerText = email;
+      document.getElementById('modal-emp-bio').innerText = bio || 'عضو الكادر التأسيسي لشركة سمارت مسار.';
+      
+      const initials = name.split(' ').map(s => s[0]).slice(0, 2).join('.');
+      document.getElementById('modal-emp-avatar').innerText = initials || 'س.م';
+
+      document.getElementById('member-modal').classList.add('open');
+    }
+
+    function openJobApplyModal() {
+      document.getElementById('job-apply-modal').classList.add('open');
+    }
+
+    function closeModals() {
+      document.querySelectorAll('.modal-backdrop').forEach(modal => {
+        modal.classList.remove('open');
+      });
+    }
+
+    // Handle Contact Form Submit
+    function handleContactSubmit(e) {
+      e.preventDefault();
+      const feedback = document.getElementById('contact-feedback');
+      feedback.style.display = 'block';
+      feedback.style.background = '#DCFCE7';
+      feedback.style.color = '#166534';
+      feedback.style.border = '1px solid #86EFAC';
+      feedback.innerHTML = '✓ شكرًا لتواصلك معنا! تم استلام رسالتك وسيتم الرد عبر البريد الإلكتروني قريباً.';
+      e.target.reset();
+    }
+
+    // Handle Job Interest Submit
+    function handleJobInterestSubmit(e) {
+      e.preventDefault();
+      document.getElementById('job-interest-feedback').style.display = 'block';
+      e.target.reset();
+    }
+
+    // 1-Click Download Current HTML File as an attachment
+    function downloadCurrentHtmlFile() {
+      // First try to fetch the server download endpoint if available
+      const downloadEndpoint = '/api/download-html';
+      const a = document.createElement('a');
+      a.href = downloadEndpoint;
+      a.download = 'smart-masar.html';
+      
+      // Fallback: serialize current HTML if running without server
+      try {
+        const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+        const blobUrl = URL.createObjectURL(blob);
+        a.href = blobUrl;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+      } catch (err) {
+        window.open('/smart-masar.html', '_blank');
+      }
+    }
+
+    // Live Read-Only SheetDB Synchronization (No Admin Keys Exposed)
+    const SHEETDB_PUBLIC_URL = 'https://sheetdb.io/api/v1/gnn52l70oflrp';
+
+    async function syncFromSheetDbReadOnly() {
+      try {
+        const sheetsRes = await fetch(SHEETDB_PUBLIC_URL + '/sheets', {
+          method: 'GET',
+          headers: { Accept: 'application/json' }
+        });
+        if (!sheetsRes.ok) return;
+        const sheetsData = await sheetsRes.json();
+        const availableSheets = Array.isArray(sheetsData.sheets) ? sheetsData.sheets : [];
+
+        // 1. Hydrate SiteSettings if available
+        if (availableSheets.includes('SiteSettings')) {
+          const res = await fetch(SHEETDB_PUBLIC_URL + '?sheet=SiteSettings');
+          if (res.ok) {
+            const rows = await res.json();
+            if (Array.isArray(rows) && rows.length > 0) {
+              const map = {};
+              rows.forEach(r => { if (r.Key) map[r.Key] = r.Value; });
+              if (map.taglineAr) {
+                const sloganEl = document.querySelector('.hero-slogan');
+                if (sloganEl) sloganEl.textContent = map.taglineAr;
+              }
+              if (map.aboutDescriptionAr) {
+                const descEl = document.querySelector('.hero-desc');
+                if (descEl) descEl.textContent = map.aboutDescriptionAr;
+              }
+            }
+          }
+        }
+
+        // 2. Hydrate Team if available
+        if (availableSheets.includes('Team')) {
+          const res = await fetch(SHEETDB_PUBLIC_URL + '?sheet=Team');
+          if (res.ok) {
+            const rows = await res.json();
+            if (Array.isArray(rows) && rows.length > 0) {
+              const grid = document.querySelector('#view-team .team-grid');
+              if (grid) {
+                grid.innerHTML = rows.map((emp) => {
+                  const nameAr = emp.nameAr || 'عضو الفريق';
+                  const roleAr = emp.jobTitleAr || 'قيد التعيين';
+                  const deptAr = emp.departmentId || 'سمارت مسار';
+                  const email = emp.email || 'info@smartmasar.edu';
+                  const bio = emp.bioAr || 'عضو الكادر التأسيسي لشركة سمارت مسار.';
+                  const initials = emp.initials || nameAr.split(' ').slice(0, 2).map(w => w[0]).join('.');
+                  return `
+                    <div class="team-member-card" onclick="openMemberModal('${nameAr.replace(/'/g, "\\'")}', '${roleAr.replace(/'/g, "\\'")}', '${deptAr.replace(/'/g, "\\'")}', '${email.replace(/'/g, "\\'")}', '${bio.replace(/'/g, "\\'")}')">
+                      <div class="member-avatar">${initials}</div>
+                      <h3 class="member-name">${nameAr}</h3>
+                      <div class="member-role">${roleAr}</div>
+                      <span class="member-dept-tag">${deptAr}</span>
+                      <p class="member-bio">${bio}</p>
+                    </div>
+                  `;
+                }).join('');
+              }
+            }
+          }
+        }
+      } catch (e) {
+        // Silently keep embedded Smart Masar initial data when offline or before Sheet initialization
+      }
+    }
+
+    // Initialize from URL Hash on page load + connect to SheetDB read-only
+    window.addEventListener('DOMContentLoaded', () => {
+      const hash = window.location.hash.replace('#', '');
+      if (hash && PAGES.includes(hash)) {
+        switchPage(hash);
+      }
+      syncFromSheetDbReadOnly();
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModals();
+    });
+  </script>
+</body>
+</html>
