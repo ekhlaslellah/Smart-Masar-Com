@@ -313,7 +313,8 @@ export async function fetchServerPublicData(forceExternalRefresh = false): Promi
 }
 
 /**
- * Establishes a server-verified HttpOnly admin session cookie.
+ * Establishes or checks a server-verified HttpOnly admin session cookie (sm_admin_session).
+ * Never retains the raw admin key in client memory.
  */
 export async function establishAdminSession(adminKey?: string): Promise<{
   success: boolean;
@@ -321,18 +322,28 @@ export async function establishAdminSession(adminKey?: string): Promise<{
   error?: string;
 }> {
   try {
+    const trimmed = typeof adminKey === 'string' ? adminKey.trim() : '';
     const res = await fetch('/api/admin/auth/session', {
-      method: 'POST',
+      method: trimmed ? 'POST' : 'GET',
       credentials: 'same-origin',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        adminKey: adminKey || runtimeBackendConfig.adminApiKey || '',
-      }),
+      headers: trimmed
+        ? { 'Content-Type': 'application/json', Accept: 'application/json' }
+        : { Accept: 'application/json' },
+      body: trimmed ? JSON.stringify({ adminKey: trimmed }) : undefined,
     });
+    const contentType = res.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      return {
+        success: false,
+        authenticated: false,
+        error: 'خدمة مصادقة الإدارة الخلفية غير متاحة على هذا النطاق الثابت.',
+      };
+    }
     const json = await res.json();
     if (json.config) {
       runtimeBackendConfig = {
         ...runtimeBackendConfig,
+        adminApiKey: '',
         webAppUrl: json.config.webAppUrl || runtimeBackendConfig.webAppUrl,
         sheetDbUrl: json.config.sheetDbUrl || runtimeBackendConfig.sheetDbUrl,
         driveFolderId: json.config.driveFolderId || runtimeBackendConfig.driveFolderId,
@@ -348,13 +359,15 @@ export async function establishAdminSession(adminKey?: string): Promise<{
     return {
       success: false,
       authenticated: false,
-      error: e?.message || 'تعذر إنشاء جلسة المسؤول',
+      error: e?.message || 'تعذر التحقق من جلسة المسؤول',
     };
   }
 }
 
 /**
- * Verifies the administrator key against the server.
+ * Verifies the administrator key against the server (/api/admin/auth/verify).
+ * Relies on the server setting an HttpOnly signed session cookie (sm_admin_session).
+ * Never stores the admin key in client memory or browser storage.
  */
 export async function verifyAdminKeyOnServer(adminKey: string): Promise<{
   success: boolean;
@@ -368,19 +381,29 @@ export async function verifyAdminKeyOnServer(adminKey: string): Promise<{
   };
 }> {
   try {
-    if (adminKey) {
-      runtimeBackendConfig.adminApiKey = adminKey;
-    }
     const res = await fetch('/api/admin/auth/verify', {
       method: 'POST',
       credentials: 'same-origin',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
       body: JSON.stringify({ adminKey }),
     });
+    const contentType = res.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      return {
+        success: false,
+        authenticated: false,
+        error:
+          'تعذر الوصول إلى مسار التحقق الخلفي (/api/admin/auth/verify). تأكد من تفعيل Vercel Serverless Functions ومتغير البيئة SMART_MASAR_ADMIN_KEY.',
+      };
+    }
     const json = await res.json();
     if (json.config) {
       runtimeBackendConfig = {
         ...runtimeBackendConfig,
+        adminApiKey: '',
         webAppUrl: json.config.webAppUrl || '',
         sheetDbUrl: json.config.sheetDbUrl || DEFAULT_SHEETDB_ENDPOINT,
         driveFolderId: json.config.driveFolderId || '',
@@ -411,6 +434,7 @@ export async function logoutAdminSession(): Promise<void> {
     await fetch('/api/admin/auth/logout', {
       method: 'POST',
       credentials: 'same-origin',
+      headers: { Accept: 'application/json' },
     });
   } catch {
     // Ignore network error on logout

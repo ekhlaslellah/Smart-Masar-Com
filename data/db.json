@@ -418,7 +418,6 @@
     "webAppUrl": "",
     "sheetDbUrl": "https://sheetdb.io/api/v1/gnn52l70oflrp",
     "driveFolderId": "",
-    "adminKey": "sm_masar_admin_secret_2026",
     "lastSheetDbStatus": "متصل بـ SheetDB (ملف \"مؤسسة Masar Smart\") — الأوراق الحالية في الملف: [الورقة1]. الأوراق الست المطلوبة (Team, Services, Pages, SiteSettings, Departments, Jobs) غير مهيأة بعد؛ يرجى تشغيل دالة initialSetup() مرة واحدة في Google Apps Script لإنشاء الأوراق الست وعناوين الأعمدة تلقائياً.",
     "externalSource": "server_db_awaiting_sheet_init",
     "availableSheets": [

@@ -48,7 +48,7 @@ export const AdminLayout: React.FC = () => {
 
   useEffect(() => {
     let mounted = true;
-    establishAdminSession(backendConfig.adminApiKey).then((res) => {
+    establishAdminSession().then((res) => {
       if (!mounted) return;
       if (res.authenticated) {
         setAuthStatus('authenticated');
@@ -59,7 +59,7 @@ export const AdminLayout: React.FC = () => {
     return () => {
       mounted = false;
     };
-  }, [backendConfig.adminApiKey]);
+  }, []);
 
   const handleAdminLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,7 +77,7 @@ export const AdminLayout: React.FC = () => {
     if (result.authenticated) {
       setBackendConfig({
         ...backendConfig,
-        adminApiKey: trimmedKey,
+        adminApiKey: '',
         ...(result.config
           ? {
               webAppUrl: result.config.webAppUrl || backendConfig.webAppUrl,
@@ -100,6 +100,7 @@ export const AdminLayout: React.FC = () => {
       ...backendConfig,
       adminApiKey: '',
     });
+    setLoginKeyInput('');
     setAuthStatus('unauthenticated');
   };
 

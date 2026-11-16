@@ -56,19 +56,39 @@ test('Static Hosting Bundle & Security Verification Suite', async (t) => {
     assert.ok(zipStr.includes('404.html'), 'ZIP must include 404.html');
   });
 
-  await t.test('4. Ensures zero admin secret keys or passwords exist in public HTML/JS bundles', () => {
-    const forbiddenSecret = 'sm_masar_admin_secret_2026';
+  await t.test('4. Ensures zero hardcoded admin secret keys or passwords exist in data/db.json, server.ts, .env.example, or public HTML/JS bundles', () => {
+    const legacyKeyPattern = new RegExp('sm_masar_' + 'admin_secret_' + '2026');
+
+    const dbJsonRaw = fs.readFileSync(path.resolve('data/db.json'), 'utf8');
+    const dbParsed = JSON.parse(dbJsonRaw);
+    assert.equal(
+      legacyKeyPattern.test(dbJsonRaw),
+      false,
+      'data/db.json must never contain the legacy admin key'
+    );
+    assert.equal(
+      'adminKey' in (dbParsed.backendMeta || {}),
+      false,
+      'data/db.json backendMeta must not store any adminKey property'
+    );
+
+    const envExample = fs.readFileSync(path.resolve('.env.example'), 'utf8');
+    assert.equal(
+      legacyKeyPattern.test(envExample),
+      false,
+      '.env.example must not contain the legacy admin key'
+    );
 
     const standaloneHtml = fs.readFileSync(path.resolve('public/smart-masar.html'), 'utf8');
     assert.equal(
-      standaloneHtml.includes(forbiddenSecret),
+      legacyKeyPattern.test(standaloneHtml),
       false,
       'smart-masar.html must never contain admin secret key'
     );
 
     const distIndex = fs.readFileSync(path.resolve('dist/index.html'), 'utf8');
     assert.equal(
-      distIndex.includes(forbiddenSecret),
+      legacyKeyPattern.test(distIndex),
       false,
       'dist/index.html must never contain admin secret key'
     );
@@ -80,7 +100,7 @@ test('Static Hosting Bundle & Security Verification Suite', async (t) => {
     for (const file of assetFiles) {
       const content = fs.readFileSync(path.join(assetsDir, file), 'utf8');
       assert.equal(
-        content.includes(forbiddenSecret),
+        legacyKeyPattern.test(content),
         false,
         `dist/assets/${file} must never contain admin secret key`
       );

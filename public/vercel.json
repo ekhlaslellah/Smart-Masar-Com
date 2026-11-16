@@ -1,7 +1,23 @@
 {
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/api/admin/auth/verify",
+      "destination": "/api/admin/auth/verify"
+    },
+    {
+      "source": "/api/admin/auth/session",
+      "destination": "/api/admin/auth/session"
+    },
+    {
+      "source": "/api/admin/auth/logout",
+      "destination": "/api/admin/auth/logout"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
   ]

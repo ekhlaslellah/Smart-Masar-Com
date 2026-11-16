@@ -31,6 +31,14 @@ import {
   extractGoogleDriveFileId,
   resolvePublicImageUrl,
 } from './src/utils/imageUrl';
+import {
+  getConfiguredAdminKey,
+  verifyAdminKeyConstantTime,
+  createStatelessAdminSessionToken,
+  isRequestAdminAuthenticated,
+  buildAdminSessionSetCookie,
+  buildAdminLogoutSetCookie,
+} from './src/utils/adminAuth';
 
 dotenv.config();
 
@@ -40,9 +48,6 @@ const __dirname = path.dirname(__filename);
 const PORT = Number(process.env.PORT) || 3000;
 const DEFAULT_SHEETDB_URL =
   process.env.SHEETDB_API_URL || 'https://sheetdb.io/api/v1/gnn52l70oflrp';
-const DEFAULT_ADMIN_KEY =
-  process.env.SMART_MASAR_ADMIN_KEY || 'sm_masar_admin_secret_2026';
-const SERVER_SESSION_TOKEN = crypto.randomBytes(32).toString('hex');
 
 export const REQUIRED_WORKSHEETS = [
   'Team',
@@ -55,9 +60,15 @@ export const REQUIRED_WORKSHEETS = [
 
 export type WorksheetName = (typeof REQUIRED_WORKSHEETS)[number];
 
-const DATA_DIR = path.join(__dirname, 'data');
-const DB_FILE = path.join(DATA_DIR, 'db.json');
-const UPLOADS_DIR = path.join(__dirname, 'public', 'uploads');
+const IS_VERCEL_RUNTIME = Boolean(process.env.VERCEL);
+const BUNDLED_DB_FILE = path.join(__dirname, 'data', 'db.json');
+const DATA_DIR = IS_VERCEL_RUNTIME ? '/tmp/smart-masar-data' : path.join(__dirname, 'data');
+const DB_FILE = IS_VERCEL_RUNTIME
+  ? path.join(DATA_DIR, 'db.json')
+  : BUNDLED_DB_FILE;
+const UPLOADS_DIR = IS_VERCEL_RUNTIME
+  ? '/tmp/smart-masar-uploads'
+  : path.join(__dirname, 'public', 'uploads');
 const PROJECT_ZIP_PATH = path.join(
   __dirname,
   'public',
@@ -69,12 +80,16 @@ const STATIC_HOSTING_ZIP_PATH = path.join(
   'smart-masar-static-hosting.zip'
 );
 
-// Ensure directories exist
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
-}
-if (!fs.existsSync(UPLOADS_DIR)) {
-  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+// Ensure writable directories exist without failing on read-only serverless filesystems
+try {
+  if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+  }
+  if (!fs.existsSync(UPLOADS_DIR)) {
+    fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+  }
+} catch {
+  // Ignore on read-only serverless container root
 }
 
 export interface ServerDatabase {
@@ -88,7 +103,6 @@ export interface ServerDatabase {
     webAppUrl: string;
     sheetDbUrl: string;
     driveFolderId: string;
-    adminKey: string;
     lastSyncTime?: string;
     lastSheetDbStatus?: string;
     externalSource?: string;
@@ -98,44 +112,49 @@ export interface ServerDatabase {
 }
 
 function loadDatabase(): ServerDatabase {
-  try {
-    if (fs.existsSync(DB_FILE)) {
-      const raw = fs.readFileSync(DB_FILE, 'utf-8');
-      const parsed = JSON.parse(raw);
-      return {
-        profile: { ...INITIAL_COMPANY_PROFILE, ...(parsed.profile || {}) },
-        departments: Array.isArray(parsed.departments)
-          ? parsed.departments
-          : INITIAL_DEPARTMENTS,
-        employees: Array.isArray(parsed.employees)
-          ? parsed.employees
-          : INITIAL_EMPLOYEES,
-        jobs: Array.isArray(parsed.jobs) ? parsed.jobs : INITIAL_JOBS,
-        services: Array.isArray(parsed.services)
-          ? parsed.services
-          : INITIAL_SERVICES,
-        pages: Array.isArray(parsed.pages) ? parsed.pages : INITIAL_PAGES,
-        backendMeta: {
-          webAppUrl:
-            parsed.backendMeta?.webAppUrl ||
-            process.env.GOOGLE_APPS_SCRIPT_URL ||
-            '',
-          sheetDbUrl: parsed.backendMeta?.sheetDbUrl || DEFAULT_SHEETDB_URL,
-          driveFolderId:
-            parsed.backendMeta?.driveFolderId ||
-            process.env.GOOGLE_DRIVE_FOLDER_ID ||
-            '',
-          adminKey: parsed.backendMeta?.adminKey || DEFAULT_ADMIN_KEY,
-          lastSyncTime: parsed.backendMeta?.lastSyncTime,
-          lastSheetDbStatus: parsed.backendMeta?.lastSheetDbStatus,
-          externalSource: parsed.backendMeta?.externalSource,
-          availableSheets: parsed.backendMeta?.availableSheets,
-          missingRequiredSheets: parsed.backendMeta?.missingRequiredSheets,
-        },
-      };
+  const candidateFiles = IS_VERCEL_RUNTIME
+    ? [DB_FILE, BUNDLED_DB_FILE]
+    : [DB_FILE];
+
+  for (const filePath of candidateFiles) {
+    try {
+      if (fs.existsSync(filePath)) {
+        const raw = fs.readFileSync(filePath, 'utf-8');
+        const parsed = JSON.parse(raw);
+        return {
+          profile: { ...INITIAL_COMPANY_PROFILE, ...(parsed.profile || {}) },
+          departments: Array.isArray(parsed.departments)
+            ? parsed.departments
+            : INITIAL_DEPARTMENTS,
+          employees: Array.isArray(parsed.employees)
+            ? parsed.employees
+            : INITIAL_EMPLOYEES,
+          jobs: Array.isArray(parsed.jobs) ? parsed.jobs : INITIAL_JOBS,
+          services: Array.isArray(parsed.services)
+            ? parsed.services
+            : INITIAL_SERVICES,
+          pages: Array.isArray(parsed.pages) ? parsed.pages : INITIAL_PAGES,
+          backendMeta: {
+            webAppUrl:
+              parsed.backendMeta?.webAppUrl ||
+              process.env.GOOGLE_APPS_SCRIPT_URL ||
+              '',
+            sheetDbUrl: parsed.backendMeta?.sheetDbUrl || DEFAULT_SHEETDB_URL,
+            driveFolderId:
+              parsed.backendMeta?.driveFolderId ||
+              process.env.GOOGLE_DRIVE_FOLDER_ID ||
+              '',
+            lastSyncTime: parsed.backendMeta?.lastSyncTime,
+            lastSheetDbStatus: parsed.backendMeta?.lastSheetDbStatus,
+            externalSource: parsed.backendMeta?.externalSource,
+            availableSheets: parsed.backendMeta?.availableSheets,
+            missingRequiredSheets: parsed.backendMeta?.missingRequiredSheets,
+          },
+        };
+      }
+    } catch (err) {
+      console.warn('Failed to load server db.json, trying fallback:', err);
     }
-  } catch (err) {
-    console.warn('Failed to load server db.json, initializing defaults:', err);
   }
 
   const initial: ServerDatabase = {
@@ -149,18 +168,29 @@ function loadDatabase(): ServerDatabase {
       webAppUrl: process.env.GOOGLE_APPS_SCRIPT_URL || '',
       sheetDbUrl: DEFAULT_SHEETDB_URL,
       driveFolderId: process.env.GOOGLE_DRIVE_FOLDER_ID || '',
-      adminKey: DEFAULT_ADMIN_KEY,
     },
   };
   saveDatabase(initial);
   return initial;
 }
 
-function saveDatabase(db: ServerDatabase): void {
+function saveDatabase(dbToSave: ServerDatabase): void {
   try {
-    fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2), 'utf-8');
-  } catch (err) {
-    console.error('Error writing db.json:', err);
+    const cleanBackendMeta = { ...dbToSave.backendMeta } as Record<string, unknown>;
+    delete cleanBackendMeta.adminKey;
+    const sanitized: ServerDatabase = {
+      ...dbToSave,
+      backendMeta: cleanBackendMeta as ServerDatabase['backendMeta'],
+    };
+    fs.writeFileSync(DB_FILE, JSON.stringify(sanitized, null, 2), 'utf-8');
+  } catch {
+    // On read-only serverless filesystem, fallback to /tmp if not already there
+    try {
+      const tmpPath = '/tmp/smart-masar-db.json';
+      fs.writeFileSync(tmpPath, JSON.stringify(dbToSave, null, 2), 'utf-8');
+    } catch {
+      // Ignore write error in restricted environments
+    }
   }
 }
 
@@ -210,39 +240,28 @@ function verifyImageMagicBytes(buf: Buffer): { valid: boolean; detectedMime?: st
   return { valid: false };
 }
 
-function parseCookies(cookieHeader?: string): Record<string, string> {
-  const result: Record<string, string> = {};
-  if (!cookieHeader) return result;
-  for (const part of cookieHeader.split(';')) {
-    const idx = part.indexOf('=');
-    if (idx > 0) {
-      const k = part.slice(0, idx).trim();
-      const v = part.slice(idx + 1).trim();
-      result[k] = decodeURIComponent(v);
-    }
-  }
-  return result;
-}
-
 /**
  * Server-verified Admin Authorization Middleware.
+ * Relies exclusively on `process.env.SMART_MASAR_ADMIN_KEY` and stateless HMAC session cookies.
  * Protects all write operations, Google Drive uploads, and SheetDB updates.
  */
 function requireAdminAuth(req: Request, res: Response, next: NextFunction) {
-  const cookies = parseCookies(req.headers.cookie);
-  if (cookies.sm_admin_session && cookies.sm_admin_session === SERVER_SESSION_TOKEN) {
-    next();
+  const authCheck = isRequestAdminAuthenticated({
+    cookie: req.headers.cookie,
+    'x-admin-key': req.headers['x-admin-key'],
+    authorization: req.headers.authorization,
+  });
+
+  if (!authCheck.configured) {
+    res.status(503).json({
+      success: false,
+      error:
+        'غير مهيأ: يرجى ضبط متغير البيئة SMART_MASAR_ADMIN_KEY على الخادم لتفعيل مصادقة الإدارة.',
+    });
     return;
   }
 
-  const headerKey =
-    (req.headers['x-admin-key'] as string) ||
-    (req.headers.authorization?.startsWith('Bearer ')
-      ? req.headers.authorization.slice(7)
-      : '');
-  const expectedKey = db.backendMeta.adminKey || DEFAULT_ADMIN_KEY;
-
-  if (!headerKey || headerKey.trim() !== expectedKey.trim()) {
+  if (!authCheck.authenticated) {
     res.status(401).json({
       success: false,
       error:
@@ -712,7 +731,7 @@ async function syncBundleToExternalDatabase(): Promise<{
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({
           action: 'syncAllData',
-          apiKey: db.backendMeta.adminKey || DEFAULT_ADMIN_KEY,
+          apiKey: getConfiguredAdminKey(),
           data: {
             profile: db.profile,
             departments: db.departments,
@@ -812,7 +831,7 @@ async function uploadToGoogleDriveViaAppsScript(params: {
       },
       body: JSON.stringify({
         action: 'uploadImageToDrive',
-        apiKey: db.backendMeta.adminKey || DEFAULT_ADMIN_KEY,
+        apiKey: getConfiguredAdminKey(),
         folderId: db.backendMeta.driveFolderId || '',
         fileName: params.fileName,
         mimeType: params.mimeType,
@@ -855,19 +874,19 @@ async function uploadToGoogleDriveViaAppsScript(params: {
   }
 }
 
-async function startServer() {
-  const app = express();
+export const apiApp = express();
+apiApp.use(express.json({ limit: '12mb' }));
 
-  app.use(express.json({ limit: '12mb' }));
+// Serve uploaded files directly from /public/uploads (or /tmp on Vercel)
+apiApp.use(
+  '/uploads',
+  express.static(UPLOADS_DIR, {
+    maxAge: '7d',
+    etag: true,
+  })
+);
 
-  // Serve uploaded files directly from /public/uploads
-  app.use(
-    '/uploads',
-    express.static(UPLOADS_DIR, {
-      maxAge: '7d',
-      etag: true,
-    })
-  );
+function registerApiRoutes(app: express.Express) {
 
   // ============================================================================
   // 1. PUBLIC API ENDPOINTS (Unauthenticated Read-Only)
@@ -1020,29 +1039,45 @@ async function startServer() {
   // ============================================================================
 
   /**
-   * POST /api/admin/auth/session
+   * GET & POST /api/admin/auth/session
    * Checks whether the client already holds a valid server-verified HttpOnly admin session cookie,
-   * or verifies a provided adminKey. Never auto-authenticates unauthenticated requests.
+   * or verifies a provided adminKey against process.env.SMART_MASAR_ADMIN_KEY.
+   * Never auto-authenticates unauthenticated requests.
    */
-  app.post('/api/admin/auth/session', (req: Request, res: Response) => {
+  const handleSessionCheck = (req: Request, res: Response) => {
+    const expectedKey = getConfiguredAdminKey();
     const { adminKey } = req.body || {};
-    const expectedKey = db.backendMeta.adminKey || DEFAULT_ADMIN_KEY;
-    const cookies = parseCookies(req.headers.cookie);
-    const hasValidCookie =
-      Boolean(cookies.sm_admin_session) &&
-      cookies.sm_admin_session === SERVER_SESSION_TOKEN;
+    if (!expectedKey) {
+      res.status(req.method === 'GET' && !adminKey ? 200 : 503).json({
+        success: false,
+        authenticated: false,
+        configured: false,
+        error:
+          'متغير البيئة SMART_MASAR_ADMIN_KEY غير مضبوط على الخادم. يرجى إضافته في إعدادات البيئة (Vercel Environment Variables أو .env).',
+      });
+      return;
+    }
+    const authCheck = isRequestAdminAuthenticated(
+      {
+        cookie: req.headers.cookie,
+        'x-admin-key': req.headers['x-admin-key'],
+        authorization: req.headers.authorization,
+      },
+      expectedKey
+    );
 
-    if (
-      hasValidCookie ||
-      (adminKey && String(adminKey).trim() === expectedKey.trim())
-    ) {
-      res.setHeader(
-        'Set-Cookie',
-        `sm_admin_session=${SERVER_SESSION_TOKEN}; HttpOnly; Path=/; SameSite=Lax; Max-Age=86400`
-      );
+    const isKeyValid =
+      typeof adminKey === 'string' &&
+      adminKey.trim().length > 0 &&
+      verifyAdminKeyConstantTime(adminKey, expectedKey);
+
+    if (authCheck.authenticated || isKeyValid) {
+      const token = createStatelessAdminSessionToken(expectedKey);
+      res.setHeader('Set-Cookie', buildAdminSessionSetCookie(token));
       res.json({
         success: true,
         authenticated: true,
+        configured: true,
         config: {
           webAppUrl: db.backendMeta.webAppUrl,
           sheetDbUrl: db.backendMeta.sheetDbUrl,
@@ -1056,19 +1091,20 @@ async function startServer() {
     res.status(200).json({
       success: false,
       authenticated: false,
+      configured: true,
       error: 'يرجى تسجيل الدخول باستخدام مفتاح صلاحية المسؤول المعتمد للوصول إلى لوحة الإدارة.',
     });
-  });
+  };
+
+  app.get('/api/admin/auth/session', handleSessionCheck);
+  app.post('/api/admin/auth/session', handleSessionCheck);
 
   /**
    * POST /api/admin/auth/logout
    * Clears the HttpOnly admin session cookie.
    */
   app.post('/api/admin/auth/logout', (_req: Request, res: Response) => {
-    res.setHeader(
-      'Set-Cookie',
-      'sm_admin_session=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0'
-    );
+    res.setHeader('Set-Cookie', buildAdminLogoutSetCookie());
     res.json({
       success: true,
       authenticated: false,
@@ -1077,23 +1113,44 @@ async function startServer() {
 
   /**
    * POST /api/admin/auth/verify
-   * Verifies administrator secret key on the server and sets HttpOnly session cookie.
+   * Verifies administrator secret key exclusively against process.env.SMART_MASAR_ADMIN_KEY
+   * and sets a stateless HMAC-signed HttpOnly session cookie.
    */
   app.post('/api/admin/auth/verify', (req: Request, res: Response) => {
-    const { adminKey } = req.body || {};
-    const expectedKey = db.backendMeta.adminKey || DEFAULT_ADMIN_KEY;
-    const cookies = parseCookies(req.headers.cookie);
-    const hasValidCookie =
-      cookies.sm_admin_session && cookies.sm_admin_session === SERVER_SESSION_TOKEN;
+    const expectedKey = getConfiguredAdminKey();
+    if (!expectedKey) {
+      res.status(503).json({
+        success: false,
+        authenticated: false,
+        configured: false,
+        error:
+          'متغير البيئة SMART_MASAR_ADMIN_KEY غير مضبوط على الخادم. يرجى إضافته في إعدادات البيئة (Vercel Environment Variables أو .env).',
+      });
+      return;
+    }
 
-    if (hasValidCookie || (adminKey && String(adminKey).trim() === expectedKey.trim())) {
-      res.setHeader(
-        'Set-Cookie',
-        `sm_admin_session=${SERVER_SESSION_TOKEN}; HttpOnly; Path=/; SameSite=Lax; Max-Age=86400`
-      );
+    const { adminKey } = req.body || {};
+    const authCheck = isRequestAdminAuthenticated(
+      {
+        cookie: req.headers.cookie,
+        'x-admin-key': req.headers['x-admin-key'],
+        authorization: req.headers.authorization,
+      },
+      expectedKey
+    );
+
+    const isKeyValid =
+      typeof adminKey === 'string' &&
+      adminKey.trim().length > 0 &&
+      verifyAdminKeyConstantTime(adminKey, expectedKey);
+
+    if ((typeof adminKey === 'string' && isKeyValid) || (!adminKey && authCheck.authenticated)) {
+      const token = createStatelessAdminSessionToken(expectedKey);
+      res.setHeader('Set-Cookie', buildAdminSessionSetCookie(token));
       res.json({
         success: true,
         authenticated: true,
+        configured: true,
         config: {
           webAppUrl: db.backendMeta.webAppUrl,
           sheetDbUrl: db.backendMeta.sheetDbUrl,
@@ -1103,9 +1160,11 @@ async function startServer() {
       });
       return;
     }
+
     res.status(401).json({
       success: false,
       authenticated: false,
+      configured: true,
       error: 'مفتاح صلاحية المسؤول غير صحيح.',
     });
   });
@@ -1135,10 +1194,11 @@ async function startServer() {
 
   /**
    * POST /api/admin/config
-   * Updates server-side Google Apps Script URL, Google Drive folder ID, SheetDB URL, or Admin Key.
+   * Updates server-side Google Apps Script URL, Google Drive folder ID, or SheetDB URL.
+   * Never accepts or persists admin keys in db.json (admin key comes exclusively from SMART_MASAR_ADMIN_KEY).
    */
   app.post('/api/admin/config', requireAdminAuth, (req: Request, res: Response) => {
-    const { webAppUrl, sheetDbUrl, driveFolderId, newAdminKey } = req.body || {};
+    const { webAppUrl, sheetDbUrl, driveFolderId } = req.body || {};
     if (typeof webAppUrl === 'string') {
       db.backendMeta.webAppUrl = webAppUrl.trim();
     }
@@ -1148,9 +1208,6 @@ async function startServer() {
     if (typeof driveFolderId === 'string') {
       db.backendMeta.driveFolderId = driveFolderId.trim();
       db.profile.drive_folder_id = driveFolderId.trim();
-    }
-    if (typeof newAdminKey === 'string' && newAdminKey.trim().length >= 6) {
-      db.backendMeta.adminKey = newAdminKey.trim();
     }
     saveDatabase(db);
     res.json({
@@ -1643,6 +1700,11 @@ async function startServer() {
     });
   });
 
+}
+
+registerApiRoutes(apiApp);
+
+export async function startServer() {
   // ============================================================================
   // 4. VITE DEV MIDDLEWARE OR PRODUCTION STATIC ASSETS
   // ============================================================================
@@ -1650,8 +1712,8 @@ async function startServer() {
   const isProd = process.env.NODE_ENV === 'production' && fs.existsSync(distPath);
 
   if (isProd) {
-    app.use(express.static(distPath));
-    app.get('*', (_req: Request, res: Response) => {
+    apiApp.use(express.static(distPath));
+    apiApp.get('*', (_req: Request, res: Response) => {
       res.sendFile(path.join(distPath, 'index.html'));
     });
   } else {
@@ -1660,12 +1722,17 @@ async function startServer() {
       server: { middlewareMode: true },
       appType: 'spa',
     });
-    app.use(vite.middlewares);
+    apiApp.use(vite.middlewares);
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
+  apiApp.listen(PORT, '0.0.0.0', () => {
     console.log(`Smart Masar server running on http://0.0.0.0:${PORT}`);
   });
 }
 
-startServer();
+if (!process.env.VERCEL && process.env.SMART_MASAR_NO_LISTEN !== '1') {
+  startServer();
+}
+
+export default apiApp;
+

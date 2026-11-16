@@ -9,7 +9,7 @@
  * 3. Replace Code.gs with this script
  * 4. Run `initialSetup()` once from the editor to create/initialize all sheets (Team, Services, Pages, SiteSettings, Departments, Jobs) and create the dedicated Google Drive folder
  * 5. Project Settings > Script Properties:
- *    - `SMART_MASAR_ADMIN_KEY`: Your secret admin key (default: sm_masar_admin_secret_2026)
+ *    - `SMART_MASAR_ADMIN_KEY`: Your secret admin key (must match SMART_MASAR_ADMIN_KEY on your server)
  *    - `SMART_MASAR_DRIVE_FOLDER_ID`: Your Google Drive Folder ID (created automatically by initialSetup if empty)
  * 6. Deploy > New Deployment > Web App:
  *    - Execute as: Me
@@ -19,13 +19,12 @@
 
 const SCRIPT_PROP_KEY = 'SMART_MASAR_ADMIN_KEY';
 const DRIVE_FOLDER_PROP_KEY = 'SMART_MASAR_DRIVE_FOLDER_ID';
-const DEFAULT_KEY_IF_UNSET = 'sm_masar_admin_secret_2026';
 const DEFAULT_FOLDER_NAME = 'Smart Masar Website Images';
 
 function getAdminApiKey() {
   var props = PropertiesService.getScriptProperties();
   var key = props.getProperty(SCRIPT_PROP_KEY);
-  return key || DEFAULT_KEY_IF_UNSET;
+  return key ? String(key).trim() : '';
 }
 
 /**
@@ -141,7 +140,7 @@ function doPost(e) {
     var serverKey = getAdminApiKey();
     var clientKey = payload.apiKey || (e && e.parameter && e.parameter.apiKey);
 
-    if (!clientKey || clientKey !== serverKey) {
+    if (!serverKey || !clientKey || String(clientKey).trim() !== serverKey) {
       return createJsonResponse({
         success: false,
         error: 'Unauthorized: Invalid or missing administrator API key',

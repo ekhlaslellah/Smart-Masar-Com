@@ -57,7 +57,7 @@ export const AdminSettings: React.FC = () => {
 
   // Google Sheets, SheetDB & Google Drive Backend State
   const [webAppUrl, setWebAppUrl] = useState(backendConfig.webAppUrl);
-  const [adminApiKey, setAdminApiKey] = useState(backendConfig.adminApiKey || '');
+  const adminApiKey = '';
   const [sheetDbUrl, setSheetDbUrl] = useState(
     backendConfig.sheetDbUrl || DEFAULT_SHEETDB_ENDPOINT
   );
@@ -98,17 +98,16 @@ export const AdminSettings: React.FC = () => {
 
   const handleSaveBackendConfig = async (e: React.FormEvent) => {
     e.preventDefault();
-    const isConfigured = Boolean(adminApiKey.trim());
     setBackendConfig({
       webAppUrl: webAppUrl.trim(),
-      adminApiKey: adminApiKey.trim(),
+      adminApiKey: '',
       sheetDbUrl: sheetDbUrl.trim() || DEFAULT_SHEETDB_ENDPOINT,
       driveFolderId: driveFolderId.trim(),
-      isConfigured,
+      isConfigured: true,
       lastSyncTime: backendConfig.lastSyncTime,
     });
 
-    const serverRes = await saveServerCloudConfig(adminApiKey.trim(), {
+    const serverRes = await saveServerCloudConfig('', {
       webAppUrl: webAppUrl.trim(),
       sheetDbUrl: sheetDbUrl.trim() || DEFAULT_SHEETDB_ENDPOINT,
       driveFolderId: driveFolderId.trim(),
@@ -124,7 +123,7 @@ export const AdminSettings: React.FC = () => {
   const handleCheckSheetDbStatus = async () => {
     setIsCheckingSheetDb(true);
     setTestResult(null);
-    const diag = await fetchSheetDbDiagnostics(adminApiKey.trim());
+    const diag = await fetchSheetDbDiagnostics('');
     setTestResult({
       success: Boolean(diag.reachable),
       message: diag.messageAr,
@@ -272,16 +271,12 @@ export const AdminSettings: React.FC = () => {
 
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1">
-                مفتاح مصادقة المسؤول على الخادم (SMART_MASAR_ADMIN_KEY) *
+                حالة مصادقة الخادم (SMART_MASAR_ADMIN_KEY)
               </label>
-              <input
-                type="password"
-                value={adminApiKey}
-                onChange={(e) => setAdminApiKey(e.target.value)}
-                placeholder="أدخل مفتاح الأمان المعتمد في الخادم"
-                className="w-full px-3.5 py-2 text-xs rounded-xl border border-[#CBD5E1] bg-[#F5F8FC] focus:outline-none focus:border-[#2563EB] font-mono"
-                dir="ltr"
-              />
+              <div className="w-full px-3.5 py-2 text-xs rounded-xl border border-emerald-200 bg-emerald-50/70 text-emerald-900 font-semibold flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>محمي عبر متغير البيئة الخلفي وجلسة HttpOnly مشفرة</span>
+              </div>
             </div>
           </div>
 
