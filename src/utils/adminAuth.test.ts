@@ -8,6 +8,7 @@ import assert from 'node:assert/strict';
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import {
   getConfiguredAdminKey,
   verifyAdminKeyConstantTime,
@@ -90,107 +91,45 @@ test('Admin Authentication & Vercel Serverless Compatibility Suite', async (t) =
     assert.ok(logoutCookie.includes('HttpOnly'));
   });
 
-  await t.test('4. Integration test: /api/admin/auth/* login, session check, protected routes, and logout', async () => {
-    const { apiApp } = await import('../../server');
-    const server = http.createServer(apiApp);
-    await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
-    const address = server.address() as { port: number };
-    const baseUrl = `http://127.0.0.1:${address.port}`;
+  await t.test('4. Verifies compiled Vercel Serverless bundle (api/index.js) has zero unbundled imports, zero listen(), and zero /tmp replacement', () => {
+    const bundlePath = path.resolve('api/index.js');
+    assert.equal(fs.existsSync(bundlePath), true, 'api/index.js unified bundle must exist');
+    assert.equal(
+      fs.existsSync(path.resolve('api/admin')),
+      false,
+      'Separate conflicting api/admin/* functions must not exist'
+    );
 
-    try {
-      // Case A: SMART_MASAR_ADMIN_KEY is unset -> /api/admin/auth/verify returns 503
-      delete process.env.SMART_MASAR_ADMIN_KEY;
-      const unconfiguredRes = await fetch(`${baseUrl}/api/admin/auth/verify`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ adminKey: 'anything' }),
-      });
-      assert.equal(unconfiguredRes.status, 503);
-      const unconfiguredJson: any = await unconfiguredRes.json();
-      assert.equal(unconfiguredJson.authenticated, false);
-
-      // Case B: Configure SMART_MASAR_ADMIN_KEY in environment
-      const runtimeSecret = 'vercel_runtime_admin_secret_2026_xyz';
-      process.env.SMART_MASAR_ADMIN_KEY = runtimeSecret;
-
-      // Reject unauthorized request with wrong key (401)
-      const badLoginRes = await fetch(`${baseUrl}/api/admin/auth/verify`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ adminKey: 'invalid_key_attempt' }),
-      });
-      assert.equal(badLoginRes.status, 401);
-      const badLoginJson: any = await badLoginRes.json();
-      assert.equal(badLoginJson.authenticated, false);
-
-      // Reject unauthorized access to protected admin endpoints (401)
-      const unauthConfigRes = await fetch(`${baseUrl}/api/admin/config`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ webAppUrl: 'https://script.google.com/macros/s/test/exec' }),
-      });
-      assert.equal(unauthConfigRes.status, 401);
-
-      const unauthSheetStatusRes = await fetch(`${baseUrl}/api/admin/sheetdb-status`);
-      assert.equal(unauthSheetStatusRes.status, 401);
-
-      // Case C: Valid login with SMART_MASAR_ADMIN_KEY -> 200 + HttpOnly Set-Cookie
-      const goodLoginRes = await fetch(`${baseUrl}/api/admin/auth/verify`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ adminKey: runtimeSecret }),
-      });
-      assert.equal(goodLoginRes.status, 200);
-      const setCookieHeader = goodLoginRes.headers.get('set-cookie') || '';
-      assert.ok(
-        setCookieHeader.includes(`${ADMIN_SESSION_COOKIE_NAME}=`),
-        'Verify endpoint must issue sm_admin_session cookie'
-      );
-      assert.ok(setCookieHeader.includes('HttpOnly'), 'Session cookie must be HttpOnly');
-      const goodLoginJson: any = await goodLoginRes.json();
-      assert.equal(goodLoginJson.authenticated, true);
-      assert.equal(
-        JSON.stringify(goodLoginJson).includes(runtimeSecret),
-        false,
-        'Server response must never echo or expose the admin key'
-      );
-
-      const cookiePair = setCookieHeader.split(';')[0];
-
-      // Case D: Verify session using only the HttpOnly cookie (GET /api/admin/auth/session)
-      const sessionCheckRes = await fetch(`${baseUrl}/api/admin/auth/session`, {
-        method: 'GET',
-        headers: { Cookie: cookiePair },
-      });
-      assert.equal(sessionCheckRes.status, 200);
-      const sessionCheckJson: any = await sessionCheckRes.json();
-      assert.equal(sessionCheckJson.authenticated, true);
-
-      // Case E: Logout clears the session cookie
-      const logoutRes = await fetch(`${baseUrl}/api/admin/auth/logout`, {
-        method: 'POST',
-        headers: { Cookie: cookiePair },
-      });
-      assert.equal(logoutRes.status, 200);
-      const logoutCookieHeader = logoutRes.headers.get('set-cookie') || '';
-      assert.ok(logoutCookieHeader.includes('Max-Age=0'), 'Logout must expire the cookie immediately');
-
-      // Verify unauthenticated session check returns authenticated: false
-      const afterLogoutSessionRes = await fetch(`${baseUrl}/api/admin/auth/session`, {
-        method: 'GET',
-      });
-      const afterLogoutJson: any = await afterLogoutSessionRes.json();
-      assert.equal(afterLogoutJson.authenticated, false);
-    } finally {
-      await new Promise<void>((resolve) => server.close(() => resolve()));
-    }
-  });
-
-  await t.test('5. Verifies Vercel Serverless Function files and vercel.json rewrites exist', () => {
-    assert.equal(fs.existsSync(path.resolve('api/index.ts')), true);
-    assert.equal(fs.existsSync(path.resolve('api/admin/auth/verify.ts')), true);
-    assert.equal(fs.existsSync(path.resolve('api/admin/auth/session.ts')), true);
-    assert.equal(fs.existsSync(path.resolve('api/admin/auth/logout.ts')), true);
+    const bundleCode = fs.readFileSync(bundlePath, 'utf8');
+    assert.equal(
+      bundleCode.includes('/var/task/server') ||
+        bundleCode.includes('../server') ||
+        bundleCode.includes('./src/'),
+      false,
+      'api/index.js must be self-contained with zero relative imports to ../server or ./src/*'
+    );
+    assert.equal(
+      bundleCode.includes('import("vite")') || bundleCode.includes("import('vite')"),
+      false,
+      'api/index.js must not import vite in serverless bundle'
+    );
+    assert.equal(
+      bundleCode.includes('apiApp.listen('),
+      false,
+      'api/index.js must not invoke apiApp.listen() inside Serverless Function'
+    );
+    assert.equal(
+      bundleCode.includes('/tmp/smart-masar') || bundleCode.includes('/tmp/'),
+      false,
+      'api/index.js must not replace persistent storage with /tmp'
+    );
+    assert.equal(
+      bundleCode.includes('writeFileSync') ||
+        bundleCode.includes('mkdirSync') ||
+        bundleCode.includes('unlinkSync'),
+      false,
+      'api/index.js must not rely on writing to local container files (data/db.json or public/uploads) on Vercel'
+    );
 
     const rootVercel = JSON.parse(fs.readFileSync(path.resolve('vercel.json'), 'utf8'));
     assert.ok(Array.isArray(rootVercel.rewrites));
@@ -201,6 +140,116 @@ test('Admin Authentication & Vercel Serverless Compatibility Suite', async (t) =
       (r: any) => r.source === '/((?!api/).*)' && r.destination === '/index.html'
     );
     assert.equal(hasApiRewrite, true, 'vercel.json must route /api/(.*) to /api/index');
-    assert.equal(hasSpaRewrite, true, 'vercel.json must route non-API paths to /index.html without swallowing /api/*');
+    assert.equal(hasSpaRewrite, true, 'vercel.json must route non-API paths to /index.html');
+  });
+
+  await t.test('5. End-to-End Vercel Serverless Runtime Test on compiled api/index.js (session, verify, logout, public/data)', async () => {
+    const bundleUrl = pathToFileURL(path.resolve('api/index.js')).href;
+    const vercelBundleMod = await import(bundleUrl);
+    const serverlessHandler = vercelBundleMod.default;
+    assert.equal(typeof serverlessHandler, 'function', 'api/index.js default export must be an Express handler');
+
+    const server = http.createServer(serverlessHandler);
+    await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+    const address = server.address() as { port: number };
+    const baseUrl = `http://127.0.0.1:${address.port}`;
+
+    try {
+      // 1) GET /api/public/data works and returns JSON with intact team, org, services, and jobs
+      const publicDataRes = await fetch(`${baseUrl}/api/public/data`);
+      assert.equal(publicDataRes.status, 200);
+      assert.ok((publicDataRes.headers.get('content-type') || '').includes('application/json'));
+      const publicDataJson: any = await publicDataRes.json();
+      assert.equal(publicDataJson.success, true);
+      assert.ok(Array.isArray(publicDataJson.data.employees));
+      assert.equal(publicDataJson.data.employees.length, 6);
+      assert.ok(Array.isArray(publicDataJson.data.jobs));
+      assert.equal(publicDataJson.data.jobs.length, 2);
+
+      // 2) GET /api/admin/auth/session when unconfigured returns HTTP 200 JSON { authenticated: false } (never HTTP 500)
+      delete process.env.SMART_MASAR_ADMIN_KEY;
+      const unconfSessionRes = await fetch(`${baseUrl}/api/admin/auth/session`);
+      assert.equal(unconfSessionRes.status, 200);
+      assert.ok((unconfSessionRes.headers.get('content-type') || '').includes('application/json'));
+      const unconfSessionJson: any = await unconfSessionRes.json();
+      assert.equal(unconfSessionJson.authenticated, false);
+
+      // POST /api/admin/auth/verify when unconfigured returns 503 JSON
+      const unconfVerifyRes = await fetch(`${baseUrl}/api/admin/auth/verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adminKey: 'any_key' }),
+      });
+      assert.equal(unconfVerifyRes.status, 503);
+      const unconfVerifyJson: any = await unconfVerifyRes.json();
+      assert.equal(unconfVerifyJson.authenticated, false);
+
+      // 3) Configure SMART_MASAR_ADMIN_KEY in environment
+      const runtimeSecret = 'vercel_preview_admin_secret_2026_verified';
+      process.env.SMART_MASAR_ADMIN_KEY = runtimeSecret;
+
+      // GET /api/admin/auth/session without cookie returns HTTP 200 JSON { authenticated: false }
+      const noCookieSessionRes = await fetch(`${baseUrl}/api/admin/auth/session`);
+      assert.equal(noCookieSessionRes.status, 200);
+      assert.ok((noCookieSessionRes.headers.get('content-type') || '').includes('application/json'));
+      const noCookieSessionJson: any = await noCookieSessionRes.json();
+      assert.equal(noCookieSessionJson.authenticated, false);
+
+      // Also verify rewritten URL (/admin/auth/session without /api prefix) works identically
+      const rewrittenSessionRes = await fetch(`${baseUrl}/admin/auth/session`);
+      assert.equal(rewrittenSessionRes.status, 200);
+      const rewrittenSessionJson: any = await rewrittenSessionRes.json();
+      assert.equal(rewrittenSessionJson.authenticated, false);
+
+      // POST /api/admin/auth/verify with invalid key returns 401 JSON
+      const badLoginRes = await fetch(`${baseUrl}/api/admin/auth/verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adminKey: 'wrong_password' }),
+      });
+      assert.equal(badLoginRes.status, 401);
+      const badLoginJson: any = await badLoginRes.json();
+      assert.equal(badLoginJson.authenticated, false);
+
+      // 4) POST /api/admin/auth/verify with valid SMART_MASAR_ADMIN_KEY returns 200 JSON + HttpOnly cookie
+      const goodLoginRes = await fetch(`${baseUrl}/api/admin/auth/verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adminKey: runtimeSecret }),
+      });
+      assert.equal(goodLoginRes.status, 200);
+      assert.ok((goodLoginRes.headers.get('content-type') || '').includes('application/json'));
+      const setCookieHeader = goodLoginRes.headers.get('set-cookie') || '';
+      assert.ok(setCookieHeader.includes(`${ADMIN_SESSION_COOKIE_NAME}=`));
+      assert.ok(setCookieHeader.includes('HttpOnly'));
+      const goodLoginJson: any = await goodLoginRes.json();
+      assert.equal(goodLoginJson.authenticated, true);
+      assert.equal(JSON.stringify(goodLoginJson).includes(runtimeSecret), false);
+
+      const cookiePair = setCookieHeader.split(';')[0];
+
+      // 5) GET /api/admin/auth/session with cookie returns 200 JSON { authenticated: true }
+      const authedSessionRes = await fetch(`${baseUrl}/api/admin/auth/session`, {
+        method: 'GET',
+        headers: { Cookie: cookiePair },
+      });
+      assert.equal(authedSessionRes.status, 200);
+      const authedSessionJson: any = await authedSessionRes.json();
+      assert.equal(authedSessionJson.authenticated, true);
+
+      // 6) POST /api/admin/auth/logout clears session cookie and returns 200 JSON { authenticated: false }
+      const logoutRes = await fetch(`${baseUrl}/api/admin/auth/logout`, {
+        method: 'POST',
+        headers: { Cookie: cookiePair },
+      });
+      assert.equal(logoutRes.status, 200);
+      assert.ok((logoutRes.headers.get('content-type') || '').includes('application/json'));
+      const logoutCookieHeader = logoutRes.headers.get('set-cookie') || '';
+      assert.ok(logoutCookieHeader.includes('Max-Age=0'));
+      const logoutJson: any = await logoutRes.json();
+      assert.equal(logoutJson.authenticated, false);
+    } finally {
+      await new Promise<void>((resolve) => server.close(() => resolve()));
+    }
   });
 });

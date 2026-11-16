@@ -42,8 +42,11 @@ import {
 
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const MODULE_DIR = path.dirname(fileURLToPath(import.meta.url));
+const __dirname =
+  path.basename(MODULE_DIR) === 'api'
+    ? path.resolve(MODULE_DIR, '..')
+    : MODULE_DIR;
 
 const PORT = Number(process.env.PORT) || 3000;
 const DEFAULT_SHEETDB_URL =
@@ -60,15 +63,9 @@ export const REQUIRED_WORKSHEETS = [
 
 export type WorksheetName = (typeof REQUIRED_WORKSHEETS)[number];
 
-const IS_VERCEL_RUNTIME = Boolean(process.env.VERCEL);
-const BUNDLED_DB_FILE = path.join(__dirname, 'data', 'db.json');
-const DATA_DIR = IS_VERCEL_RUNTIME ? '/tmp/smart-masar-data' : path.join(__dirname, 'data');
-const DB_FILE = IS_VERCEL_RUNTIME
-  ? path.join(DATA_DIR, 'db.json')
-  : BUNDLED_DB_FILE;
-const UPLOADS_DIR = IS_VERCEL_RUNTIME
-  ? '/tmp/smart-masar-uploads'
-  : path.join(__dirname, 'public', 'uploads');
+const DATA_DIR = path.join(__dirname, 'data');
+const DB_FILE = path.join(DATA_DIR, 'db.json');
+const UPLOADS_DIR = path.join(__dirname, 'public', 'uploads');
 const PROJECT_ZIP_PATH = path.join(
   __dirname,
   'public',
@@ -80,16 +77,17 @@ const STATIC_HOSTING_ZIP_PATH = path.join(
   'smart-masar-static-hosting.zip'
 );
 
-// Ensure writable directories exist without failing on read-only serverless filesystems
-try {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
+if (process.env.VERCEL_BUNDLE !== '1' && !process.env.VERCEL) {
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+    if (!fs.existsSync(UPLOADS_DIR)) {
+      fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+    }
+  } catch {
+    // Ignore directory creation errors on read-only environments
   }
-  if (!fs.existsSync(UPLOADS_DIR)) {
-    fs.mkdirSync(UPLOADS_DIR, { recursive: true });
-  }
-} catch {
-  // Ignore on read-only serverless container root
 }
 
 export interface ServerDatabase {
@@ -112,9 +110,10 @@ export interface ServerDatabase {
 }
 
 function loadDatabase(): ServerDatabase {
-  const candidateFiles = IS_VERCEL_RUNTIME
-    ? [DB_FILE, BUNDLED_DB_FILE]
-    : [DB_FILE];
+  const candidateFiles = [
+    DB_FILE,
+    path.join(process.cwd(), 'data', 'db.json'),
+  ];
 
   for (const filePath of candidateFiles) {
     try {
@@ -175,6 +174,11 @@ function loadDatabase(): ServerDatabase {
 }
 
 function saveDatabase(dbToSave: ServerDatabase): void {
+  // On Vercel Serverless, project files are read-only and ephemeral (/tmp is not used).
+  // All persistent changes are stored externally in Google Sheets (via SheetDB / Apps Script) and Google Drive.
+  if (process.env.VERCEL_BUNDLE === '1' || process.env.VERCEL) {
+    return;
+  }
   try {
     const cleanBackendMeta = { ...dbToSave.backendMeta } as Record<string, unknown>;
     delete cleanBackendMeta.adminKey;
@@ -182,15 +186,11 @@ function saveDatabase(dbToSave: ServerDatabase): void {
       ...dbToSave,
       backendMeta: cleanBackendMeta as ServerDatabase['backendMeta'],
     };
-    fs.writeFileSync(DB_FILE, JSON.stringify(sanitized, null, 2), 'utf-8');
-  } catch {
-    // On read-only serverless filesystem, fallback to /tmp if not already there
-    try {
-      const tmpPath = '/tmp/smart-masar-db.json';
-      fs.writeFileSync(tmpPath, JSON.stringify(dbToSave, null, 2), 'utf-8');
-    } catch {
-      // Ignore write error in restricted environments
+    if (fs.existsSync(DATA_DIR)) {
+      fs.writeFileSync(DB_FILE, JSON.stringify(sanitized, null, 2), 'utf-8');
     }
+  } catch {
+    // Ignore local disk write error on read-only environments
   }
 }
 
@@ -762,7 +762,10 @@ async function syncBundleToExternalDatabase(): Promise<{
     (!sheetStatus.missingSheets || sheetStatus.missingSheets.length === 0) &&
     !sheetStatus.isEmptyHeader
   ) {
-    // Sync employees & services & jobs & pages to SheetDB
+    // Sync departments, employees, services, pages, and jobs to external SheetDB
+    for (const dept of db.departments) {
+      await syncRecordToSheetDb('Departments', 'id', dept.id, dept as any);
+    }
     for (const emp of db.employees) {
       await syncRecordToSheetDb('Team', 'id', emp.id, emp as any);
     }
@@ -877,7 +880,21 @@ async function uploadToGoogleDriveViaAppsScript(params: {
 export const apiApp = express();
 apiApp.use(express.json({ limit: '12mb' }));
 
-// Serve uploaded files directly from /public/uploads (or /tmp on Vercel)
+// Normalize request URLs when invoked via Vercel Serverless rewrites (/api/(.*) -> /api/index)
+apiApp.use((req: Request, _res: Response, next: NextFunction) => {
+  if (
+    !req.url.startsWith('/api/') &&
+    (req.url.startsWith('/admin/') ||
+      req.url.startsWith('/public/') ||
+      req.url.startsWith('/images/') ||
+      req.url.startsWith('/download-'))
+  ) {
+    req.url = `/api${req.url}`;
+  }
+  next();
+});
+
+// Serve uploaded files directly from /public/uploads
 apiApp.use(
   '/uploads',
   express.static(UPLOADS_DIR, {
@@ -986,9 +1003,9 @@ function registerApiRoutes(app: express.Express) {
     }
 
     // 1. Check if we have a cached local copy in /public/uploads
-    const localMatches = fs
-      .readdirSync(UPLOADS_DIR)
-      .filter((f) => f.includes(fileId));
+    const localMatches = fs.existsSync(UPLOADS_DIR)
+      ? fs.readdirSync(UPLOADS_DIR).filter((f) => f.includes(fileId))
+      : [];
     if (localMatches.length > 0) {
       const filePath = path.join(UPLOADS_DIR, localMatches[0]);
       res.setHeader('Cache-Control', 'public, max-age=86400');
@@ -1045,55 +1062,67 @@ function registerApiRoutes(app: express.Express) {
    * Never auto-authenticates unauthenticated requests.
    */
   const handleSessionCheck = (req: Request, res: Response) => {
-    const expectedKey = getConfiguredAdminKey();
-    const { adminKey } = req.body || {};
-    if (!expectedKey) {
-      res.status(req.method === 'GET' && !adminKey ? 200 : 503).json({
+    try {
+      const expectedKey = getConfiguredAdminKey();
+      const rawAdminKey =
+        req.body && typeof req.body.adminKey === 'string'
+          ? req.body.adminKey.trim()
+          : '';
+
+      if (!expectedKey) {
+        res.status(rawAdminKey ? 503 : 200).json({
+          success: false,
+          authenticated: false,
+          configured: false,
+          error:
+            'متغير البيئة SMART_MASAR_ADMIN_KEY غير مضبوط على الخادم. يرجى إضافته في إعدادات البيئة (Vercel Environment Variables أو .env).',
+        });
+        return;
+      }
+
+      const authCheck = isRequestAdminAuthenticated(
+        {
+          cookie: req.headers.cookie,
+          'x-admin-key': req.headers['x-admin-key'],
+          authorization: req.headers.authorization,
+        },
+        expectedKey
+      );
+
+      const isKeyValid =
+        rawAdminKey.length > 0 &&
+        verifyAdminKeyConstantTime(rawAdminKey, expectedKey);
+
+      if (authCheck.authenticated || isKeyValid) {
+        const token = createStatelessAdminSessionToken(expectedKey);
+        res.setHeader('Set-Cookie', buildAdminSessionSetCookie(token));
+        res.status(200).json({
+          success: true,
+          authenticated: true,
+          configured: true,
+          config: {
+            webAppUrl: db.backendMeta.webAppUrl,
+            sheetDbUrl: db.backendMeta.sheetDbUrl,
+            driveFolderId: db.backendMeta.driveFolderId,
+            lastSyncTime: db.backendMeta.lastSyncTime,
+          },
+        });
+        return;
+      }
+
+      res.status(200).json({
         success: false,
         authenticated: false,
-        configured: false,
-        error:
-          'متغير البيئة SMART_MASAR_ADMIN_KEY غير مضبوط على الخادم. يرجى إضافته في إعدادات البيئة (Vercel Environment Variables أو .env).',
-      });
-      return;
-    }
-    const authCheck = isRequestAdminAuthenticated(
-      {
-        cookie: req.headers.cookie,
-        'x-admin-key': req.headers['x-admin-key'],
-        authorization: req.headers.authorization,
-      },
-      expectedKey
-    );
-
-    const isKeyValid =
-      typeof adminKey === 'string' &&
-      adminKey.trim().length > 0 &&
-      verifyAdminKeyConstantTime(adminKey, expectedKey);
-
-    if (authCheck.authenticated || isKeyValid) {
-      const token = createStatelessAdminSessionToken(expectedKey);
-      res.setHeader('Set-Cookie', buildAdminSessionSetCookie(token));
-      res.json({
-        success: true,
-        authenticated: true,
         configured: true,
-        config: {
-          webAppUrl: db.backendMeta.webAppUrl,
-          sheetDbUrl: db.backendMeta.sheetDbUrl,
-          driveFolderId: db.backendMeta.driveFolderId,
-          lastSyncTime: db.backendMeta.lastSyncTime,
-        },
+        error: 'يرجى تسجيل الدخول باستخدام مفتاح صلاحية المسؤول المعتمد للوصول إلى لوحة الإدارة.',
       });
-      return;
+    } catch {
+      res.status(200).json({
+        success: false,
+        authenticated: false,
+        configured: Boolean(getConfiguredAdminKey()),
+      });
     }
-
-    res.status(200).json({
-      success: false,
-      authenticated: false,
-      configured: true,
-      error: 'يرجى تسجيل الدخول باستخدام مفتاح صلاحية المسؤول المعتمد للوصول إلى لوحة الإدارة.',
-    });
   };
 
   app.get('/api/admin/auth/session', handleSessionCheck);
@@ -1330,26 +1359,35 @@ function registerApiRoutes(app: express.Express) {
             ? driveResult.driveFileId
             : `sm-${safeEntity}-${safeId}-${timestamp}`;
 
-        // 2. Save binary image on server (/public/uploads) for instant, reliable delivery
+        // 2. Always prefer external Google Drive URL for permanent storage; only cache locally in non-Vercel dev mode
         const diskFileName = `${fileId}${ext}`;
         const diskFilePath = path.join(UPLOADS_DIR, diskFileName);
-        fs.writeFileSync(diskFilePath, imageBuffer);
-
-        // Delete previous local file if replacing an existing image
-        if (previousFileId && previousFileId !== fileId) {
-          const oldFiles = fs
-            .readdirSync(UPLOADS_DIR)
-            .filter((f) => f.startsWith(String(previousFileId)));
-          for (const oldFile of oldFiles) {
-            try {
-              fs.unlinkSync(path.join(UPLOADS_DIR, oldFile));
-            } catch {
-              // ignore cleanup errors
+        if (process.env.VERCEL_BUNDLE !== '1' && !process.env.VERCEL) {
+          try {
+            if (fs.existsSync(UPLOADS_DIR)) {
+              fs.writeFileSync(diskFilePath, imageBuffer);
             }
+            if (previousFileId && previousFileId !== fileId && fs.existsSync(UPLOADS_DIR)) {
+              const oldFiles = fs
+                .readdirSync(UPLOADS_DIR)
+                .filter((f) => f.startsWith(String(previousFileId)));
+              for (const oldFile of oldFiles) {
+                try {
+                  fs.unlinkSync(path.join(UPLOADS_DIR, oldFile));
+                } catch {
+                  // ignore cleanup errors
+                }
+              }
+            }
+          } catch {
+            // Ignore local cache write errors
           }
         }
 
-        const publicDisplayUrl = `/uploads/${diskFileName}`;
+        const publicDisplayUrl =
+          driveResult.uploadedToDrive && driveResult.driveDirectUrl
+            ? driveResult.driveDirectUrl
+            : `/uploads/${diskFileName}`;
 
         // 3. Automatically update corresponding record in Server Database & SheetDB
         let sheetSyncResult = { synced: false, detail: '' };
@@ -1474,8 +1512,13 @@ function registerApiRoutes(app: express.Express) {
           return;
         }
 
-        // Remove local uploaded file if present
-        if (fileId) {
+        // Remove local cached file in non-Vercel dev environment if present
+        if (
+          fileId &&
+          process.env.VERCEL_BUNDLE !== '1' &&
+          !process.env.VERCEL &&
+          fs.existsSync(UPLOADS_DIR)
+        ) {
           const matchingFiles = fs
             .readdirSync(UPLOADS_DIR)
             .filter((f) => f.startsWith(String(fileId)));
@@ -1704,7 +1747,10 @@ function registerApiRoutes(app: express.Express) {
 
 registerApiRoutes(apiApp);
 
-export async function startServer() {
+async function startServer() {
+  if (process.env.VERCEL_BUNDLE === '1') {
+    return;
+  }
   // ============================================================================
   // 4. VITE DEV MIDDLEWARE OR PRODUCTION STATIC ASSETS
   // ============================================================================
@@ -1730,9 +1776,18 @@ export async function startServer() {
   });
 }
 
-if (!process.env.VERCEL && process.env.SMART_MASAR_NO_LISTEN !== '1') {
+if (
+  process.env.VERCEL_BUNDLE !== '1' &&
+  !process.env.VERCEL &&
+  !process.env.AWS_LAMBDA_FUNCTION_NAME &&
+  path.basename(MODULE_DIR) !== 'api' &&
+  process.env.SMART_MASAR_NO_LISTEN !== '1'
+) {
   startServer();
 }
 
 export default apiApp;
+
+
+
 
