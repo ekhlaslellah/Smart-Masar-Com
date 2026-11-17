@@ -1,0 +1,217 @@
+{
+  "generatedAt": "2026-11-17T11:25:00Z",
+  "spreadsheetId": "1-7tcV3S0YMuee7mpFvqtUj9SCsC1acb-_qrw5uqa1yE",
+  "sheetDbEndpoint": "https://sheetdb.io/api/v1/9537p5ct7m308",
+  "employeesDriveFolderId": "1ss80vbtewFJ09876Re5uIH2g3Xu7tB0l",
+  "servicesDriveFolderId": "1qS_b1gOnR66V9WoPxjgj69IoGn5Yc_f3",
+  "employeeFolderFiles": [
+    {
+      "index": 1,
+      "fileId": "1SNWYU3SGMajk5_O_Io0CNRETO-zhffQW",
+      "fileName": "759E91DD-1406-46FB-82B5-F17E8DFA78B5.jpeg",
+      "sha256": "3b2a0bcfb61da38f7554ab6c1d9c31621d29d1399252425bf7fd00ae3742fd6d",
+      "sizeBytes": 273604,
+      "badgeTextAr": "د. أحمد العابد",
+      "matchedEntityId": "emp-ahmed-alabed",
+      "matchedNameAr": "د. أحمد العابد",
+      "status": "matched_confirmed"
+    },
+    {
+      "index": 2,
+      "fileId": "1bxu9TfFn6zIHY0UTePG36BFql6EQ4GlW",
+      "fileName": "FC82C8A2-2021-4E03-B353-D2A903314652.webp",
+      "sha256": "b41981a3d652dfa86ae3813d0e708fce5ad23c438afe6890ee14803ae9afd7f4",
+      "sizeBytes": 1378848,
+      "badgeTextAr": "إخلاص لله الشلبي",
+      "matchedEntityId": "emp-ekhlaslellah-alshalabi",
+      "matchedNameAr": "إخلاص لله الشلبي",
+      "status": "matched_confirmed"
+    },
+    {
+      "index": 3,
+      "fileId": "1Y8CePVldxGd0gadscfqF7l0hmqT3RNtf",
+      "fileName": "E534C838-0379-4CA7-9696-10778B67984E.webp",
+      "sha256": "0b1b461a296a475afc26b291302271f8b9a2bd7c8ba8e1e6b14b362a71335bab",
+      "sizeBytes": 1235994,
+      "badgeTextAr": "رهف الشرفات",
+      "matchedEntityId": "emp-rahaf-alsharafat",
+      "matchedNameAr": "رهف الشرفات",
+      "status": "matched_confirmed"
+    },
+    {
+      "index": 4,
+      "fileId": "1cZyK4EQ_eXKfmccQxnbmTi77gEXEzZPw",
+      "fileName": "600E5B0A-22DA-45CB-8F21-4FEE797A9DD2.webp",
+      "sha256": "69b7f31a7f076618ffb200c7f0afecac436794e83cd2aae36aa753d30341353c",
+      "sizeBytes": 1326906,
+      "badgeTextAr": "شروق الشرفات",
+      "matchedEntityId": "emp-shorouq-alsharafat",
+      "matchedNameAr": "شروق الشرفات",
+      "status": "matched_confirmed"
+    },
+    {
+      "index": 5,
+      "fileId": "1B1P6jUlB_gHYOuVuKmsUDYp03_tPwnfh",
+      "fileName": "B979387F-5EA1-46FA-9D41-0018D760FFDF.webp",
+      "sha256": "53a21db5eeca324613bf543a6aa673b44027e3a79decbc33a3b02d08c0e25eb3",
+      "sizeBytes": 1264908,
+      "badgeTextAr": "إكرام الشرفات",
+      "matchedEntityId": "emp-ekram-alsharafat",
+      "matchedNameAr": "إكرام الشرفات",
+      "status": "matched_confirmed"
+    },
+    {
+      "index": 6,
+      "fileId": "1Me3T5FYpkNERbujypIUbtxckCuNBRyVd",
+      "fileName": "F7759E7D-32CD-4BA4-9E76-9CC235A0AF89.webp",
+      "sha256": "de028b5f4c66eb91c2d76bbbde1f476c8fc844bd432683538570297b097e0a1d",
+      "sizeBytes": 1302338,
+      "badgeTextAr": "أماني أكرم",
+      "matchedEntityId": "emp-amani-akram",
+      "matchedNameAr": "أماني أكرم",
+      "status": "matched_confirmed"
+    },
+    {
+      "index": 7,
+      "fileId": "1cRx3Q2dkSlxghMsezFoJootyXr-kIQ9D",
+      "fileName": "31DF1D1D-154A-4E7F-BCF6-9C5A46B2051E.webp",
+      "sha256": "7852637a7fd24549d3439a7b57434f45cdfa363b7a7578aa3248792e27881cfe",
+      "sizeBytes": 1252712,
+      "badgeTextAr": "دعاء طارق",
+      "matchedEntityId": "emp-doaa-tareq",
+      "matchedNameAr": "دعاء طارق",
+      "status": "matched_confirmed"
+    },
+    {
+      "index": 8,
+      "fileId": "1A_cinAhQ3Akfx1__S7HECF_AOpipOxW2",
+      "fileName": "0313D2A5-070D-47BF-924D-DF0C4B114BCD.webp",
+      "sha256": "27c64a8029b98b191692798a04076d9f495dd8edecccf008c69dddb0bc89840b",
+      "sizeBytes": 1100006,
+      "badgeTextAr": "رؤى",
+      "matchedEntityId": "emp-roaa",
+      "matchedNameAr": "رؤى",
+      "status": "matched_confirmed"
+    },
+    {
+      "index": 9,
+      "fileId": "1QQmU3xoFvlxU3cyBxvizGkNodlueLe5j",
+      "fileName": "F5B42BE6-DF06-43BD-918D-6D7BC3E2FA56.webp",
+      "sha256": "a1c3605d790fe9be2dec787fcb2ecc4f9333c7e549b6a68e323813aa1aa6b456",
+      "sizeBytes": 1234682,
+      "badgeTextAr": "حنين الكسجي",
+      "matchedEntityId": null,
+      "matchedNameAr": "محفوظة في ملف المراجعة (الباج المطبوع: حنين الكسجي — غير مربوطة بسجل حنين زياد حالياً حتى تأكيد المطابقة)",
+      "driveViewUrl": "https://drive.google.com/file/d/1QQmU3xoFvlxU3cyBxvizGkNodlueLe5j/view",
+      "proxyUrl": "/api/images/drive/1QQmU3xoFvlxU3cyBxvizGkNodlueLe5j",
+      "status": "held_in_review_unlinked"
+    },
+    {
+      "index": 10,
+      "fileId": "1nMpwyGsmlNt1AfiP50NrkrlJMX5aV3dr",
+      "fileName": "86E5178F-C82F-441C-80D7-C9894FA7AF4D.png",
+      "sha256": "1dbe2cc393b3fadfe48e2f4f5b56bd6c64e4dd1f40a0636a72cbc6eaf7e79512",
+      "sizeBytes": 2699422,
+      "badgeTextAr": "سمية الشرفات",
+      "matchedEntityId": "emp-sumaya-alsharafat",
+      "matchedNameAr": "سمية الشرفات (الصورة الشخصية الكاملة المعتمدة)",
+      "driveViewUrl": "https://drive.google.com/file/d/1nMpwyGsmlNt1AfiP50NrkrlJMX5aV3dr/view",
+      "proxyUrl": "/api/images/drive/1nMpwyGsmlNt1AfiP50NrkrlJMX5aV3dr",
+      "status": "matched_confirmed"
+    },
+    {
+      "index": 11,
+      "fileId": "1QZB-emP9g8NDSuu6ATPKRrqHZ_l-n34Q",
+      "fileName": "86E5178F-C82F-441C-80D7-C9894FA7AF4D.png",
+      "sha256": "1dbe2cc393b3fadfe48e2f4f5b56bd6c64e4dd1f40a0636a72cbc6eaf7e79512",
+      "sizeBytes": 2699422,
+      "badgeTextAr": "سمية الشرفات",
+      "matchedEntityId": null,
+      "matchedNameAr": "نسخة مكررة مطابقة 100% للملف رقم 10 (نفس البصمة SHA-256)",
+      "driveViewUrl": "https://drive.google.com/file/d/1QZB-emP9g8NDSuu6ATPKRrqHZ_l-n34Q/view",
+      "proxyUrl": "/api/images/drive/1QZB-emP9g8NDSuu6ATPKRrqHZ_l-n34Q",
+      "status": "exact_duplicate_archived"
+    },
+    {
+      "index": 12,
+      "fileId": "1gOhMJwJcBbYjdaDbVA-qdzh4Nw65sZoT",
+      "fileName": "AC9C8FE7-09A1-43E8-AC94-02F87A8C17F6.webp",
+      "sha256": "cb8ad025dd5cca1a9f322f2d5cddd4425c78c21ba48dc9ad9607c86caff48fc7",
+      "sizeBytes": 1104096,
+      "badgeTextAr": "سمية الشرفات",
+      "matchedEntityId": null,
+      "matchedNameAr": "سمية الشرفات (نسخة رمزية بديلة بدون ملامح — محفوظة في النسخة الاحتياطية)",
+      "driveViewUrl": "https://drive.google.com/file/d/1gOhMJwJcBbYjdaDbVA-qdzh4Nw65sZoT/view",
+      "proxyUrl": "/api/images/drive/1gOhMJwJcBbYjdaDbVA-qdzh4Nw65sZoT",
+      "status": "backup_alternative_variant"
+    },
+    {
+      "index": 13,
+      "fileId": "11PCfK-Lzezlhz2Ey5Gzlhd2odgRukt7C",
+      "fileName": "EAFE2DAD-8B5A-4CBE-A829-E50F88EA1427.webp",
+      "sha256": "79c69721b81c80ebe6617b372173339325db85b3cd3fba1c8d403ee929e6f0cc",
+      "sizeBytes": 1209880,
+      "badgeTextAr": "م. رزان جابر",
+      "matchedEntityId": null,
+      "matchedNameAr": "م. رزان جابر (غير مدرجة في قائمة الـ 10 قادة)",
+      "status": "unmatched_extra_employee"
+    },
+    {
+      "index": 14,
+      "fileId": "1SUfiPV9vIx5DAso8XAFiZyPi4Uj_ezgA",
+      "fileName": "B1369722-5A21-46BF-A0AA-2B0A9BCBA77B.webp",
+      "sha256": "31004ea67ab043d6f816edfface80f7fd83a5433cce0acf33284cec40950eac9",
+      "sizeBytes": 1391894,
+      "badgeTextAr": "أحمد بكر",
+      "matchedEntityId": null,
+      "matchedNameAr": "أحمد بكر (غير مدرج في قائمة الـ 10 قادة — صورة رمزية بدون ملامح)",
+      "status": "unmatched_extra_employee"
+    }
+  ],
+  "serviceFolderFiles": [
+    {
+      "index": 1,
+      "fileId": "1OSRJbC2DaGI3HwW-eBnB6eJfQ6OYkpJk",
+      "fileName": "AF7CD88D-7FC5-48FE-A03A-285500F6C8D8.webp",
+      "sha256": "2e5519a533bcb0afb5236a0438626ba0540220b8a6b5fdbb390fd1d165b714e7",
+      "sizeBytes": 1833298,
+      "visualSubjectAr": "دماغ ذكاء اصطناعي وشبكات عصبية ومساعد ذكي وتحليلات تنبؤية",
+      "matchedServiceId": "ai-solutions",
+      "matchedServiceTitleAr": "حلول الذكاء الاصطناعي",
+      "status": "matched_confirmed"
+    },
+    {
+      "index": 2,
+      "fileId": "1mQt7QVAeAyhqqDmLfjytjwmI92LLOw8s",
+      "fileName": "2B48CD9B-F886-4101-9EAB-CC9DEADFC991.png",
+      "sha256": "2d546465bfdce60bf74e4aef3ff8cf6af26e3caa13c8c7255a2896d2350d62e6",
+      "sizeBytes": 3371713,
+      "visualSubjectAr": "تطوير منصات الويب والتطبيقات السحابية وتكامل قواعد البيانات والأنظمة",
+      "matchedServiceId": "software-dev",
+      "matchedServiceTitleAr": "تطوير البرمجيات والأنظمة",
+      "status": "matched_confirmed"
+    },
+    {
+      "index": 3,
+      "fileId": "1Lw_el-yaInfRPBoHxYPvYp9Pa-TVV5LU",
+      "fileName": "17FCC59E-66FF-4210-A587-6F3DBBE06B1C.png",
+      "sha256": "821ae94323ac64e6c64b3c4fbab31449ad48fec2865a7abd9ba49929675a1800",
+      "sizeBytes": 4114807,
+      "visualSubjectAr": "الانتقال المؤسسي من الأرشيف الورقي التقليدي إلى مقر رقمي سحابي متكامل",
+      "matchedServiceId": "digital-transformation",
+      "matchedServiceTitleAr": "التحول الرقمي المؤسسي",
+      "status": "matched_confirmed"
+    },
+    {
+      "index": 4,
+      "fileId": "1XwZs85oTMeRT6ZCZpoCyFEyw52OHosNm",
+      "fileName": "EBD5BEE5-E614-4954-B9DA-C917370F898A.png",
+      "sha256": "9ccbb85ca86c6d811e1469501cd35918b33ba56b21af5f3a9256783595ca85ec",
+      "sizeBytes": 3678049,
+      "visualSubjectAr": "روبوت أتمتة العمليات (RPA) لمسح الوثائق وأتمتة مسارات الموافقات",
+      "matchedServiceId": "process-automation",
+      "matchedServiceTitleAr": "أتمتة العمليات التشغيلية (RPA)",
+      "status": "matched_confirmed"
+    }
+  ]
+}

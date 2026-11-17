@@ -11,7 +11,7 @@ This document describes the complete storage, database schema, Google Drive imag
    - Uploaded files are given public reader permission (`ANYONE_WITH_LINK`, `VIEW`) by the server-side Google Apps Script (`uploadImageToDrive` action) only after verifying the administrator's `SMART_MASAR_ADMIN_KEY`.
 2. **Google Sheets & SheetDB (Metadata & URL Store)**:
    - Spreadsheet name: **`مؤسسة Masar Smart`**
-   - SheetDB API endpoint: `https://sheetdb.io/api/v1/gnn52l70oflrp`
+   - SheetDB API endpoint: `https://sheetdb.io/api/v1/9537p5ct7m308`
    - Stores image URLs, Google Drive file IDs, Arabic alt text, and record metadata across 6 structured tabs.
 3. **Express Server Proxy (`server.ts`)**:
    - Protects all write/upload endpoints (`/api/admin/upload-image`, `/api/admin/remove-image`, `/api/admin/sync-state`) behind server-verified `SMART_MASAR_ADMIN_KEY` authentication (`requireAdminAuth` middleware).

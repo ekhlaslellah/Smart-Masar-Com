@@ -11,154 +11,254 @@ import dotenv from "dotenv";
 var INITIAL_DEPARTMENTS = [
   {
     id: "exec",
-    nameAr: "\u0627\u0644\u0625\u062F\u0627\u0631\u0629 \u0627\u0644\u0639\u0627\u0645\u0629 \u0648\u0627\u0644\u062A\u0646\u0641\u064A\u0630\u064A\u0629",
-    nameEn: "Executive Management",
+    nameAr: "\u0627\u0644\u0625\u062F\u0627\u0631\u0629 \u0627\u0644\u0639\u0644\u064A\u0627 \u0648\u0627\u0644\u062A\u0646\u0641\u064A\u0630\u064A\u0629",
+    nameEn: "Executive Leadership",
     iconName: "Building2",
     badgeBg: "#101B32"
   },
   {
-    id: "tech",
-    nameAr: "\u0627\u0644\u062A\u0643\u0646\u0648\u0644\u0648\u062C\u064A\u0627 \u0648\u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064A",
-    nameEn: "Technology & AI",
-    iconName: "Cpu",
+    id: "dept-inst-dev",
+    nameAr: "\u0642\u0633\u0645 \u0627\u0644\u062A\u0637\u0648\u064A\u0631 \u0627\u0644\u0645\u0624\u0633\u0633\u064A \u0648\u0627\u0644\u062A\u062F\u0631\u064A\u0628",
+    nameEn: "Institutional Development & Training",
+    iconName: "Award",
     badgeBg: "#203B65"
   },
   {
-    id: "finance",
-    nameAr: "\u0627\u0644\u0645\u0627\u0644\u064A\u0629 \u0648\u0627\u0644\u0645\u062D\u0627\u0633\u0628\u0629",
+    id: "dept-hr",
+    nameAr: "\u0642\u0633\u0645 \u0627\u0644\u0645\u0648\u0627\u0631\u062F \u0627\u0644\u0628\u0634\u0631\u064A\u0629",
+    nameEn: "Human Resources",
+    iconName: "Users",
+    badgeBg: "#2563EB"
+  },
+  {
+    id: "dept-marketing",
+    nameAr: "\u0642\u0633\u0645 \u0627\u0644\u062A\u0633\u0648\u064A\u0642 \u0648\u0627\u0644\u0639\u0644\u0627\u0642\u0627\u062A \u0627\u0644\u0639\u0627\u0645\u0629",
+    nameEn: "Marketing & Public Relations",
+    iconName: "Megaphone",
+    badgeBg: "#203B65"
+  },
+  {
+    id: "dept-finance",
+    nameAr: "\u0642\u0633\u0645 \u0627\u0644\u0645\u0627\u0644\u064A\u0629 \u0648\u0627\u0644\u0645\u062D\u0627\u0633\u0628\u0629",
     nameEn: "Finance & Accounting",
     iconName: "CircleDollarSign",
     badgeBg: "#2563EB"
   },
   {
-    id: "hr",
-    nameAr: "\u0627\u0644\u0645\u0648\u0627\u0631\u062F \u0627\u0644\u0628\u0634\u0631\u064A\u0629",
-    nameEn: "Human Resources",
-    iconName: "Users",
+    id: "dept-tech-ai",
+    nameAr: "\u0642\u0633\u0645 \u0627\u0644\u062A\u0643\u0646\u0648\u0644\u0648\u062C\u064A\u0627 \u0648\u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064A",
+    nameEn: "Technology & AI",
+    iconName: "Cpu",
+    badgeBg: "#101B32"
+  },
+  {
+    id: "dept-ops-projects",
+    nameAr: "\u0642\u0633\u0645 \u0627\u0644\u0639\u0645\u0644\u064A\u0627\u062A \u0648\u0627\u0644\u0645\u0634\u0627\u0631\u064A\u0639",
+    nameEn: "Operations & Projects",
+    iconName: "Layers",
     badgeBg: "#203B65"
   },
   {
-    id: "marketing",
-    nameAr: "\u0627\u0644\u062A\u0633\u0648\u064A\u0642 \u0648\u0627\u0644\u0627\u062A\u0635\u0627\u0644 \u0627\u0644\u0645\u0624\u0633\u0633\u064A",
-    nameEn: "Marketing & Communications",
-    iconName: "Megaphone",
+    id: "dept-biz-dev",
+    nameAr: "\u0642\u0633\u0645 \u062A\u0637\u0648\u064A\u0631 \u0627\u0644\u0623\u0639\u0645\u0627\u0644 \u0648\u0627\u0644\u0634\u0631\u0627\u0643\u0627\u062A",
+    nameEn: "Business Development & Partnerships",
+    iconName: "Briefcase",
     badgeBg: "#2563EB"
   },
   {
-    id: "ops",
-    nameAr: "\u0627\u0644\u0639\u0645\u0644\u064A\u0627\u062A \u0648\u0627\u0644\u0625\u062F\u0627\u0631\u0629 \u0627\u0644\u062A\u0634\u063A\u064A\u0644\u064A\u0629",
-    nameEn: "Operations & Administration",
-    iconName: "Layers",
+    id: "dept-cx",
+    nameAr: "\u0642\u0633\u0645 \u062A\u062C\u0631\u0628\u0629 \u0648\u062E\u062F\u0645\u0627\u062A \u0627\u0644\u0639\u0645\u0644\u0627\u0621",
+    nameEn: "Customer Experience & Services",
+    iconName: "HeartHandshake",
+    badgeBg: "#203B65"
+  },
+  {
+    id: "dept-quality",
+    nameAr: "\u0642\u0633\u0645 \u0627\u0644\u062C\u0648\u062F\u0629 \u0648\u0627\u0644\u0623\u062F\u0627\u0621",
+    nameEn: "Quality & Performance",
+    iconName: "ShieldCheck",
     badgeBg: "#101B32"
   }
 ], INITIAL_EMPLOYEES = [
   {
     id: "emp-ahmed-alabed",
     nameAr: "\u062F. \u0623\u062D\u0645\u062F \u0627\u0644\u0639\u0627\u0628\u062F",
-    nameEn: "Dr. Ahmed Alabed",
-    jobTitleAr: "\u0627\u0644\u0645\u062F\u064A\u0631 \u0627\u0644\u0639\u0627\u0645",
-    jobTitleEn: "General Manager",
+    nameEn: "Dr. Ahmad Al-Abed",
+    jobTitleAr: "\u0627\u0644\u0631\u0626\u064A\u0633 \u0627\u0644\u062A\u0646\u0641\u064A\u0630\u064A",
+    jobTitleEn: "Chief Executive Officer (CEO)",
     departmentId: "exec",
     managerId: null,
-    avatarUrl: "",
-    image_url: "",
-    image_file_id: "",
-    image_alt_ar: "\u0635\u0648\u0631\u0629 \u062F. \u0623\u062D\u0645\u062F \u0627\u0644\u0639\u0627\u0628\u062F - \u0627\u0644\u0645\u062F\u064A\u0631 \u0627\u0644\u0639\u0627\u0645",
-    initials: "\u062F.\u0623",
-    bioAr: "\u0627\u0644\u0645\u062F\u064A\u0631 \u0627\u0644\u0639\u0627\u0645 \u0644\u0634\u0631\u0643\u0629 \u0633\u0645\u0627\u0631\u062A \u0645\u0633\u0627\u0631\u060C \u064A\u0642\u0648\u062F \u0627\u0644\u062A\u0648\u062C\u0647 \u0627\u0644\u0627\u0633\u062A\u0631\u0627\u062A\u064A\u062C\u064A \u0648\u062A\u0637\u0648\u064A\u0631 \u062D\u0644\u0648\u0644 \u0627\u0644\u062A\u062D\u0648\u0644 \u0627\u0644\u0631\u0642\u0645\u064A \u0648\u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064A.",
-    email: "gm@smartmasar.edu",
+    avatarUrl: "/api/images/drive/1SNWYU3SGMajk5_O_Io0CNRETO-zhffQW",
+    image_url: "/api/images/drive/1SNWYU3SGMajk5_O_Io0CNRETO-zhffQW",
+    image_file_id: "1SNWYU3SGMajk5_O_Io0CNRETO-zhffQW",
+    image_alt_ar: "\u0635\u0648\u0631\u0629 \u062F. \u0623\u062D\u0645\u062F \u0627\u0644\u0639\u0627\u0628\u062F - \u0627\u0644\u0631\u0626\u064A\u0633 \u0627\u0644\u062A\u0646\u0641\u064A\u0630\u064A",
+    initials: "AA",
+    bioAr: "\u064A\u0642\u0648\u062F \u0627\u0644\u0631\u0624\u064A\u0629 \u0627\u0644\u0627\u0633\u062A\u0631\u0627\u062A\u064A\u062C\u064A\u0629 \u0644\u0634\u0631\u0643\u0629 \u0633\u0645\u0627\u0631\u062A \u0645\u0633\u0627\u0631\u060C \u0648\u064A\u0634\u0631\u0641 \u0639\u0644\u0649 \u0627\u0644\u062A\u0643\u0627\u0645\u0644 \u0628\u064A\u0646 \u0642\u0637\u0627\u0639\u0627\u062A \u0627\u0644\u062A\u0643\u0646\u0648\u0644\u0648\u062C\u064A\u0627 \u0648\u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064A \u0648\u0627\u0644\u062A\u0637\u0648\u064A\u0631 \u0627\u0644\u0645\u0624\u0633\u0633\u064A.",
+    email: "ceo@smartmasar.edu",
     isConfirmedPosition: !0,
     order: 1
   },
   {
-    id: "emp-shorouq-alsharafat",
-    nameAr: "\u0634\u0631\u0648\u0642 \u0627\u0644\u0634\u0631\u0641\u0627\u062A",
-    nameEn: "Shorouq Alsharafat",
-    jobTitleAr: "\u0642\u064A\u062F \u0627\u0644\u062A\u0639\u064A\u064A\u0646",
-    jobTitleEn: "Position to be assigned",
-    departmentId: "tech",
+    id: "emp-ekhlaslellah-alshalabi",
+    nameAr: "\u0625\u062E\u0644\u0627\u0635 \u0644\u0644\u0647 \u0627\u0644\u0634\u0644\u0628\u064A",
+    nameEn: "Ekhlaslellah Al-Shalabi",
+    jobTitleAr: "\u0631\u0626\u064A\u0633\u0629 \u0642\u0633\u0645 \u0627\u0644\u062A\u0637\u0648\u064A\u0631 \u0627\u0644\u0645\u0624\u0633\u0633\u064A \u0648\u0627\u0644\u062A\u062F\u0631\u064A\u0628",
+    jobTitleEn: "Head of Institutional Development & Training",
+    departmentId: "dept-inst-dev",
     managerId: "emp-ahmed-alabed",
-    avatarUrl: "",
-    image_url: "",
-    image_file_id: "",
-    image_alt_ar: "\u0635\u0648\u0631\u0629 \u0634\u0631\u0648\u0642 \u0627\u0644\u0634\u0631\u0641\u0627\u062A",
-    initials: "\u0634.\u0634",
-    bioAr: "",
-    email: "shorouq@smartmasar.edu",
-    isConfirmedPosition: !1,
+    avatarUrl: "/api/images/drive/1bxu9TfFn6zIHY0UTePG36BFql6EQ4GlW",
+    image_url: "/api/images/drive/1bxu9TfFn6zIHY0UTePG36BFql6EQ4GlW",
+    image_file_id: "1bxu9TfFn6zIHY0UTePG36BFql6EQ4GlW",
+    image_alt_ar: "\u0635\u0648\u0631\u0629 \u0625\u062E\u0644\u0627\u0635 \u0644\u0644\u0647 \u0627\u0644\u0634\u0644\u0628\u064A - \u0631\u0626\u064A\u0633\u0629 \u0642\u0633\u0645 \u0627\u0644\u062A\u0637\u0648\u064A\u0631 \u0627\u0644\u0645\u0624\u0633\u0633\u064A \u0648\u0627\u0644\u062A\u062F\u0631\u064A\u0628",
+    initials: "EA",
+    bioAr: "\u0642\u064A\u0627\u062F\u0629 \u062E\u0637\u0637 \u0627\u0644\u062A\u0637\u0648\u064A\u0631 \u0627\u0644\u0645\u0624\u0633\u0633\u064A \u0648\u0628\u0646\u0627\u0621 \u0642\u062F\u0631\u0627\u062A \u0627\u0644\u0643\u0648\u0627\u062F\u0631 \u0648\u062A\u0635\u0645\u064A\u0645 \u0627\u0644\u0628\u0631\u0627\u0645\u062C \u0627\u0644\u062A\u062F\u0631\u064A\u0628\u064A\u0629 \u0627\u0644\u0645\u062A\u0642\u062F\u0645\u0629.",
+    email: "ekhlaslellah@smartmasar.edu",
+    isConfirmedPosition: !0,
     order: 2
   },
   {
-    id: "emp-ikram-alsharafat",
-    nameAr: "\u0625\u0643\u0631\u0627\u0645 \u0627\u0644\u0634\u0631\u0641\u0627\u062A",
-    nameEn: "Ikram Alsharafat",
-    jobTitleAr: "\u0642\u064A\u062F \u0627\u0644\u062A\u0639\u064A\u064A\u0646",
-    jobTitleEn: "Position to be assigned",
-    departmentId: "finance",
+    id: "emp-rahaf-alsharafat",
+    nameAr: "\u0631\u0647\u0641 \u0627\u0644\u0634\u0631\u0641\u0627\u062A",
+    nameEn: "Rahaf Al-Sharafat",
+    jobTitleAr: "\u0631\u0626\u064A\u0633\u0629 \u0642\u0633\u0645 \u0627\u0644\u0645\u0648\u0627\u0631\u062F \u0627\u0644\u0628\u0634\u0631\u064A\u0629",
+    jobTitleEn: "Head of Human Resources",
+    departmentId: "dept-hr",
     managerId: "emp-ahmed-alabed",
-    avatarUrl: "",
-    image_url: "",
-    image_file_id: "",
-    image_alt_ar: "\u0635\u0648\u0631\u0629 \u0625\u0643\u0631\u0627\u0645 \u0627\u0644\u0634\u0631\u0641\u0627\u062A",
-    initials: "\u0625.\u0634",
-    bioAr: "",
-    email: "ikram@smartmasar.edu",
-    isConfirmedPosition: !1,
+    avatarUrl: "/api/images/drive/1Y8CePVldxGd0gadscfqF7l0hmqT3RNtf",
+    image_url: "/api/images/drive/1Y8CePVldxGd0gadscfqF7l0hmqT3RNtf",
+    image_file_id: "1Y8CePVldxGd0gadscfqF7l0hmqT3RNtf",
+    image_alt_ar: "\u0635\u0648\u0631\u0629 \u0631\u0647\u0641 \u0627\u0644\u0634\u0631\u0641\u0627\u062A - \u0631\u0626\u064A\u0633\u0629 \u0642\u0633\u0645 \u0627\u0644\u0645\u0648\u0627\u0631\u062F \u0627\u0644\u0628\u0634\u0631\u064A\u0629",
+    initials: "RS",
+    bioAr: "\u0627\u0644\u0625\u0634\u0631\u0627\u0641 \u0639\u0644\u0649 \u0627\u0633\u062A\u0631\u0627\u062A\u064A\u062C\u064A\u0627\u062A \u0631\u0623\u0633 \u0627\u0644\u0645\u0627\u0644 \u0627\u0644\u0628\u0634\u0631\u064A\u060C \u0627\u0644\u0627\u0633\u062A\u0642\u0637\u0627\u0628 \u0627\u0644\u0631\u0642\u0645\u064A\u060C \u0648\u0628\u064A\u0626\u0629 \u0627\u0644\u0639\u0645\u0644 \u0627\u0644\u0645\u062D\u0641\u0632\u0629.",
+    email: "rahaf@smartmasar.edu",
+    isConfirmedPosition: !0,
     order: 3
   },
   {
-    id: "emp-ekhlaslellah-sh",
-    nameAr: "\u0625\u062E\u0644\u0627\u0635 \u0644\u0644\u0647 \u0627\u0644\u0634\u0631\u0641\u0627\u062A",
-    nameEn: "Ekhlaslellah Sh",
-    jobTitleAr: "\u0642\u064A\u062F \u0627\u0644\u062A\u0639\u064A\u064A\u0646",
-    jobTitleEn: "Position to be assigned",
-    departmentId: "hr",
+    id: "emp-shorouq-alsharafat",
+    nameAr: "\u0634\u0631\u0648\u0642 \u0627\u0644\u0634\u0631\u0641\u0627\u062A",
+    nameEn: "Shorouq Al-Sharafat",
+    jobTitleAr: "\u0631\u0626\u064A\u0633\u0629 \u0642\u0633\u0645 \u0627\u0644\u062A\u0633\u0648\u064A\u0642 \u0648\u0627\u0644\u0639\u0644\u0627\u0642\u0627\u062A \u0627\u0644\u0639\u0627\u0645\u0629",
+    jobTitleEn: "Head of Marketing & Public Relations",
+    departmentId: "dept-marketing",
     managerId: "emp-ahmed-alabed",
-    avatarUrl: "",
-    image_url: "",
-    image_file_id: "",
-    image_alt_ar: "\u0635\u0648\u0631\u0629 \u0625\u062E\u0644\u0627\u0635 \u0644\u0644\u0647 \u0627\u0644\u0634\u0631\u0641\u0627\u062A",
-    initials: "\u0625.\u0644",
-    bioAr: "",
-    email: "ekhlaslellah@smartmasar.edu",
-    isConfirmedPosition: !1,
+    avatarUrl: "/api/images/drive/1cZyK4EQ_eXKfmccQxnbmTi77gEXEzZPw",
+    image_url: "/api/images/drive/1cZyK4EQ_eXKfmccQxnbmTi77gEXEzZPw",
+    image_file_id: "1cZyK4EQ_eXKfmccQxnbmTi77gEXEzZPw",
+    image_alt_ar: "\u0635\u0648\u0631\u0629 \u0634\u0631\u0648\u0642 \u0627\u0644\u0634\u0631\u0641\u0627\u062A - \u0631\u0626\u064A\u0633\u0629 \u0642\u0633\u0645 \u0627\u0644\u062A\u0633\u0648\u064A\u0642 \u0648\u0627\u0644\u0639\u0644\u0627\u0642\u0627\u062A \u0627\u0644\u0639\u0627\u0645\u0629",
+    initials: "SS",
+    bioAr: "\u0642\u064A\u0627\u062F\u0629 \u0627\u0644\u0647\u0648\u064A\u0629 \u0627\u0644\u0645\u0624\u0633\u0633\u064A\u0629\u060C \u0627\u0644\u062D\u0645\u0644\u0627\u062A \u0627\u0644\u0631\u0642\u0645\u064A\u0629\u060C \u0648\u0628\u0646\u0627\u0621 \u0627\u0644\u0635\u0648\u0631\u0629 \u0627\u0644\u0630\u0647\u0646\u064A\u0629 \u0648\u0627\u0644\u0639\u0644\u0627\u0642\u0627\u062A \u0627\u0644\u0639\u0627\u0645\u0629 \u0644\u0644\u0634\u0631\u0643\u0629.",
+    email: "shorouq@smartmasar.edu",
+    isConfirmedPosition: !0,
     order: 4
   },
   {
-    id: "emp-haneen-alkasaji",
-    nameAr: "\u062D\u0646\u064A\u0646 \u0627\u0644\u0643\u0633\u0627\u0633\u0628\u0629",
-    nameEn: "Haneen Alkasaji",
-    jobTitleAr: "\u0642\u064A\u062F \u0627\u0644\u062A\u0639\u064A\u064A\u0646",
-    jobTitleEn: "Position to be assigned",
-    departmentId: "marketing",
+    id: "emp-ekram-alsharafat",
+    nameAr: "\u0625\u0643\u0631\u0627\u0645 \u0627\u0644\u0634\u0631\u0641\u0627\u062A",
+    nameEn: "Ekram Al-Sharafat",
+    jobTitleAr: "\u0631\u0626\u064A\u0633\u0629 \u0642\u0633\u0645 \u0627\u0644\u0645\u0627\u0644\u064A\u0629 \u0648\u0627\u0644\u0645\u062D\u0627\u0633\u0628\u0629",
+    jobTitleEn: "Head of Finance & Accounting",
+    departmentId: "dept-finance",
     managerId: "emp-ahmed-alabed",
-    avatarUrl: "",
-    image_url: "",
-    image_file_id: "",
-    image_alt_ar: "\u0635\u0648\u0631\u0629 \u062D\u0646\u064A\u0646 \u0627\u0644\u0643\u0633\u0627\u0633\u0628\u0629",
-    initials: "\u062D.\u0643",
-    bioAr: "",
-    email: "haneen@smartmasar.edu",
-    isConfirmedPosition: !1,
+    avatarUrl: "/api/images/drive/1B1P6jUlB_gHYOuVuKmsUDYp03_tPwnfh",
+    image_url: "/api/images/drive/1B1P6jUlB_gHYOuVuKmsUDYp03_tPwnfh",
+    image_file_id: "1B1P6jUlB_gHYOuVuKmsUDYp03_tPwnfh",
+    image_alt_ar: "\u0635\u0648\u0631\u0629 \u0625\u0643\u0631\u0627\u0645 \u0627\u0644\u0634\u0631\u0641\u0627\u062A - \u0631\u0626\u064A\u0633\u0629 \u0642\u0633\u0645 \u0627\u0644\u0645\u0627\u0644\u064A\u0629 \u0648\u0627\u0644\u0645\u062D\u0627\u0633\u0628\u0629",
+    initials: "ES",
+    bioAr: "\u0625\u062F\u0627\u0631\u0629 \u0627\u0644\u062A\u062E\u0637\u064A\u0637 \u0627\u0644\u0645\u0627\u0644\u064A\u060C \u0627\u0644\u0645\u064A\u0632\u0627\u0646\u064A\u0627\u062A \u0627\u0644\u0633\u0646\u0648\u064A\u0629\u060C \u0648\u0627\u0644\u0631\u0642\u0627\u0628\u0629 \u0627\u0644\u0645\u062D\u0627\u0633\u0628\u064A\u0629 \u0648\u0641\u0642 \u0627\u0644\u0645\u0639\u0627\u064A\u064A\u0631 \u0627\u0644\u062F\u0648\u0644\u064A\u0629.",
+    email: "ikram@smartmasar.edu",
+    isConfirmedPosition: !0,
     order: 5
   },
   {
     id: "emp-amani-akram",
     nameAr: "\u0623\u0645\u0627\u0646\u064A \u0623\u0643\u0631\u0645",
     nameEn: "Amani Akram",
-    jobTitleAr: "\u0642\u064A\u062F \u0627\u0644\u062A\u0639\u064A\u064A\u0646",
-    jobTitleEn: "Position to be assigned",
-    departmentId: "ops",
+    jobTitleAr: "\u0631\u0626\u064A\u0633\u0629 \u0642\u0633\u0645 \u0627\u0644\u062A\u0643\u0646\u0648\u0644\u0648\u062C\u064A\u0627 \u0648\u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064A",
+    jobTitleEn: "Head of Technology & AI",
+    departmentId: "dept-tech-ai",
+    managerId: "emp-ahmed-alabed",
+    avatarUrl: "/api/images/drive/1Me3T5FYpkNERbujypIUbtxckCuNBRyVd",
+    image_url: "/api/images/drive/1Me3T5FYpkNERbujypIUbtxckCuNBRyVd",
+    image_file_id: "1Me3T5FYpkNERbujypIUbtxckCuNBRyVd",
+    image_alt_ar: "\u0635\u0648\u0631\u0629 \u0623\u0645\u0627\u0646\u064A \u0623\u0643\u0631\u0645 - \u0631\u0626\u064A\u0633\u0629 \u0642\u0633\u0645 \u0627\u0644\u062A\u0643\u0646\u0648\u0644\u0648\u062C\u064A\u0627 \u0648\u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064A",
+    initials: "AA",
+    bioAr: "\u0642\u064A\u0627\u062F\u0629 \u0647\u0646\u062F\u0633\u0629 \u0627\u0644\u0628\u0631\u0645\u062C\u064A\u0627\u062A \u0627\u0644\u0633\u062D\u0627\u0628\u064A\u0629\u060C \u062A\u0637\u0648\u064A\u0631 \u0646\u0645\u0627\u0630\u062C \u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064A\u060C \u0648\u0627\u0644\u0627\u0628\u062A\u0643\u0627\u0631 \u0627\u0644\u062A\u0642\u0646\u064A.",
+    email: "amani@smartmasar.edu",
+    isConfirmedPosition: !0,
+    order: 6
+  },
+  {
+    id: "emp-doaa-tareq",
+    nameAr: "\u062F\u0639\u0627\u0621 \u0637\u0627\u0631\u0642",
+    nameEn: "Doaa Tareq",
+    jobTitleAr: "\u0631\u0626\u064A\u0633\u0629 \u0642\u0633\u0645 \u0627\u0644\u0639\u0645\u0644\u064A\u0627\u062A \u0648\u0627\u0644\u0645\u0634\u0627\u0631\u064A\u0639",
+    jobTitleEn: "Head of Operations & Projects",
+    departmentId: "dept-ops-projects",
+    managerId: "emp-ahmed-alabed",
+    avatarUrl: "/api/images/drive/1cRx3Q2dkSlxghMsezFoJootyXr-kIQ9D",
+    image_url: "/api/images/drive/1cRx3Q2dkSlxghMsezFoJootyXr-kIQ9D",
+    image_file_id: "1cRx3Q2dkSlxghMsezFoJootyXr-kIQ9D",
+    image_alt_ar: "\u0635\u0648\u0631\u0629 \u062F\u0639\u0627\u0621 \u0637\u0627\u0631\u0642 - \u0631\u0626\u064A\u0633\u0629 \u0642\u0633\u0645 \u0627\u0644\u0639\u0645\u0644\u064A\u0627\u062A \u0648\u0627\u0644\u0645\u0634\u0627\u0631\u064A\u0639",
+    initials: "DT",
+    bioAr: "\u0627\u0644\u0625\u0634\u0631\u0627\u0641 \u0639\u0644\u0649 \u062A\u0646\u0641\u064A\u0630 \u0627\u0644\u0645\u0634\u0627\u0631\u064A\u0639 \u0627\u0644\u062A\u0642\u0646\u064A\u0629\u060C \u0643\u0641\u0627\u0621\u0629 \u0627\u0644\u0639\u0645\u0644\u064A\u0627\u062A \u0627\u0644\u062A\u0634\u063A\u064A\u0644\u064A\u0629\u060C \u0648\u0636\u0628\u0637 \u0627\u0644\u062C\u062F\u0627\u0648\u0644 \u0627\u0644\u0632\u0645\u0646\u064A\u0629.",
+    email: "doaa@smartmasar.edu",
+    isConfirmedPosition: !0,
+    order: 7
+  },
+  {
+    id: "emp-roaa",
+    nameAr: "\u0631\u0624\u0649",
+    nameEn: "Roaa",
+    jobTitleAr: "\u0631\u0626\u064A\u0633\u0629 \u0642\u0633\u0645 \u062A\u0637\u0648\u064A\u0631 \u0627\u0644\u0623\u0639\u0645\u0627\u0644 \u0648\u0627\u0644\u0634\u0631\u0627\u0643\u0627\u062A",
+    jobTitleEn: "Head of Business Development & Partnerships",
+    departmentId: "dept-biz-dev",
+    managerId: "emp-ahmed-alabed",
+    avatarUrl: "/api/images/drive/1A_cinAhQ3Akfx1__S7HECF_AOpipOxW2",
+    image_url: "/api/images/drive/1A_cinAhQ3Akfx1__S7HECF_AOpipOxW2",
+    image_file_id: "1A_cinAhQ3Akfx1__S7HECF_AOpipOxW2",
+    image_alt_ar: "\u0635\u0648\u0631\u0629 \u0631\u0624\u0649 - \u0631\u0626\u064A\u0633\u0629 \u0642\u0633\u0645 \u062A\u0637\u0648\u064A\u0631 \u0627\u0644\u0623\u0639\u0645\u0627\u0644 \u0648\u0627\u0644\u0634\u0631\u0627\u0643\u0627\u062A",
+    initials: "RO",
+    bioAr: "\u0628\u0646\u0627\u0621 \u0627\u0644\u0634\u0631\u0627\u0643\u0627\u062A \u0627\u0644\u0627\u0633\u062A\u0631\u0627\u062A\u064A\u062C\u064A\u0629\u060C \u0627\u0633\u062A\u0643\u0634\u0627\u0641 \u0641\u0631\u0635 \u0627\u0644\u0646\u0645\u0648\u060C \u0648\u062A\u0648\u0633\u064A\u0639 \u0646\u0637\u0627\u0642 \u0627\u0644\u062D\u0644\u0648\u0644 \u0627\u0644\u0631\u0642\u0645\u064A\u0629 \u0644\u0644\u0645\u0624\u0633\u0633\u0627\u062A.",
+    email: "roaa@smartmasar.edu",
+    isConfirmedPosition: !0,
+    order: 8
+  },
+  {
+    id: "emp-haneen-ziad",
+    nameAr: "\u062D\u0646\u064A\u0646 \u0632\u064A\u0627\u062F",
+    nameEn: "Haneen Ziad",
+    jobTitleAr: "\u0631\u0626\u064A\u0633\u0629 \u0642\u0633\u0645 \u062A\u062C\u0631\u0628\u0629 \u0648\u062E\u062F\u0645\u0627\u062A \u0627\u0644\u0639\u0645\u0644\u0627\u0621",
+    jobTitleEn: "Head of Customer Experience & Services",
+    departmentId: "dept-cx",
     managerId: "emp-ahmed-alabed",
     avatarUrl: "",
     image_url: "",
     image_file_id: "",
-    image_alt_ar: "\u0635\u0648\u0631\u0629 \u0623\u0645\u0627\u0646\u064A \u0623\u0643\u0631\u0645",
-    initials: "\u0623.\u0623",
-    bioAr: "",
-    email: "amani@smartmasar.edu",
-    isConfirmedPosition: !1,
-    order: 6
+    image_alt_ar: "\u0635\u0648\u0631\u0629 \u062D\u0646\u064A\u0646 \u0632\u064A\u0627\u062F - \u0631\u0626\u064A\u0633\u0629 \u0642\u0633\u0645 \u062A\u062C\u0631\u0628\u0629 \u0648\u062E\u062F\u0645\u0627\u062A \u0627\u0644\u0639\u0645\u0644\u0627\u0621",
+    initials: "HZ",
+    bioAr: "\u0627\u0644\u0627\u0631\u062A\u0642\u0627\u0621 \u0628\u062A\u062C\u0631\u0628\u0629 \u0627\u0644\u0645\u0633\u062A\u0641\u064A\u062F\u064A\u0646 \u0648\u0627\u0644\u0639\u0645\u0644\u0627\u0621\u060C \u0648\u0636\u0645\u0627\u0646 \u062C\u0648\u062F\u0629 \u0627\u0644\u062F\u0639\u0645 \u0648\u0627\u0644\u062E\u062F\u0645\u0627\u062A \u0627\u0644\u0631\u0642\u0645\u064A\u0629 \u0627\u0644\u0645\u0642\u062F\u0645\u0629.",
+    email: "haneen@smartmasar.edu",
+    isConfirmedPosition: !0,
+    order: 9
+  },
+  {
+    id: "emp-sumaya-alsharafat",
+    nameAr: "\u0633\u0645\u064A\u0629 \u0627\u0644\u0634\u0631\u0641\u0627\u062A",
+    nameEn: "Sumaya Al-Sharafat",
+    jobTitleAr: "\u0631\u0626\u064A\u0633\u0629 \u0642\u0633\u0645 \u0627\u0644\u062C\u0648\u062F\u0629 \u0648\u0627\u0644\u0623\u062F\u0627\u0621",
+    jobTitleEn: "Head of Quality & Performance",
+    departmentId: "dept-quality",
+    managerId: "emp-ahmed-alabed",
+    avatarUrl: "/api/images/drive/1nMpwyGsmlNt1AfiP50NrkrlJMX5aV3dr",
+    image_url: "/api/images/drive/1nMpwyGsmlNt1AfiP50NrkrlJMX5aV3dr",
+    image_file_id: "1nMpwyGsmlNt1AfiP50NrkrlJMX5aV3dr",
+    image_alt_ar: "\u0635\u0648\u0631\u0629 \u0633\u0645\u064A\u0629 \u0627\u0644\u0634\u0631\u0641\u0627\u062A - \u0631\u0626\u064A\u0633\u0629 \u0642\u0633\u0645 \u0627\u0644\u062C\u0648\u062F\u0629 \u0648\u0627\u0644\u0623\u062F\u0627\u0621",
+    initials: "SA",
+    bioAr: "\u0642\u064A\u0627\u062F\u0629 \u0645\u0646\u0638\u0648\u0645\u0629 \u0636\u0645\u0627\u0646 \u0627\u0644\u062C\u0648\u062F\u0629 \u0627\u0644\u0634\u0627\u0645\u0644\u0629\u060C \u0642\u064A\u0627\u0633 \u0645\u0624\u0634\u0631\u0627\u062A \u0627\u0644\u0623\u062F\u0627\u0621 \u0627\u0644\u0645\u0624\u0633\u0633\u064A (KPIs)\u060C \u0648\u0627\u0644\u0627\u0645\u062A\u062B\u0627\u0644 \u0627\u0644\u0645\u0639\u064A\u0627\u0631\u064A.",
+    email: "sumaya@smartmasar.edu",
+    isConfirmedPosition: !0,
+    order: 10
   }
 ], INITIAL_SERVICES = [
   {
@@ -173,8 +273,8 @@ var INITIAL_DEPARTMENTS = [
       "\u0645\u0639\u0627\u0644\u062C\u0629 \u0627\u0644\u0648\u062B\u0627\u0626\u0642 \u0648\u0627\u0633\u062A\u062E\u0631\u0627\u062C \u0627\u0644\u0628\u064A\u0627\u0646\u0627\u062A \u0622\u0644\u064A\u0627\u064B"
     ],
     iconName: "Cpu",
-    image_url: "",
-    image_file_id: "",
+    image_url: "/api/images/drive/1OSRJbC2DaGI3HwW-eBnB6eJfQ6OYkpJk",
+    image_file_id: "1OSRJbC2DaGI3HwW-eBnB6eJfQ6OYkpJk",
     image_alt_ar: "\u062D\u0644\u0648\u0644 \u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064A \u0641\u064A \u0633\u0645\u0627\u0631\u062A \u0645\u0633\u0627\u0631"
   },
   {
@@ -189,8 +289,8 @@ var INITIAL_DEPARTMENTS = [
       "\u0645\u0639\u0627\u064A\u064A\u0631 \u0623\u0645\u0627\u0646 \u0639\u0627\u0644\u064A\u0629 \u0648\u0636\u0645\u0627\u0646 \u0627\u0633\u062A\u0645\u0631\u0627\u0631\u064A\u0629 \u0627\u0644\u062A\u0634\u063A\u064A\u0644"
     ],
     iconName: "Code",
-    image_url: "",
-    image_file_id: "",
+    image_url: "/api/images/drive/1mQt7QVAeAyhqqDmLfjytjwmI92LLOw8s",
+    image_file_id: "1mQt7QVAeAyhqqDmLfjytjwmI92LLOw8s",
     image_alt_ar: "\u062A\u0637\u0648\u064A\u0631 \u0627\u0644\u0628\u0631\u0645\u062C\u064A\u0627\u062A \u0648\u0627\u0644\u0623\u0646\u0638\u0645\u0629 \u0627\u0644\u0633\u062D\u0627\u0628\u064A\u0629"
   },
   {
@@ -205,8 +305,8 @@ var INITIAL_DEPARTMENTS = [
       "\u0631\u0628\u0637 \u0627\u0644\u0642\u0646\u0648\u0627\u062A \u0627\u0644\u0631\u0642\u0645\u064A\u0629 \u0648\u062A\u062D\u0633\u064A\u0646 \u062A\u062C\u0631\u0628\u0629 \u0627\u0644\u0645\u0633\u062A\u0641\u064A\u062F\u064A\u0646"
     ],
     iconName: "Share2",
-    image_url: "",
-    image_file_id: "",
+    image_url: "/api/images/drive/1Lw_el-yaInfRPBoHxYPvYp9Pa-TVV5LU",
+    image_file_id: "1Lw_el-yaInfRPBoHxYPvYp9Pa-TVV5LU",
     image_alt_ar: "\u0627\u0633\u062A\u0631\u0627\u062A\u064A\u062C\u064A\u0627\u062A \u0627\u0644\u062A\u062D\u0648\u0644 \u0627\u0644\u0631\u0642\u0645\u064A \u0627\u0644\u0645\u0624\u0633\u0633\u064A"
   },
   {
@@ -221,8 +321,8 @@ var INITIAL_DEPARTMENTS = [
       "\u062A\u0642\u0627\u0631\u064A\u0631 \u0641\u0648\u0631\u064A\u0629 \u0648\u0645\u0624\u0634\u0631\u0627\u062A \u0642\u064A\u0627\u0633 \u0627\u0644\u0623\u062F\u0627\u0621 KPI"
     ],
     iconName: "Sliders",
-    image_url: "",
-    image_file_id: "",
+    image_url: "/api/images/drive/1XwZs85oTMeRT6ZCZpoCyFEyw52OHosNm",
+    image_file_id: "1XwZs85oTMeRT6ZCZpoCyFEyw52OHosNm",
     image_alt_ar: "\u0623\u062A\u0645\u062A\u0629 \u0627\u0644\u0639\u0645\u0644\u064A\u0627\u062A \u0627\u0644\u062A\u0634\u063A\u064A\u0644\u064A\u0629 \u0648\u0627\u0644\u0625\u062F\u0627\u0631\u064A\u0629"
   }
 ], INITIAL_PAGES = [
@@ -301,8 +401,8 @@ var INITIAL_DEPARTMENTS = [
     id: "job-accountant-01",
     titleAr: "\u0645\u062D\u0627\u0633\u0628 \u0639\u0627\u0645 \u2013 Accountant",
     titleEn: "Accountant",
-    departmentId: "finance",
-    departmentNameAr: "\u0627\u0644\u0645\u0627\u0644\u064A\u0629 \u0648\u0627\u0644\u0645\u062D\u0627\u0633\u0628\u0629",
+    departmentId: "dept-finance",
+    departmentNameAr: "\u0642\u0633\u0645 \u0627\u0644\u0645\u0627\u0644\u064A\u0629 \u0648\u0627\u0644\u0645\u062D\u0627\u0633\u0628\u0629",
     status: "active",
     employmentTypeAr: "\u062F\u0648\u0627\u0645 \u0643\u0627\u0645\u0644 (\u0645\u0643\u062A\u0628\u064A / \u0647\u062C\u064A\u0646)",
     locationAr: "\u0627\u0644\u0645\u0642\u0631 \u0627\u0644\u0631\u0626\u064A\u0633\u064A \u2014 \u0639\u0645\u0651\u0627\u0646",
@@ -341,8 +441,8 @@ var INITIAL_DEPARTMENTS = [
     id: "job-hr-specialist-02",
     titleAr: "\u0623\u062E\u0635\u0627\u0626\u064A \u0645\u0648\u0627\u0631\u062F \u0628\u0634\u0631\u064A\u0629 \u2013 HR Specialist",
     titleEn: "Human Resources Specialist (HR Specialist)",
-    departmentId: "hr",
-    departmentNameAr: "\u0627\u0644\u0645\u0648\u0627\u0631\u062F \u0627\u0644\u0628\u0634\u0631\u064A\u0629",
+    departmentId: "dept-hr",
+    departmentNameAr: "\u0642\u0633\u0645 \u0627\u0644\u0645\u0648\u0627\u0631\u062F \u0627\u0644\u0628\u0634\u0631\u064A\u0629",
     status: "active",
     employmentTypeAr: "\u062F\u0648\u0627\u0645 \u0643\u0627\u0645\u0644 \u2014 Full-Time",
     locationAr: "\u0627\u0644\u0639\u0642\u0628\u0629\u060C \u0627\u0644\u0623\u0631\u062F\u0646 \u2014 Aqaba, Jordan",
@@ -416,7 +516,7 @@ var INITIAL_DEPARTMENTS = [
   logo_url: "/assets/aistudio/D666B97C-619E-459D-8A6A-33BEDB06BB76_d5572475.png",
   logo_file_id: "",
   logo_alt_ar: "\u0634\u0639\u0627\u0631 \u0634\u0631\u0643\u0629 \u0633\u0645\u0627\u0631\u062A \u0645\u0633\u0627\u0631 - Smart Masar",
-  drive_folder_id: ""
+  drive_folder_id: "1ss80vbtewFJ09876Re5uIH2g3Xu7tB0l"
 };
 
 // src/utils/imageUrl.ts
@@ -451,6 +551,39 @@ function resolvePublicImageUrl(imageUrl, imageFileId, options = { useServerProxy
     return rawUrl;
   let driveId = extractGoogleDriveFileId(rawUrl) || (rawFileId && !rawFileId.startsWith("local-") ? rawFileId : null);
   return driveId ? options.useServerProxy !== !1 ? `/api/images/drive/${encodeURIComponent(driveId)}` : `https://lh3.googleusercontent.com/d/${encodeURIComponent(driveId)}` : rawUrl;
+}
+var IMAGE_COLUMN_NAMES = [
+  "image_url",
+  "avatarUrl",
+  "image_file_id",
+  "hero_image_url",
+  "hero_image_file_id",
+  "logo_url",
+  "logo_file_id"
+];
+function sanitizeRecordForSheetPatch(recordData, options) {
+  if (options?.allowClearImages)
+    return { ...recordData };
+  let sanitized = {};
+  for (let [key, val] of Object.entries(recordData)) {
+    if (IMAGE_COLUMN_NAMES.includes(key)) {
+      typeof val == "string" && val.trim().length > 0 && (sanitized[key] = val.trim());
+      continue;
+    }
+    key === "Value" && recordData.Key === "logo_url" && (val === "" || val === null || val === void 0) || (sanitized[key] = val);
+  }
+  return sanitized;
+}
+function preserveExistingImageFields(incoming, existing, options) {
+  if (!existing || options?.allowClearImages)
+    return { ...incoming };
+  let merged = { ...incoming };
+  for (let col of IMAGE_COLUMN_NAMES)
+    if (col in existing || col in incoming) {
+      let incomingVal = typeof incoming[col] == "string" ? incoming[col].trim() : "", existingVal = typeof existing[col] == "string" ? existing[col].trim() : "";
+      !incomingVal && existingVal && (merged[col] = existingVal);
+    }
+  return merged;
 }
 
 // src/utils/adminAuth.ts
@@ -536,7 +669,7 @@ function buildAdminLogoutSetCookie(isSecure = process.env.NODE_ENV === "producti
 
 // server.ts
 dotenv.config();
-var MODULE_DIR = path.dirname(fileURLToPath(import.meta.url)), __dirname = path.basename(MODULE_DIR) === "api" ? path.resolve(MODULE_DIR, "..") : MODULE_DIR, PORT = Number(process.env.PORT) || 3e3, DEFAULT_SHEETDB_URL = process.env.SHEETDB_API_URL || "https://sheetdb.io/api/v1/gnn52l70oflrp", REQUIRED_WORKSHEETS = [
+var MODULE_DIR = path.dirname(fileURLToPath(import.meta.url)), __dirname = path.basename(MODULE_DIR) === "api" ? path.resolve(MODULE_DIR, "..") : MODULE_DIR, PORT = Number(process.env.PORT) || 3e3, LEGACY_SHEETDB_URL = "https://sheetdb.io/api/v1/gnn52l70oflrp", DEFAULT_SHEETDB_URL = process.env.SHEETDB_API_URL || "https://sheetdb.io/api/v1/9537p5ct7m308", DEFAULT_SPREADSHEET_ID = process.env.GOOGLE_SPREADSHEET_ID || "1-7tcV3S0YMuee7mpFvqtUj9SCsC1acb-_qrw5uqa1yE", REQUIRED_WORKSHEETS = [
   "Team",
   "Services",
   "Pages",
@@ -552,6 +685,10 @@ var MODULE_DIR = path.dirname(fileURLToPath(import.meta.url)), __dirname = path.
   "public",
   "smart-masar-static-hosting.zip"
 );
+function resolveConfiguredSheetDbUrl(candidateUrl) {
+  let trimmed = (candidateUrl || "").trim();
+  return !trimmed || trimmed === LEGACY_SHEETDB_URL ? DEFAULT_SHEETDB_URL : trimmed;
+}
 function loadDatabase() {
   let candidateFiles = [
     DB_FILE,
@@ -570,7 +707,9 @@ function loadDatabase() {
           pages: Array.isArray(parsed.pages) ? parsed.pages : INITIAL_PAGES,
           backendMeta: {
             webAppUrl: parsed.backendMeta?.webAppUrl || process.env.GOOGLE_APPS_SCRIPT_URL || "",
-            sheetDbUrl: parsed.backendMeta?.sheetDbUrl || DEFAULT_SHEETDB_URL,
+            sheetDbUrl: resolveConfiguredSheetDbUrl(
+              parsed.backendMeta?.sheetDbUrl
+            ),
             driveFolderId: parsed.backendMeta?.driveFolderId || process.env.GOOGLE_DRIVE_FOLDER_ID || "",
             lastSyncTime: parsed.backendMeta?.lastSyncTime,
             lastSheetDbStatus: parsed.backendMeta?.lastSheetDbStatus,
@@ -638,53 +777,121 @@ function parseJsonStringArray(val) {
 }
 async function checkSheetDbStatus(sheetDbUrl) {
   try {
-    let cleanUrl = sheetDbUrl.replace(/\/+$/, ""), [nameRes, sheetsRes, keysRes] = await Promise.all([
+    let cleanUrl = resolveConfiguredSheetDbUrl(sheetDbUrl).replace(/\/+$/, ""), [nameRes, sheetsRes, keysRes] = await Promise.all([
       fetch(`${cleanUrl}/name`),
       fetch(`${cleanUrl}/sheets`),
       fetch(`${cleanUrl}/keys`)
-    ]), nameJson = nameRes.ok ? await nameRes.json().catch(() => ({})) : {}, sheetsJson = sheetsRes.ok ? await sheetsRes.json().catch(() => ({})) : {}, keysJson = await keysRes.json().catch(() => ({})), spreadsheetName = nameJson?.name || "Google Sheet", sheets = Array.isArray(sheetsJson?.sheets) ? sheetsJson.sheets : [], isEmptyHeader = !!keysJson?.error && String(keysJson.error).toLowerCase().includes("spreadsheet is empty"), keys = Array.isArray(keysJson) ? keysJson : [], missingSheets = [], worksheetChecks = {};
+    ]);
+    if (!sheetsRes.ok)
+      return {
+        reachable: !1,
+        messageAr: `\u062A\u0639\u0630\u0631 \u0627\u0644\u0648\u0635\u0648\u0644 \u0625\u0644\u0649 \u0646\u0642\u0637\u0629 \u0646\u0647\u0627\u064A\u0629 SheetDB (HTTP ${sheetsRes.status}). \u062A\u062D\u0642\u0642 \u0645\u0646 \u0635\u062D\u0629 \u0627\u0644\u0631\u0627\u0628\u0637 \u0648\u0635\u0644\u0627\u062D\u064A\u0627\u062A \u0627\u0644\u0648\u0635\u0648\u0644.`
+      };
+    let nameJson = nameRes.ok ? await nameRes.json().catch(() => ({})) : {}, sheetsJson = await sheetsRes.json().catch(() => ({})), keysJson = await keysRes.json().catch(() => ({})), spreadsheetName = nameJson?.name || "Google Sheet", sheets = Array.isArray(sheetsJson?.sheets) ? sheetsJson.sheets : [], keys = Array.isArray(keysJson) ? keysJson : [], missingSheets = [], tabsWithoutHeaders = [], worksheetChecks = {}, verifiedReadTabs = 0, totalRowsAcrossTabs = 0;
     for (let reqSheet of REQUIRED_WORKSHEETS)
       if (!sheets.includes(reqSheet))
-        missingSheets.push(reqSheet), worksheetChecks[reqSheet] = { exists: !1, status: 404, rowCount: 0 };
+        missingSheets.push(reqSheet), worksheetChecks[reqSheet] = {
+          exists: !1,
+          readOk: !1,
+          headersOk: !1,
+          status: 404,
+          rowCount: 0,
+          headers: []
+        };
       else
         try {
-          let tabRes = await fetch(
-            `${cleanUrl}?sheet=${encodeURIComponent(reqSheet)}`
-          ), tabRows = tabRes.ok ? await tabRes.json().catch(() => []) : [];
+          let sheetParam = `?sheet=${encodeURIComponent(reqSheet)}`, [tabRes, tabKeysRes] = await Promise.all([
+            fetch(`${cleanUrl}${sheetParam}`),
+            fetch(`${cleanUrl}/keys${sheetParam}`)
+          ]), tabRows = tabRes.ok ? await tabRes.json().catch(() => []) : [], tabKeysJson = await tabKeysRes.json().catch(() => []), tabHeaders = Array.isArray(tabKeysJson) ? tabKeysJson.map(String) : [], headersOk = tabKeysRes.ok && tabHeaders.length > 0 && !tabKeysJson?.error, readOk = tabRes.ok && Array.isArray(tabRows), rowCount = Array.isArray(tabRows) ? tabRows.length : 0;
           worksheetChecks[reqSheet] = {
-            exists: tabRes.ok,
+            exists: !0,
+            readOk,
+            headersOk,
             status: tabRes.status,
-            rowCount: Array.isArray(tabRows) ? tabRows.length : 0
-          }, tabRes.ok || missingSheets.push(reqSheet);
+            rowCount,
+            headers: tabHeaders
+          }, readOk ? (verifiedReadTabs += 1, totalRowsAcrossTabs += rowCount) : missingSheets.push(reqSheet), headersOk || tabsWithoutHeaders.push(reqSheet);
         } catch {
-          worksheetChecks[reqSheet] = { exists: !1, status: 500, rowCount: 0 }, missingSheets.push(reqSheet);
+          worksheetChecks[reqSheet] = {
+            exists: !1,
+            readOk: !1,
+            headersOk: !1,
+            status: 500,
+            rowCount: 0,
+            headers: []
+          }, missingSheets.push(reqSheet);
         }
-    return db.backendMeta.availableSheets = sheets, db.backendMeta.missingRequiredSheets = missingSheets, isEmptyHeader || missingSheets.length > 0 ? {
+    let writeAccess = {
+      ok: !1,
+      status: 0,
+      method: "PATCH (Non-Destructive Probe)",
+      detailAr: "\u0644\u0645 \u064A\u062A\u0645 \u0627\u0644\u062A\u062D\u0642\u0642 \u0645\u0646 \u0635\u0644\u0627\u062D\u064A\u0629 \u0627\u0644\u0643\u062A\u0627\u0628\u0629 \u0628\u0639\u062F."
+    };
+    if (sheets.includes("SiteSettings"))
+      try {
+        let probeUrl = `${cleanUrl}/Key/__smart_masar_connectivity_probe__?sheet=SiteSettings`, probeRes = await fetch(probeUrl, {
+          method: "PATCH",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ data: { Value: "probe" } })
+        }), probeJson = await probeRes.json().catch(() => ({})), isNotFoundAfterWriteAuth = probeRes.status === 404 && String(probeJson?.error || "").toLowerCase().includes("no results found"), writePermitted = probeRes.ok || isNotFoundAfterWriteAuth;
+        writeAccess = {
+          ok: writePermitted,
+          status: probeRes.status,
+          method: "PATCH (Non-Destructive Probe)",
+          detailAr: writePermitted ? "\u0635\u0644\u0627\u062D\u064A\u0629 \u0627\u0644\u0643\u062A\u0627\u0628\u0629 \u0648\u0627\u0644\u062A\u062D\u062F\u064A\u062B (POST / PATCH) \u0645\u0641\u0639\u0651\u0644\u0629 \u0648\u0645\u062A\u0627\u062D\u0629 \u062F\u0648\u0646 \u0623\u062E\u0637\u0627\u0621." : `\u0635\u0644\u0627\u062D\u064A\u0629 \u0627\u0644\u0643\u062A\u0627\u0628\u0629 \u0645\u0642\u064A\u062F\u0629 \u0623\u0648 \u0645\u0631\u0641\u0648\u0636\u0629 \u0645\u0646 SheetDB (HTTP ${probeRes.status}: ${probeJson?.error || "Write disabled"}).`
+        };
+      } catch (probeErr) {
+        writeAccess = {
+          ok: !1,
+          status: 500,
+          method: "PATCH (Non-Destructive Probe)",
+          detailAr: `\u062A\u0639\u0630\u0631 \u0627\u062E\u062A\u0628\u0627\u0631 \u0635\u0644\u0627\u062D\u064A\u0629 \u0627\u0644\u0643\u062A\u0627\u0628\u0629: ${probeErr?.message || String(probeErr)}`
+        };
+      }
+    let isEmptyHeader = tabsWithoutHeaders.length > 0, readAccess = {
+      ok: missingSheets.length === 0 && verifiedReadTabs === REQUIRED_WORKSHEETS.length,
+      verifiedTabs: verifiedReadTabs,
+      totalRows: totalRowsAcrossTabs,
+      detailAr: verifiedReadTabs === REQUIRED_WORKSHEETS.length ? `\u0635\u0644\u0627\u062D\u064A\u0629 \u0627\u0644\u0642\u0631\u0627\u0621\u0629 (GET) \u0645\u0641\u0639\u0651\u0644\u0629 \u0644\u062C\u0645\u064A\u0639 \u0627\u0644\u0623\u0648\u0631\u0627\u0642 \u0627\u0644\u0633\u062A (${verifiedReadTabs}/6) \u2014 \u0625\u062C\u0645\u0627\u0644\u064A \u0627\u0644\u0633\u062C\u0644\u0627\u062A \u0627\u0644\u062D\u0627\u0644\u064A\u0629: ${totalRowsAcrossTabs} \u0633\u062C\u0644.` : `\u062A\u0645 \u0627\u0644\u062A\u062D\u0642\u0642 \u0645\u0646 \u0642\u0631\u0627\u0621\u0629 ${verifiedReadTabs} \u0645\u0646 \u0623\u0635\u0644 6 \u0623\u0648\u0631\u0627\u0642 \u0645\u0637\u0644\u0648\u0628\u0629.`
+    };
+    if (db.backendMeta.availableSheets = sheets, db.backendMeta.missingRequiredSheets = missingSheets, missingSheets.length > 0 || isEmptyHeader)
+      return {
+        reachable: !0,
+        spreadsheetName,
+        sheets,
+        requiredSheets: [...REQUIRED_WORKSHEETS],
+        missingSheets,
+        worksheetChecks,
+        readAccess,
+        writeAccess,
+        keys,
+        isEmptyHeader,
+        messageAr: `\u0645\u062A\u0635\u0644 \u0628\u0640 SheetDB (\u0645\u0644\u0641 "${spreadsheetName}") \u2014 \u0627\u0644\u0623\u0648\u0631\u0627\u0642 \u0627\u0644\u0645\u062A\u0648\u0641\u0631\u0629: [${sheets.join(
+          "\u060C "
+        )}]. \u0627\u0644\u0623\u0648\u0631\u0627\u0642 \u0627\u0644\u0646\u0627\u0642\u0635\u0629 \u0623\u0648 \u063A\u064A\u0631 \u0627\u0644\u0645\u0647\u064A\u0623\u0629 \u0628\u0627\u0644\u0623\u0639\u0645\u062F\u0629: [${[
+          .../* @__PURE__ */ new Set([...missingSheets, ...tabsWithoutHeaders])
+        ].join("\u060C ")}]. \u064A\u0631\u062C\u0649 \u0627\u0644\u062A\u0623\u0643\u062F \u0645\u0646 \u0648\u062C\u0648\u062F \u0627\u0644\u0623\u0648\u0631\u0627\u0642 \u0627\u0644\u0633\u062A \u0648\u0639\u0646\u0627\u0648\u064A\u0646 \u0627\u0644\u0623\u0639\u0645\u062F\u0629 \u0641\u064A \u0627\u0644\u0635\u0641 \u0627\u0644\u0623\u0648\u0644.`
+      };
+    let emptyDataNotice = totalRowsAcrossTabs === 0 ? " (\u0645\u0644\u0627\u062D\u0638\u0629: \u0627\u0644\u0623\u0648\u0631\u0627\u0642 \u0627\u0644\u0633\u062A \u0645\u0647\u064A\u0623\u0629 \u0628\u0639\u0646\u0627\u0648\u064A\u0646 \u0627\u0644\u0623\u0639\u0645\u062F\u0629 \u0627\u0644\u0635\u062D\u064A\u062D\u0629 \u0648\u0644\u0643\u0646\u0647\u0627 \u0641\u0627\u0631\u063A\u0629 \u0645\u0646 \u0627\u0644\u0633\u062C\u0644\u0627\u062A \u062D\u0627\u0644\u064A\u0627\u064B \u2014 \u062C\u0627\u0647\u0632\u0629 \u0644\u0627\u0633\u062A\u0642\u0628\u0627\u0644 \u0627\u0644\u0628\u064A\u0627\u0646\u0627\u062A \u0627\u0644\u0645\u0639\u062A\u0645\u062F\u0629)." : ` (\u0625\u062C\u0645\u0627\u0644\u064A \u0627\u0644\u0633\u062C\u0644\u0627\u062A \u0627\u0644\u0645\u062D\u0641\u0648\u0638\u0629: ${totalRowsAcrossTabs} \u0633\u062C\u0644).`;
+    return {
       reachable: !0,
       spreadsheetName,
-      sheets,
-      requiredSheets: [...REQUIRED_WORKSHEETS],
-      missingSheets,
-      worksheetChecks,
-      keys: [],
-      isEmptyHeader,
-      messageAr: `\u0645\u062A\u0635\u0644 \u0628\u0640 SheetDB (\u0645\u0644\u0641 "${spreadsheetName}") \u2014 \u0627\u0644\u0623\u0648\u0631\u0627\u0642 \u0627\u0644\u062D\u0627\u0644\u064A\u0629 \u0641\u064A \u0627\u0644\u0645\u0644\u0641: [${sheets.join(
-        "\u060C "
-      )}]. \u0627\u0644\u0623\u0648\u0631\u0627\u0642 \u0627\u0644\u0633\u062A \u0627\u0644\u0645\u0637\u0644\u0648\u0628\u0629 (${REQUIRED_WORKSHEETS.join(
-        ", "
-      )}) \u063A\u064A\u0631 \u0645\u0647\u064A\u0623\u0629 \u0628\u0639\u062F\u061B \u064A\u0631\u062C\u0649 \u062A\u0634\u063A\u064A\u0644 \u062F\u0627\u0644\u0629 initialSetup() \u0645\u0631\u0629 \u0648\u0627\u062D\u062F\u0629 \u0641\u064A Google Apps Script \u0644\u0625\u0646\u0634\u0627\u0621 \u0627\u0644\u0623\u0648\u0631\u0627\u0642 \u0627\u0644\u0633\u062A \u0648\u0639\u0646\u0627\u0648\u064A\u0646 \u0627\u0644\u0623\u0639\u0645\u062F\u0629 \u062A\u0644\u0642\u0627\u0626\u064A\u0627\u064B.`
-    } : {
-      reachable: !0,
-      spreadsheetName,
+      spreadsheetId: db.backendMeta.spreadsheetId || DEFAULT_SPREADSHEET_ID,
       sheets,
       requiredSheets: [...REQUIRED_WORKSHEETS],
       missingSheets: [],
       worksheetChecks,
+      readAccess,
+      writeAccess,
       keys,
       isEmptyHeader: !1,
-      messageAr: `\u0645\u062A\u0635\u0644 \u0628\u0646\u062C\u0627\u062D \u0628\u0640 SheetDB (\u0645\u0644\u0641 "${spreadsheetName}") \u2014 \u0643\u0627\u0641\u0629 \u0627\u0644\u0623\u0648\u0631\u0627\u0642 \u0627\u0644\u0633\u062A (${REQUIRED_WORKSHEETS.join(
+      messageAr: `\u0645\u062A\u0635\u0644 \u0628\u0646\u062C\u0627\u062D \u0628\u0640 SheetDB (\u0645\u0644\u0641 "${spreadsheetName}" \u2014 Spreadsheet ID: ${db.backendMeta.spreadsheetId || DEFAULT_SPREADSHEET_ID}) \u2014 \u0643\u0627\u0641\u0629 \u0627\u0644\u0623\u0648\u0631\u0627\u0642 \u0627\u0644\u0633\u062A (${REQUIRED_WORKSHEETS.join(
         "\u060C "
-      )}) \u062C\u0627\u0647\u0632\u0629 \u0648\u0645\u062A\u0635\u0644\u0629.`
+      )}) \u0645\u0648\u062C\u0648\u062F\u0629 \u0648\u0645\u0647\u064A\u0623\u0629\u061B \u0627\u0644\u0642\u0631\u0627\u0621\u0629: ${readAccess.ok ? "\u0645\u062A\u0627\u062D\u0629 (6/6)" : "\u063A\u064A\u0631 \u0645\u0643\u062A\u0645\u0644\u0629"}\u060C \u0627\u0644\u0643\u062A\u0627\u0628\u0629: ${writeAccess.ok ? "\u0645\u062A\u0627\u062D\u0629 \u0648\u0645\u0624\u0643\u062F\u0629" : "\u063A\u064A\u0631 \u0645\u0641\u0639\u0644\u0629"}${emptyDataNotice}`
     };
   } catch (err) {
     return {
@@ -706,7 +913,14 @@ async function hydrateFromExternalDatabase(force = !1) {
         let json = await res.json().catch(() => ({}));
         if (json?.success && json?.data) {
           let d = json.data;
-          d.profile && Object.keys(d.profile).length > 0 && (db.profile = { ...db.profile, ...d.profile }), Array.isArray(d.departments) && d.departments.length > 0 && (db.departments = d.departments), Array.isArray(d.employees) && d.employees.length > 0 && (db.employees = d.employees.map((emp) => ({
+          d.profile && Object.keys(d.profile).length > 0 && (db.profile = {
+            ...db.profile,
+            ...d.profile,
+            logo_url: resolvePublicImageUrl(
+              d.profile.logo_url,
+              d.profile.logo_file_id
+            )
+          }), Array.isArray(d.departments) && d.departments.length > 0 && (db.departments = d.departments), Array.isArray(d.employees) && d.employees.length > 0 && (db.employees = d.employees.map((emp) => ({
             ...emp,
             isConfirmedPosition: emp.isConfirmedPosition === !0 || String(emp.isConfirmedPosition).toLowerCase() === "true",
             order: Number(emp.order) || 1,
@@ -740,10 +954,9 @@ async function hydrateFromExternalDatabase(force = !1) {
       }
     } catch {
     }
-  let sheetDbUrl = (db.backendMeta.sheetDbUrl || DEFAULT_SHEETDB_URL).replace(
-    /\/+$/,
-    ""
-  );
+  let sheetDbUrl = resolveConfiguredSheetDbUrl(
+    db.backendMeta.sheetDbUrl
+  ).replace(/\/+$/, "");
   if (sheetDbUrl)
     try {
       let sheetsRes = await fetch(`${sheetDbUrl}/sheets`);
@@ -759,9 +972,35 @@ async function hydrateFromExternalDatabase(force = !1) {
           let rows = await res.json().catch(() => []);
           if (Array.isArray(rows) && rows.length > 0) {
             let settingsObj = {};
-            for (let r of rows)
-              r.Key && (settingsObj[r.Key] = r.Value);
-            Object.keys(settingsObj).length > 0 && (db.profile = { ...db.profile, ...settingsObj }, hydratedAnyTab = !0);
+            for (let r of rows) {
+              if (r.Key)
+                if (r.Key === "valuesAr")
+                  try {
+                    let parsedValues = typeof r.Value == "string" ? JSON.parse(r.Value) : r.Value;
+                    Array.isArray(parsedValues) && parsedValues.length > 0 && (settingsObj.valuesAr = parsedValues);
+                  } catch {
+                  }
+                else
+                  settingsObj[r.Key] = r.Value;
+              r.logo_url && (settingsObj.logo_url = r.logo_url), r.logo_file_id && (settingsObj.logo_file_id = r.logo_file_id);
+            }
+            if (Object.keys(settingsObj).length > 0) {
+              settingsObj.services_drive_folder_id && (db.backendMeta.servicesDriveFolderId = String(
+                settingsObj.services_drive_folder_id
+              )), settingsObj.google_spreadsheet_id && (db.backendMeta.spreadsheetId = String(
+                settingsObj.google_spreadsheet_id
+              ));
+              let resolvedLogo = resolvePublicImageUrl(
+                settingsObj.logo_url ?? db.profile.logo_url,
+                settingsObj.logo_file_id ?? db.profile.logo_file_id
+              );
+              db.profile = {
+                ...db.profile,
+                ...settingsObj,
+                valuesAr: Array.isArray(settingsObj.valuesAr) ? settingsObj.valuesAr : db.profile.valuesAr,
+                logo_url: resolvedLogo
+              }, hydratedAnyTab = !0;
+            }
           }
         }
       }
@@ -769,7 +1008,13 @@ async function hydrateFromExternalDatabase(force = !1) {
         let res = await fetch(`${sheetDbUrl}?sheet=Departments`);
         if (res.ok) {
           let rows = await res.json().catch(() => []);
-          Array.isArray(rows) && rows.length > 0 && (db.departments = rows, hydratedAnyTab = !0);
+          Array.isArray(rows) && rows.length > 0 && (db.departments = rows.map((d) => ({
+            id: String(d.id || ""),
+            nameAr: String(d.nameAr || ""),
+            nameEn: String(d.nameEn || ""),
+            iconName: String(d.iconName || "Building2"),
+            badgeBg: String(d.badgeBg || "#101B32")
+          })), hydratedAnyTab = !0);
         }
       }
       if (availableSheets.includes("Team")) {
@@ -828,15 +1073,14 @@ async function hydrateFromExternalDatabase(force = !1) {
           })), hydratedAnyTab = !0);
         }
       }
-      db.backendMeta.externalSource = hydratedAnyTab ? "sheetdb_live" : "server_db_awaiting_sheet_init";
+      db.backendMeta.externalSource = hydratedAnyTab ? "sheetdb_live" : "sheetdb_connected_empty_rows";
     } catch {
     }
 }
-async function syncRecordToSheetDb(sheetName, matchField, matchValue, recordData) {
-  let sheetDbUrl = (db.backendMeta.sheetDbUrl || DEFAULT_SHEETDB_URL).replace(
-    /\/+$/,
-    ""
-  );
+async function syncRecordToSheetDb(sheetName, matchField, matchValue, recordData, options) {
+  let sheetDbUrl = resolveConfiguredSheetDbUrl(
+    db.backendMeta.sheetDbUrl
+  ).replace(/\/+$/, "");
   if (!sheetDbUrl)
     return { synced: !1, detail: "\u0644\u0645 \u064A\u062A\u0645 \u062A\u0643\u0648\u064A\u0646 \u0631\u0627\u0628\u0637 SheetDB" };
   try {
@@ -847,17 +1091,20 @@ async function syncRecordToSheetDb(sheetName, matchField, matchValue, recordData
     if (!availableSheets.includes(sheetName))
       return {
         synced: !1,
-        detail: `\u062A\u0645 \u0627\u0644\u062D\u0641\u0638 \u0641\u064A \u0642\u0627\u0639\u062F\u0629 \u0628\u064A\u0627\u0646\u0627\u062A \u0627\u0644\u062E\u0627\u062F\u0645. \u0627\u0644\u0648\u0631\u0642\u0629 "${sheetName}" \u063A\u064A\u0631 \u0645\u0648\u062C\u0648\u062F\u0629 \u0628\u0639\u062F \u0641\u064A \u0645\u0644\u0641 Google Sheets \u0627\u0644\u0645\u0631\u062A\u0628\u0637 \u0628\u0640 SheetDB (\u0627\u0644\u0623\u0648\u0631\u0627\u0642 \u0627\u0644\u0645\u0648\u062C\u0648\u062F\u0629 \u062D\u0627\u0644\u064A\u0627\u064B: ${availableSheets.join(
+        detail: `\u0641\u0634\u0644 \u0627\u0644\u062D\u0641\u0638 \u0627\u0644\u062F\u0627\u0626\u0645: \u0627\u0644\u0648\u0631\u0642\u0629 "${sheetName}" \u063A\u064A\u0631 \u0645\u0648\u062C\u0648\u062F\u0629 \u0641\u064A \u0645\u0644\u0641 Google Sheets \u0627\u0644\u0645\u0631\u062A\u0628\u0637 \u0628\u0640 SheetDB (\u0627\u0644\u0623\u0648\u0631\u0627\u0642 \u0627\u0644\u0645\u062A\u0648\u0641\u0631\u0629: ${availableSheets.join(
           ", "
-        )}). \u0634\u063A\u0651\u0644 initialSetup() \u0641\u064A Apps Script \u0644\u0625\u0646\u0634\u0627\u0621 \u0627\u0644\u0623\u0648\u0631\u0627\u0642 \u0627\u0644\u0633\u062A.`
+        )}).`
       };
-    let sheetQuery = `?sheet=${encodeURIComponent(sheetName)}`;
-    if ((await (await fetch(`${sheetDbUrl}/keys${sheetQuery}`)).json().catch(() => ({})))?.error)
+    let sheetQuery = `?sheet=${encodeURIComponent(sheetName)}`, keysRes = await fetch(`${sheetDbUrl}/keys${sheetQuery}`), keysJson = await keysRes.json().catch(() => ({}));
+    if (!keysRes.ok || keysJson?.error)
       return {
         synced: !1,
-        detail: "\u062A\u0645 \u0627\u0644\u062D\u0641\u0638 \u0641\u064A \u062E\u0627\u062F\u0645 \u0633\u0645\u0627\u0631\u062A \u0645\u0633\u0627\u0631. \u062C\u062F\u0648\u0644 Google Sheets \u0627\u0644\u0645\u0631\u062A\u0628\u0637 \u0628\u0640 SheetDB \u064A\u062D\u062A\u0627\u062C \u062A\u0647\u064A\u0626\u0629 \u0627\u0644\u0635\u0641 \u0627\u0644\u0623\u0648\u0644 (\u0623\u0633\u0645\u0627\u0621 \u0627\u0644\u0623\u0639\u0645\u062F\u0629) \u0639\u0628\u0631 \u062A\u0634\u063A\u064A\u0644 initialSetup() \u0641\u064A Apps Script."
+        detail: `\u0641\u0634\u0644 \u0627\u0644\u062D\u0641\u0638 \u0627\u0644\u062F\u0627\u0626\u0645: \u0627\u0644\u0648\u0631\u0642\u0629 "${sheetName}" \u0641\u064A Google Sheets \u062A\u0641\u062A\u0642\u0631 \u0625\u0644\u0649 \u0639\u0646\u0627\u0648\u064A\u0646 \u0627\u0644\u0623\u0639\u0645\u062F\u0629 \u0641\u064A \u0627\u0644\u0635\u0641 \u0627\u0644\u0623\u0648\u0644.`
       };
-    let patchUrl = `${sheetDbUrl}/${encodeURIComponent(
+    let sanitizedPatchPayload = sanitizeRecordForSheetPatch(
+      recordData,
+      options
+    ), patchUrl = `${sheetDbUrl}/${encodeURIComponent(
       matchField
     )}/${encodeURIComponent(matchValue)}${sheetQuery}`, patchRes = await fetch(patchUrl, {
       method: "PATCH",
@@ -865,7 +1112,7 @@ async function syncRecordToSheetDb(sheetName, matchField, matchValue, recordData
         Accept: "application/json",
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ data: recordData })
+      body: JSON.stringify({ data: sanitizedPatchPayload })
     }), patchJson = await patchRes.json().catch(() => ({}));
     if (patchRes.ok && Number(patchJson?.updated) > 0)
       return db.backendMeta.lastSyncTime = (/* @__PURE__ */ new Date()).toLocaleTimeString("ar-JO"), {
@@ -879,18 +1126,45 @@ async function syncRecordToSheetDb(sheetName, matchField, matchValue, recordData
         "Content-Type": "application/json"
       },
       body: JSON.stringify({ data: [recordData] })
-    });
-    return postRes.ok ? (db.backendMeta.lastSyncTime = (/* @__PURE__ */ new Date()).toLocaleTimeString("ar-JO"), {
+    }), postJson = await postRes.json().catch(() => ({}));
+    return postRes.ok && (Number(postJson?.created) > 0 || !postJson?.error) ? (db.backendMeta.lastSyncTime = (/* @__PURE__ */ new Date()).toLocaleTimeString("ar-JO"), {
       synced: !0,
       detail: `\u062A\u0645\u062A \u0625\u0636\u0627\u0641\u0629 \u0627\u0644\u0633\u062C\u0644 \u0641\u064A Google Sheets \u0639\u0628\u0631 SheetDB (${sheetName})`
     }) : {
       synced: !1,
-      detail: `\u0627\u0633\u062A\u062C\u0627\u0628\u0629 SheetDB: HTTP ${postRes.status}`
+      detail: `\u0631\u0641\u0636 SheetDB \u0643\u062A\u0627\u0628\u0629 \u0627\u0644\u0633\u062C\u0644 \u0641\u064A "${sheetName}" (HTTP ${postRes.status}${postJson?.error ? `: ${postJson.error}` : ""})`
     };
   } catch (err) {
     return {
       synced: !1,
       detail: `\u062A\u0639\u0630\u0631 \u062A\u062D\u062F\u064A\u062B SheetDB: ${err?.message || String(err)}`
+    };
+  }
+}
+async function deleteRecordFromSheetDb(sheetName, matchField, matchValue) {
+  let sheetDbUrl = resolveConfiguredSheetDbUrl(
+    db.backendMeta.sheetDbUrl
+  ).replace(/\/+$/, "");
+  if (!sheetDbUrl)
+    return { synced: !1, detail: "\u0644\u0645 \u064A\u062A\u0645 \u062A\u0643\u0648\u064A\u0646 \u0631\u0627\u0628\u0637 SheetDB" };
+  try {
+    let sheetQuery = `?sheet=${encodeURIComponent(sheetName)}`, deleteUrl = `${sheetDbUrl}/${encodeURIComponent(
+      matchField
+    )}/${encodeURIComponent(matchValue)}${sheetQuery}`, delRes = await fetch(deleteUrl, {
+      method: "DELETE",
+      headers: { Accept: "application/json" }
+    }), delJson = await delRes.json().catch(() => ({}));
+    return delRes.ok && !delJson?.error ? (db.backendMeta.lastSyncTime = (/* @__PURE__ */ new Date()).toLocaleTimeString("ar-JO"), {
+      synced: !0,
+      detail: `\u062A\u0645 \u062D\u0630\u0641 \u0627\u0644\u0633\u062C\u0644 (${matchValue}) \u0645\u0646 \u0648\u0631\u0642\u0629 ${sheetName} \u0641\u064A Google Sheets \u0639\u0628\u0631 SheetDB.`
+    }) : {
+      synced: !1,
+      detail: `\u0641\u0634\u0644 \u062D\u0630\u0641 \u0627\u0644\u0633\u062C\u0644 \u0645\u0646 "${sheetName}" \u0641\u064A SheetDB (HTTP ${delRes.status}${delJson?.error ? `: ${delJson.error}` : ""})`
+    };
+  } catch (err) {
+    return {
+      synced: !1,
+      detail: `\u062A\u0639\u0630\u0631 \u062D\u0630\u0641 \u0627\u0644\u0633\u062C\u0644 \u0645\u0646 SheetDB: ${err?.message || String(err)}`
     };
   }
 }
@@ -924,42 +1198,143 @@ async function syncBundleToExternalDatabase() {
   let sheetStatus = await checkSheetDbStatus(
     db.backendMeta.sheetDbUrl || DEFAULT_SHEETDB_URL
   );
-  if (sheetStatus.reachable && (!sheetStatus.missingSheets || sheetStatus.missingSheets.length === 0) && !sheetStatus.isEmptyHeader) {
-    for (let dept of db.departments)
-      await syncRecordToSheetDb("Departments", "id", dept.id, dept);
-    for (let emp of db.employees)
-      await syncRecordToSheetDb("Team", "id", emp.id, emp);
-    for (let srv of db.services)
-      await syncRecordToSheetDb("Services", "id", srv.id, {
-        ...srv,
-        featuresAr: JSON.stringify(srv.featuresAr)
-      });
-    for (let pg of db.pages)
-      await syncRecordToSheetDb("Pages", "id", pg.id, pg);
-    for (let job of db.jobs)
-      await syncRecordToSheetDb("Jobs", "id", job.id, {
-        ...job,
-        responsibilitiesAr: JSON.stringify(job.responsibilitiesAr),
-        qualificationsAr: JSON.stringify(job.qualificationsAr),
-        accountingSkillsAr: JSON.stringify(job.accountingSkillsAr),
-        softwareExperienceAr: JSON.stringify(job.softwareExperienceAr)
-      });
+  if (!sheetStatus.reachable || sheetStatus.missingSheets && sheetStatus.missingSheets.length > 0 || sheetStatus.isEmptyHeader)
     return {
-      synced: !0,
-      detail: "\u062A\u0645\u062A \u0645\u0632\u0627\u0645\u0646\u0629 \u0627\u0644\u0633\u062C\u0644\u0627\u062A \u0645\u0639 Google Sheets \u0639\u0628\u0631 SheetDB \u0628\u0646\u062C\u0627\u062D."
+      synced: !1,
+      detail: sheetStatus.messageAr
     };
+  if (sheetStatus.writeAccess && !sheetStatus.writeAccess.ok)
+    return {
+      synced: !1,
+      detail: sheetStatus.writeAccess.detailAr
+    };
+  let failedWrites = [], settingsEntries = [
+    { Key: "nameAr", Value: db.profile.nameAr || "", logo_url: "", logo_file_id: "" },
+    { Key: "nameEn", Value: db.profile.nameEn || "", logo_url: "", logo_file_id: "" },
+    { Key: "taglineAr", Value: db.profile.taglineAr || "", logo_url: "", logo_file_id: "" },
+    { Key: "taglineEn", Value: db.profile.taglineEn || "", logo_url: "", logo_file_id: "" },
+    { Key: "industryAr", Value: db.profile.industryAr || "", logo_url: "", logo_file_id: "" },
+    { Key: "industryEn", Value: db.profile.industryEn || "", logo_url: "", logo_file_id: "" },
+    { Key: "visionAr", Value: db.profile.visionAr || "", logo_url: "", logo_file_id: "" },
+    { Key: "missionAr", Value: db.profile.missionAr || "", logo_url: "", logo_file_id: "" },
+    {
+      Key: "valuesAr",
+      Value: JSON.stringify(db.profile.valuesAr || []),
+      logo_url: "",
+      logo_file_id: ""
+    },
+    {
+      Key: "aboutDescriptionAr",
+      Value: db.profile.aboutDescriptionAr || "",
+      logo_url: "",
+      logo_file_id: ""
+    },
+    { Key: "email", Value: db.profile.email || "", logo_url: "", logo_file_id: "" },
+    { Key: "phone", Value: db.profile.phone || "", logo_url: "", logo_file_id: "" },
+    { Key: "locationAr", Value: db.profile.locationAr || "", logo_url: "", logo_file_id: "" },
+    {
+      Key: "workingHoursAr",
+      Value: db.profile.workingHoursAr || "",
+      logo_url: "",
+      logo_file_id: ""
+    },
+    {
+      Key: "googleFormsPlaceholderUrl",
+      Value: db.profile.googleFormsPlaceholderUrl || "https://forms.gle/ZKfYUcUxoW6YgcKw6",
+      logo_url: "",
+      logo_file_id: ""
+    },
+    {
+      Key: "logo_url",
+      Value: db.profile.logo_url || "",
+      logo_url: db.profile.logo_url || "",
+      logo_file_id: db.profile.logo_file_id || ""
+    },
+    {
+      Key: "logo_file_id",
+      Value: db.profile.logo_file_id || "",
+      logo_url: db.profile.logo_url || "",
+      logo_file_id: db.profile.logo_file_id || ""
+    },
+    { Key: "logo_alt_ar", Value: db.profile.logo_alt_ar || "", logo_url: "", logo_file_id: "" },
+    {
+      Key: "drive_folder_id",
+      Value: db.profile.drive_folder_id || db.backendMeta.driveFolderId || "1ss80vbtewFJ09876Re5uIH2g3Xu7tB0l",
+      logo_url: "",
+      logo_file_id: ""
+    },
+    {
+      Key: "services_drive_folder_id",
+      Value: db.backendMeta.servicesDriveFolderId || "1qS_b1gOnR66V9WoPxjgj69IoGn5Yc_f3",
+      logo_url: "",
+      logo_file_id: ""
+    },
+    {
+      Key: "google_spreadsheet_id",
+      Value: db.backendMeta.spreadsheetId || DEFAULT_SPREADSHEET_ID,
+      logo_url: "",
+      logo_file_id: ""
+    },
+    {
+      Key: "sheetdb_endpoint",
+      Value: resolveConfiguredSheetDbUrl(db.backendMeta.sheetDbUrl),
+      logo_url: "",
+      logo_file_id: ""
+    }
+  ];
+  for (let item of settingsEntries) {
+    let r = await syncRecordToSheetDb("SiteSettings", "Key", item.Key, item);
+    r.synced || failedWrites.push(`SiteSettings(${item.Key}): ${r.detail}`);
   }
-  return {
+  for (let dept of db.departments) {
+    let deptRow = {
+      id: dept.id,
+      nameAr: dept.nameAr,
+      nameEn: dept.nameEn,
+      iconName: dept.iconName,
+      badgeBg: dept.badgeBg
+    }, r = await syncRecordToSheetDb("Departments", "id", dept.id, deptRow);
+    r.synced || failedWrites.push(`Departments(${dept.id}): ${r.detail}`);
+  }
+  for (let emp of db.employees) {
+    let r = await syncRecordToSheetDb("Team", "id", emp.id, emp);
+    r.synced || failedWrites.push(`Team(${emp.id}): ${r.detail}`);
+  }
+  for (let srv of db.services) {
+    let r = await syncRecordToSheetDb("Services", "id", srv.id, {
+      ...srv,
+      featuresAr: JSON.stringify(srv.featuresAr)
+    });
+    r.synced || failedWrites.push(`Services(${srv.id}): ${r.detail}`);
+  }
+  for (let pg of db.pages) {
+    let r = await syncRecordToSheetDb("Pages", "id", pg.id, pg);
+    r.synced || failedWrites.push(`Pages(${pg.id}): ${r.detail}`);
+  }
+  for (let job of db.jobs) {
+    let r = await syncRecordToSheetDb("Jobs", "id", job.id, {
+      ...job,
+      responsibilitiesAr: JSON.stringify(job.responsibilitiesAr),
+      qualificationsAr: JSON.stringify(job.qualificationsAr),
+      accountingSkillsAr: JSON.stringify(job.accountingSkillsAr),
+      softwareExperienceAr: JSON.stringify(job.softwareExperienceAr)
+    });
+    r.synced || failedWrites.push(`Jobs(${job.id}): ${r.detail}`);
+  }
+  return failedWrites.length > 0 ? {
     synced: !1,
-    detail: sheetStatus.messageAr
-  };
+    detail: `\u0641\u0634\u0644 \u062A\u0623\u0643\u064A\u062F \u062D\u0641\u0638 \u0628\u0639\u0636 \u0627\u0644\u0633\u062C\u0644\u0627\u062A \u0641\u064A Google Sheets \u0639\u0628\u0631 SheetDB: ${failedWrites[0]}`
+  } : (db.backendMeta.lastSyncTime = (/* @__PURE__ */ new Date()).toLocaleTimeString("ar-JO"), db.backendMeta.externalSource = "sheetdb_live", {
+    synced: !0,
+    detail: "\u062A\u0645\u062A \u0645\u0632\u0627\u0645\u0646\u0629 \u0648\u062A\u0623\u0643\u064A\u062F \u062D\u0641\u0638 \u062C\u0645\u064A\u0639 \u0627\u0644\u062C\u062F\u0627\u0648\u0644 \u0627\u0644\u0633\u062A\u0629 (Team, Services, Pages, SiteSettings, Departments, Jobs) \u0641\u064A Google Sheets \u0639\u0628\u0631 SheetDB \u0628\u0646\u062C\u0627\u062D."
+  });
 }
 async function uploadToGoogleDriveViaAppsScript(params) {
   let webAppUrl = (db.backendMeta.webAppUrl || "").trim();
   if (!webAppUrl || !webAppUrl.startsWith("https://script.google.com/"))
     return {
       uploadedToDrive: !1,
-      error: "\u0631\u0627\u0628\u0637 Google Apps Script \u063A\u064A\u0631 \u0645\u0636\u0628\u0648\u0637 \u0628\u0639\u062F \u2014 \u062A\u0645 \u062D\u0641\u0638 \u0627\u0644\u0635\u0648\u0631\u0629 \u0648\u062A\u0642\u062F\u064A\u0645\u0647\u0627 \u0645\u0628\u0627\u0634\u0631\u0629 \u0639\u0628\u0631 \u062E\u0627\u062F\u0645 \u0627\u0644\u0645\u0648\u0642\u0639."
+      error: "\u0627\u0644\u062A\u062E\u0632\u064A\u0646 \u0627\u0644\u062F\u0627\u0626\u0645 \u0644\u0644\u0635\u0648\u0631 (Google Drive) \u063A\u064A\u0631 \u0645\u062A\u0627\u062D: \u0644\u0645 \u064A\u062A\u0645 \u0636\u0628\u0637 \u0631\u0627\u0628\u0637 Google Apps Script Web App \u0628\u0639\u062F. \u0644\u0627 \u064A\u062A\u0645 \u0642\u0628\u0648\u0644 \u0631\u0648\u0627\u0628\u0637 /uploads/ \u0627\u0644\u0645\u062D\u0644\u064A\u0629 \u0643\u0628\u062F\u064A\u0644 \u062F\u0627\u0626\u0645."
     };
   try {
     let res = await fetch(webAppUrl, {
@@ -983,7 +1358,7 @@ async function uploadToGoogleDriveViaAppsScript(params) {
     if (!res.ok)
       return {
         uploadedToDrive: !1,
-        error: `Apps Script HTTP ${res.status}`
+        error: `\u0641\u0634\u0644 \u0627\u0644\u0627\u062A\u0635\u0627\u0644 \u0628\u062E\u062F\u0645\u0629 Google Drive \u0639\u0628\u0631 Apps Script (HTTP ${res.status})`
       };
     let json = await res.json().catch(() => ({}));
     return json && json.success && json.fileId ? {
@@ -993,7 +1368,7 @@ async function uploadToGoogleDriveViaAppsScript(params) {
       driveViewUrl: json.viewUrl || `https://drive.google.com/file/d/${json.fileId}/view`
     } : {
       uploadedToDrive: !1,
-      error: json?.error || "\u0644\u0645 \u064A\u0631\u062C\u0639 Apps Script \u0645\u0639\u0631\u0641 \u0645\u0644\u0641 Google Drive"
+      error: json?.error || "\u0644\u0645 \u064A\u0631\u062C\u0639 Apps Script \u0645\u0639\u0631\u0641 \u0645\u0644\u0641 Google Drive \u0627\u0644\u062F\u0627\u0626\u0645"
     };
   } catch (err) {
     return {
@@ -1015,9 +1390,11 @@ apiApp.use(
   })
 );
 function registerApiRoutes(app) {
-  app.get("/api/public/data", async (req, res) => {
-    let forceRefresh = req.query.refresh === "1";
-    await hydrateFromExternalDatabase(forceRefresh), res.json({
+  app.get("/api/public/data", async (_req, res) => {
+    res.setHeader(
+      "Cache-Control",
+      "no-store, no-cache, must-revalidate, proxy-revalidate"
+    ), await hydrateFromExternalDatabase(!0), res.json({
       success: !0,
       data: {
         profile: db.profile,
@@ -1030,9 +1407,9 @@ function registerApiRoutes(app) {
       meta: {
         hasAppsScript: !!db.backendMeta.webAppUrl,
         hasDriveFolder: !!db.backendMeta.driveFolderId,
-        sheetDbUrl: db.backendMeta.sheetDbUrl || DEFAULT_SHEETDB_URL,
+        sheetDbUrl: resolveConfiguredSheetDbUrl(db.backendMeta.sheetDbUrl),
         lastSyncTime: db.backendMeta.lastSyncTime || null,
-        externalSource: db.backendMeta.externalSource || "server_db_awaiting_sheet_init",
+        externalSource: db.backendMeta.externalSource || "sheetdb_connected_empty_rows",
         availableSheets: db.backendMeta.availableSheets || [],
         missingRequiredSheets: db.backendMeta.missingRequiredSheets || [...REQUIRED_WORKSHEETS]
       }
@@ -1065,18 +1442,58 @@ function registerApiRoutes(app) {
       return;
     }
     res.download(htmlPath, "smart-masar.html");
+  }), app.get("/api/download-recovery-backup", (_req, res) => {
+    let zipPath = path.join(
+      __dirname,
+      "public",
+      "backups",
+      "smart-masar-recovery-backup.zip"
+    );
+    if (!fs.existsSync(zipPath)) {
+      res.status(404).json({
+        success: !1,
+        error: "\u0645\u0644\u0641 \u0627\u0644\u0646\u0633\u062E\u0629 \u0627\u0644\u0627\u062D\u062A\u064A\u0627\u0637\u064A\u0629 \u0627\u0644\u0643\u0627\u0645\u0644\u0629 \u063A\u064A\u0631 \u0645\u0648\u062C\u0648\u062F \u062D\u0627\u0644\u064A\u0627\u064B \u0639\u0644\u0649 \u0627\u0644\u062E\u0627\u062F\u0645."
+      });
+      return;
+    }
+    res.download(zipPath, "smart-masar-recovery-backup.zip");
+  }), app.get("/api/download-recovery-json", (_req, res) => {
+    let jsonPath = path.join(
+      __dirname,
+      "public",
+      "backups",
+      "smart-masar-recovery-bundle.json"
+    );
+    if (!fs.existsSync(jsonPath)) {
+      res.status(404).json({
+        success: !1,
+        error: "\u0645\u0644\u0641 \u062D\u0632\u0645\u0629 \u0627\u0644\u0628\u064A\u0627\u0646\u0627\u062A \u0627\u0644\u0627\u062D\u062A\u064A\u0627\u0637\u064A\u0629 JSON \u063A\u064A\u0631 \u0645\u0648\u062C\u0648\u062F \u062D\u0627\u0644\u064A\u0627\u064B \u0639\u0644\u0649 \u0627\u0644\u062E\u0627\u062F\u0645."
+      });
+      return;
+    }
+    res.download(jsonPath, "smart-masar-recovery-bundle.json");
   }), app.get("/api/images/drive/:fileId", async (req, res) => {
     let fileId = String(req.params.fileId || "").trim();
     if (!fileId || !/^[a-zA-Z0-9_-]{6,120}$/.test(fileId)) {
       res.status(400).send("Invalid file ID");
       return;
     }
-    let localMatches = fs.existsSync(UPLOADS_DIR) ? fs.readdirSync(UPLOADS_DIR).filter((f) => f.includes(fileId)) : [];
-    if (localMatches.length > 0) {
-      let filePath = path.join(UPLOADS_DIR, localMatches[0]);
-      res.setHeader("Cache-Control", "public, max-age=86400"), res.sendFile(filePath);
-      return;
-    }
+    let candidateCacheDirs = [
+      path.join(__dirname, "public", "backups", "drive-images", "employees"),
+      path.join(__dirname, "public", "backups", "drive-images", "services"),
+      path.join(DATA_DIR, "backups", "drive-images", "employees"),
+      path.join(DATA_DIR, "backups", "drive-images", "services"),
+      UPLOADS_DIR
+    ];
+    for (let dir of candidateCacheDirs)
+      if (fs.existsSync(dir)) {
+        let matches = fs.readdirSync(dir).filter((f) => f.includes(fileId));
+        if (matches.length > 0) {
+          let filePath = path.join(dir, matches[0]);
+          res.setHeader("Cache-Control", "public, max-age=86400"), res.sendFile(filePath);
+          return;
+        }
+      }
     let candidateUrls = [
       `https://lh3.googleusercontent.com/d/${encodeURIComponent(fileId)}`,
       `https://drive.google.com/thumbnail?id=${encodeURIComponent(fileId)}&sz=w1600`,
@@ -1131,7 +1548,7 @@ function registerApiRoutes(app) {
           configured: !0,
           config: {
             webAppUrl: db.backendMeta.webAppUrl,
-            sheetDbUrl: db.backendMeta.sheetDbUrl,
+            sheetDbUrl: resolveConfiguredSheetDbUrl(db.backendMeta.sheetDbUrl),
             driveFolderId: db.backendMeta.driveFolderId,
             lastSyncTime: db.backendMeta.lastSyncTime
           }
@@ -1184,7 +1601,7 @@ function registerApiRoutes(app) {
         configured: !0,
         config: {
           webAppUrl: db.backendMeta.webAppUrl,
-          sheetDbUrl: db.backendMeta.sheetDbUrl,
+          sheetDbUrl: resolveConfiguredSheetDbUrl(db.backendMeta.sheetDbUrl),
           driveFolderId: db.backendMeta.driveFolderId,
           lastSyncTime: db.backendMeta.lastSyncTime
         }
@@ -1201,12 +1618,10 @@ function registerApiRoutes(app) {
     "/api/admin/sheetdb-status",
     requireAdminAuth,
     async (_req, res) => {
-      let status = await checkSheetDbStatus(
-        db.backendMeta.sheetDbUrl || DEFAULT_SHEETDB_URL
-      );
+      let targetUrl = resolveConfiguredSheetDbUrl(db.backendMeta.sheetDbUrl), status = await checkSheetDbStatus(targetUrl);
       db.backendMeta.lastSheetDbStatus = status.messageAr, res.json({
         success: !0,
-        sheetDbUrl: db.backendMeta.sheetDbUrl || DEFAULT_SHEETDB_URL,
+        sheetDbUrl: targetUrl,
         webAppUrl: db.backendMeta.webAppUrl || "",
         driveFolderId: db.backendMeta.driveFolderId || "",
         ...status
@@ -1214,12 +1629,12 @@ function registerApiRoutes(app) {
     }
   ), app.post("/api/admin/config", requireAdminAuth, (req, res) => {
     let { webAppUrl, sheetDbUrl, driveFolderId } = req.body || {};
-    typeof webAppUrl == "string" && (db.backendMeta.webAppUrl = webAppUrl.trim()), typeof sheetDbUrl == "string" && sheetDbUrl.trim() && (db.backendMeta.sheetDbUrl = sheetDbUrl.trim()), typeof driveFolderId == "string" && (db.backendMeta.driveFolderId = driveFolderId.trim(), db.profile.drive_folder_id = driveFolderId.trim()), res.json({
+    typeof webAppUrl == "string" && (db.backendMeta.webAppUrl = webAppUrl.trim()), typeof sheetDbUrl == "string" && sheetDbUrl.trim() && (db.backendMeta.sheetDbUrl = resolveConfiguredSheetDbUrl(sheetDbUrl)), typeof driveFolderId == "string" && (db.backendMeta.driveFolderId = driveFolderId.trim(), db.profile.drive_folder_id = driveFolderId.trim()), res.json({
       success: !0,
       message: "\u062A\u0645 \u062D\u0641\u0638 \u0625\u0639\u062F\u0627\u062F\u0627\u062A \u0627\u0644\u0631\u0628\u0637 \u0627\u0644\u0633\u062D\u0627\u0628\u064A \u0648\u0645\u062C\u0644\u062F Google Drive \u0641\u064A \u0627\u0644\u062E\u0627\u062F\u0645 \u0628\u0646\u062C\u0627\u062D.",
       config: {
         webAppUrl: db.backendMeta.webAppUrl,
-        sheetDbUrl: db.backendMeta.sheetDbUrl,
+        sheetDbUrl: resolveConfiguredSheetDbUrl(db.backendMeta.sheetDbUrl),
         driveFolderId: db.backendMeta.driveFolderId,
         lastSyncTime: db.backendMeta.lastSyncTime
       }
@@ -1291,7 +1706,16 @@ function registerApiRoutes(app) {
           entityId: safeId,
           altAr,
           previousFileId
-        }), fileId = driveResult.uploadedToDrive && driveResult.driveFileId ? driveResult.driveFileId : `sm-${safeEntity}-${safeId}-${timestamp}`, diskFileName = `${fileId}${ext}`, diskFilePath = path.join(UPLOADS_DIR, diskFileName), publicDisplayUrl = driveResult.uploadedToDrive && driveResult.driveDirectUrl ? driveResult.driveDirectUrl : `/uploads/${diskFileName}`, sheetSyncResult = { synced: !1, detail: "" };
+        });
+        if (!driveResult.uploadedToDrive || !driveResult.driveFileId || !driveResult.driveDirectUrl) {
+          res.status(502).json({
+            success: !1,
+            driveUploaded: !1,
+            error: driveResult.error || "\u0641\u0634\u0644 \u0631\u0641\u0639 \u0627\u0644\u0635\u0648\u0631\u0629: \u0627\u0644\u062A\u062E\u0632\u064A\u0646 \u0627\u0644\u062F\u0627\u0626\u0645 \u0641\u064A Google Drive \u063A\u064A\u0631 \u0645\u062A\u0627\u062D \u062D\u0627\u0644\u064A\u0627\u064B. \u064A\u0631\u062C\u0649 \u0636\u0628\u0637 \u0631\u0627\u0628\u0637 Google Apps Script \u0648\u0645\u0639\u0631\u0641 \u0645\u062C\u0644\u062F Google Drive \u0641\u064A \u0627\u0644\u0625\u0639\u062F\u0627\u062F\u0627\u062A."
+          });
+          return;
+        }
+        let fileId = driveResult.driveFileId, publicDisplayUrl = driveResult.driveDirectUrl, sheetSyncResult = { synced: !1, detail: "" };
         if (entityType === "team") {
           let empIndex = db.employees.findIndex((e) => e.id === entityId);
           if (empIndex !== -1) {
@@ -1308,7 +1732,11 @@ function registerApiRoutes(app) {
               updatedEmp.id,
               updatedEmp
             );
-          }
+          } else
+            sheetSyncResult = {
+              synced: !0,
+              detail: "\u062A\u0645 \u0631\u0641\u0639 \u0627\u0644\u0635\u0648\u0631\u0629 \u0625\u0644\u0649 Google Drive\u061B \u0633\u064A\u062A\u0645 \u0631\u0628\u0637\u0647\u0627 \u0628\u0627\u0644\u0633\u062C\u0644 \u0639\u0646\u062F \u062D\u0641\u0638 \u0628\u064A\u0627\u0646\u0627\u062A \u0627\u0644\u0645\u0648\u0638\u0641."
+            };
         } else if (entityType === "services") {
           let srvIndex = db.services.findIndex((s) => s.id === entityId);
           if (srvIndex !== -1) {
@@ -1327,7 +1755,11 @@ function registerApiRoutes(app) {
                 featuresAr: JSON.stringify(updatedSrv.featuresAr)
               }
             );
-          }
+          } else
+            sheetSyncResult = {
+              synced: !0,
+              detail: "\u062A\u0645 \u0631\u0641\u0639 \u0627\u0644\u0635\u0648\u0631\u0629 \u0625\u0644\u0649 Google Drive\u061B \u0633\u064A\u062A\u0645 \u0631\u0628\u0637\u0647\u0627 \u0628\u0627\u0644\u062E\u062F\u0645\u0629 \u0639\u0646\u062F \u0627\u0644\u062D\u0641\u0638."
+            };
         } else if (entityType === "pages") {
           let pageIndex = db.pages.findIndex((p) => p.id === entityId);
           if (pageIndex !== -1) {
@@ -1360,14 +1792,25 @@ function registerApiRoutes(app) {
             logo_file_id: fileId
           }
         ));
+        if (!sheetSyncResult.synced) {
+          res.status(502).json({
+            success: !1,
+            driveUploaded: !0,
+            fileId,
+            driveDirectUrl: driveResult.driveDirectUrl,
+            sheetSync: sheetSyncResult,
+            error: `\u062A\u0645 \u0631\u0641\u0639 \u0627\u0644\u0635\u0648\u0631\u0629 \u0625\u0644\u0649 Google Drive \u0648\u0644\u0643\u0646 \u0641\u0634\u0644 \u062D\u0641\u0638 \u0627\u0644\u0631\u0627\u0628\u0637 \u0641\u064A \u0642\u0627\u0639\u062F\u0629 \u0627\u0644\u0628\u064A\u0627\u0646\u0627\u062A \u0627\u0644\u062F\u0627\u0626\u0645\u0629 (SheetDB): ${sheetSyncResult.detail}`
+          });
+          return;
+        }
         res.json({
           success: !0,
           imageUrl: publicDisplayUrl,
           fileId,
-          driveUploaded: driveResult.uploadedToDrive,
-          driveDirectUrl: driveResult.driveDirectUrl || null,
+          driveUploaded: !0,
+          driveDirectUrl: driveResult.driveDirectUrl,
           driveViewUrl: driveResult.driveViewUrl || null,
-          driveNotice: driveResult.error || null,
+          driveNotice: null,
           sheetSync: sheetSyncResult
         });
       } catch (err) {
@@ -1402,7 +1845,8 @@ function registerApiRoutes(app) {
             "Team",
             "id",
             db.employees[idx].id,
-            db.employees[idx]
+            db.employees[idx],
+            { allowClearImages: !0 }
           ));
         } else if (entityType === "services") {
           let idx = db.services.findIndex((s) => s.id === entityId);
@@ -1417,7 +1861,8 @@ function registerApiRoutes(app) {
             {
               ...db.services[idx],
               featuresAr: JSON.stringify(db.services[idx].featuresAr)
-            }
+            },
+            { allowClearImages: !0 }
           ));
         } else if (entityType === "pages") {
           let idx = db.pages.findIndex((p) => p.id === entityId);
@@ -1429,7 +1874,8 @@ function registerApiRoutes(app) {
             "Pages",
             "id",
             db.pages[idx].id,
-            db.pages[idx]
+            db.pages[idx],
+            { allowClearImages: !0 }
           ));
         } else entityType === "settings" && (db.profile = {
           ...db.profile,
@@ -1444,11 +1890,20 @@ function registerApiRoutes(app) {
             Value: "",
             logo_url: "",
             logo_file_id: ""
-          }
+          },
+          { allowClearImages: !0 }
         ));
+        if (!sheetSyncResult.synced) {
+          res.status(502).json({
+            success: !1,
+            error: `\u0641\u0634\u0644 \u062A\u0623\u0643\u064A\u062F \u0625\u0632\u0627\u0644\u0629 \u0627\u0644\u0635\u0648\u0631\u0629 \u0641\u064A \u0642\u0627\u0639\u062F\u0629 \u0627\u0644\u0628\u064A\u0627\u0646\u0627\u062A \u0627\u0644\u062F\u0627\u0626\u0645\u0629 (SheetDB): ${sheetSyncResult.detail}`,
+            sheetSync: sheetSyncResult
+          });
+          return;
+        }
         res.json({
           success: !0,
-          message: "\u062A\u0645\u062A \u0625\u0632\u0627\u0644\u0629 \u0627\u0644\u0635\u0648\u0631\u0629 \u0648\u062A\u062D\u062F\u064A\u062B \u0627\u0644\u0633\u062C\u0644 \u0628\u0646\u062C\u0627\u062D \u062F\u0648\u0646 \u0627\u0644\u0645\u0633\u0627\u0633 \u0628\u0627\u0644\u0628\u064A\u0627\u0646\u0627\u062A \u0627\u0644\u0623\u062E\u0631\u0649.",
+          message: "\u062A\u0645\u062A \u0625\u0632\u0627\u0644\u0629 \u0627\u0644\u0635\u0648\u0631\u0629 \u0648\u062A\u062D\u062F\u064A\u062B \u0627\u0644\u0633\u062C\u0644 \u0641\u064A \u0642\u0627\u0639\u062F\u0629 \u0627\u0644\u0628\u064A\u0627\u0646\u0627\u062A \u0627\u0644\u062F\u0627\u0626\u0645\u0629 (Google Sheets) \u0628\u0646\u062C\u0627\u062D.",
           sheetSync: sheetSyncResult
         });
       } catch (err) {
@@ -1459,47 +1914,246 @@ function registerApiRoutes(app) {
       }
     }
   ), app.post(
+    "/api/admin/record",
+    requireAdminAuth,
+    async (req, res) => {
+      try {
+        let {
+          entityType,
+          operation = "upsert",
+          recordId,
+          record,
+          allowClearImages = !1
+        } = req.body || {};
+        if (!entityType) {
+          res.status(400).json({
+            success: !1,
+            error: "\u0646\u0648\u0639 \u0627\u0644\u0633\u062C\u0644 (entityType) \u0645\u0637\u0644\u0648\u0628."
+          });
+          return;
+        }
+        let externalSync = { synced: !1, detail: "" };
+        if (entityType === "team")
+          if (operation === "delete") {
+            let targetId = String(recordId || record?.id || "").trim();
+            if (!targetId || targetId === "emp-ahmed-alabed") {
+              res.status(400).json({
+                success: !1,
+                error: "\u0644\u0627 \u064A\u0645\u0643\u0646 \u062D\u0630\u0641 \u0627\u0644\u0631\u0626\u064A\u0633 \u0627\u0644\u062A\u0646\u0641\u064A\u0630\u064A \u0623\u0648 \u0645\u0639\u0631\u0641 \u0627\u0644\u0633\u062C\u0644 \u063A\u064A\u0631 \u0635\u0627\u0644\u062D."
+              });
+              return;
+            }
+            db.employees = db.employees.filter((e) => e.id !== targetId).map(
+              (e) => e.managerId === targetId ? { ...e, managerId: "emp-ahmed-alabed" } : e
+            ), externalSync = await deleteRecordFromSheetDb("Team", "id", targetId);
+          } else {
+            let incoming = record, existing = db.employees.find((e) => e.id === incoming.id), preserved = preserveExistingImageFields(incoming, existing, {
+              allowClearImages: !!allowClearImages
+            }), normalizedUrl = resolvePublicImageUrl(
+              preserved.image_url || preserved.avatarUrl,
+              preserved.image_file_id
+            ), extractedId = preserved.image_file_id || extractGoogleDriveFileId(
+              preserved.image_url || preserved.avatarUrl
+            ) || "", finalEmp = {
+              ...preserved,
+              avatarUrl: normalizedUrl,
+              image_url: normalizedUrl,
+              image_file_id: extractedId
+            }, idx = db.employees.findIndex((e) => e.id === finalEmp.id);
+            idx !== -1 ? db.employees[idx] = finalEmp : db.employees.push(finalEmp), externalSync = await syncRecordToSheetDb(
+              "Team",
+              "id",
+              finalEmp.id,
+              finalEmp,
+              { allowClearImages: !!allowClearImages }
+            );
+          }
+        else if (entityType === "services")
+          if (operation === "delete") {
+            let targetId = String(recordId || record?.id || "").trim();
+            db.services = db.services.filter((s) => s.id !== targetId), externalSync = await deleteRecordFromSheetDb(
+              "Services",
+              "id",
+              targetId
+            );
+          } else {
+            let incoming = record, existing = db.services.find((s) => s.id === incoming.id), preserved = preserveExistingImageFields(incoming, existing, {
+              allowClearImages: !!allowClearImages
+            }), normalizedUrl = resolvePublicImageUrl(
+              preserved.image_url,
+              preserved.image_file_id
+            ), extractedId = preserved.image_file_id || extractGoogleDriveFileId(preserved.image_url) || "", finalSrv = {
+              ...preserved,
+              image_url: normalizedUrl,
+              image_file_id: extractedId
+            }, idx = db.services.findIndex((s) => s.id === finalSrv.id);
+            idx !== -1 ? db.services[idx] = finalSrv : db.services.push(finalSrv), externalSync = await syncRecordToSheetDb(
+              "Services",
+              "id",
+              finalSrv.id,
+              {
+                ...finalSrv,
+                featuresAr: JSON.stringify(finalSrv.featuresAr || [])
+              },
+              { allowClearImages: !!allowClearImages }
+            );
+          }
+        else if (entityType === "jobs")
+          if (operation === "delete") {
+            let targetId = String(recordId || record?.id || "").trim();
+            db.jobs = db.jobs.filter((j) => j.id !== targetId), externalSync = await deleteRecordFromSheetDb("Jobs", "id", targetId);
+          } else {
+            let finalJob = record, idx = db.jobs.findIndex((j) => j.id === finalJob.id);
+            idx !== -1 ? db.jobs[idx] = finalJob : db.jobs.unshift(finalJob), externalSync = await syncRecordToSheetDb("Jobs", "id", finalJob.id, {
+              ...finalJob,
+              responsibilitiesAr: JSON.stringify(
+                finalJob.responsibilitiesAr || []
+              ),
+              qualificationsAr: JSON.stringify(finalJob.qualificationsAr || []),
+              accountingSkillsAr: JSON.stringify(
+                finalJob.accountingSkillsAr || []
+              ),
+              softwareExperienceAr: JSON.stringify(
+                finalJob.softwareExperienceAr || []
+              )
+            });
+          }
+        else if (entityType === "pages") {
+          let incoming = record, existing = db.pages.find((p) => p.id === incoming.id), preserved = preserveExistingImageFields(incoming, existing, {
+            allowClearImages: !!allowClearImages
+          }), normalizedUrl = resolvePublicImageUrl(
+            preserved.hero_image_url,
+            preserved.hero_image_file_id
+          ), extractedId = preserved.hero_image_file_id || extractGoogleDriveFileId(preserved.hero_image_url) || "", finalPage = {
+            ...preserved,
+            hero_image_url: normalizedUrl,
+            hero_image_file_id: extractedId
+          }, idx = db.pages.findIndex((p) => p.id === finalPage.id);
+          idx !== -1 ? db.pages[idx] = finalPage : db.pages.push(finalPage), externalSync = await syncRecordToSheetDb(
+            "Pages",
+            "id",
+            finalPage.id,
+            finalPage,
+            { allowClearImages: !!allowClearImages }
+          );
+        }
+        if (!externalSync.synced) {
+          res.status(502).json({
+            success: !1,
+            error: externalSync.detail,
+            message: externalSync.detail,
+            externalSync
+          });
+          return;
+        }
+        res.json({
+          success: !0,
+          message: externalSync.detail,
+          externalSync,
+          data: {
+            profile: db.profile,
+            departments: db.departments,
+            employees: db.employees,
+            jobs: db.jobs,
+            services: db.services,
+            pages: db.pages
+          }
+        });
+      } catch (err) {
+        res.status(500).json({
+          success: !1,
+          error: err?.message || String(err)
+        });
+      }
+    }
+  ), app.post(
     "/api/admin/sync-state",
     requireAdminAuth,
     async (req, res) => {
       try {
-        let { profile, departments, employees, jobs, services, pages } = req.body || {};
-        profile && (db.profile = { ...db.profile, ...profile }), Array.isArray(departments) && (db.departments = departments), Array.isArray(employees) && (db.employees = employees.map((emp) => {
-          let normalizedUrl = resolvePublicImageUrl(
-            emp.image_url || emp.avatarUrl,
-            emp.image_file_id
-          ), extractedId = emp.image_file_id || extractGoogleDriveFileId(emp.image_url || emp.avatarUrl) || "";
-          return {
-            ...emp,
-            avatarUrl: normalizedUrl,
-            image_url: normalizedUrl,
-            image_file_id: extractedId
-          };
-        })), Array.isArray(jobs) && (db.jobs = jobs), Array.isArray(services) && (db.services = services.map((srv) => {
-          let normalizedUrl = resolvePublicImageUrl(
-            srv.image_url,
-            srv.image_file_id
-          ), extractedId = srv.image_file_id || extractGoogleDriveFileId(srv.image_url) || "";
-          return {
-            ...srv,
-            image_url: normalizedUrl,
-            image_file_id: extractedId
-          };
-        })), Array.isArray(pages) && (db.pages = pages.map((pg) => {
-          let normalizedUrl = resolvePublicImageUrl(
-            pg.hero_image_url,
-            pg.hero_image_file_id
-          ), extractedId = pg.hero_image_file_id || extractGoogleDriveFileId(pg.hero_image_url) || "";
-          return {
-            ...pg,
-            hero_image_url: normalizedUrl,
-            hero_image_file_id: extractedId
-          };
-        })), db.backendMeta.lastSyncTime = (/* @__PURE__ */ new Date()).toLocaleTimeString("ar-JO");
+        let {
+          profile,
+          departments,
+          employees,
+          jobs,
+          services,
+          pages,
+          allowClearImages = !1
+        } = req.body || {};
+        if (profile && (db.profile = preserveExistingImageFields(
+          { ...db.profile, ...profile },
+          db.profile,
+          { allowClearImages: !!allowClearImages }
+        )), Array.isArray(departments) && (db.departments = departments), Array.isArray(employees)) {
+          let existingMap = new Map(db.employees.map((e) => [e.id, e]));
+          db.employees = employees.map((emp) => {
+            let preserved = preserveExistingImageFields(
+              emp,
+              existingMap.get(emp.id),
+              { allowClearImages: !!allowClearImages }
+            ), normalizedUrl = resolvePublicImageUrl(
+              preserved.image_url || preserved.avatarUrl,
+              preserved.image_file_id
+            ), extractedId = preserved.image_file_id || extractGoogleDriveFileId(
+              preserved.image_url || preserved.avatarUrl
+            ) || "";
+            return {
+              ...preserved,
+              avatarUrl: normalizedUrl,
+              image_url: normalizedUrl,
+              image_file_id: extractedId
+            };
+          });
+        }
+        if (Array.isArray(jobs) && (db.jobs = jobs), Array.isArray(services)) {
+          let existingMap = new Map(db.services.map((s) => [s.id, s]));
+          db.services = services.map((srv) => {
+            let preserved = preserveExistingImageFields(
+              srv,
+              existingMap.get(srv.id),
+              { allowClearImages: !!allowClearImages }
+            ), normalizedUrl = resolvePublicImageUrl(
+              preserved.image_url,
+              preserved.image_file_id
+            ), extractedId = preserved.image_file_id || extractGoogleDriveFileId(preserved.image_url) || "";
+            return {
+              ...preserved,
+              image_url: normalizedUrl,
+              image_file_id: extractedId
+            };
+          });
+        }
+        if (Array.isArray(pages)) {
+          let existingMap = new Map(db.pages.map((p) => [p.id, p]));
+          db.pages = pages.map((pg) => {
+            let preserved = preserveExistingImageFields(
+              pg,
+              existingMap.get(pg.id),
+              { allowClearImages: !!allowClearImages }
+            ), normalizedUrl = resolvePublicImageUrl(
+              preserved.hero_image_url,
+              preserved.hero_image_file_id
+            ), extractedId = preserved.hero_image_file_id || extractGoogleDriveFileId(preserved.hero_image_url) || "";
+            return {
+              ...preserved,
+              hero_image_url: normalizedUrl,
+              hero_image_file_id: extractedId
+            };
+          });
+        }
         let externalSync = await syncBundleToExternalDatabase();
-        res.json({
+        if (!externalSync.synced) {
+          res.status(502).json({
+            success: !1,
+            error: externalSync.detail || "\u0641\u0634\u0644 \u062A\u0623\u0643\u064A\u062F \u0627\u0644\u062D\u0641\u0638 \u0641\u064A \u0642\u0627\u0639\u062F\u0629 \u0627\u0644\u0628\u064A\u0627\u0646\u0627\u062A \u0627\u0644\u062F\u0627\u0626\u0645\u0629 (SheetDB / Google Sheets).",
+            message: externalSync.detail || "\u0641\u0634\u0644 \u062A\u0623\u0643\u064A\u062F \u0627\u0644\u062D\u0641\u0638 \u0641\u064A \u0642\u0627\u0639\u062F\u0629 \u0627\u0644\u0628\u064A\u0627\u0646\u0627\u062A \u0627\u0644\u062F\u0627\u0626\u0645\u0629 (SheetDB / Google Sheets).",
+            externalSync
+          });
+          return;
+        }
+        db.backendMeta.lastSyncTime = (/* @__PURE__ */ new Date()).toLocaleTimeString("ar-JO"), res.json({
           success: !0,
-          message: "\u062A\u0645 \u062D\u0641\u0638 \u0648\u0645\u0632\u0627\u0645\u0646\u0629 \u0627\u0644\u0628\u064A\u0627\u0646\u0627\u062A \u0639\u0644\u0649 \u0627\u0644\u062E\u0627\u062F\u0645 \u0628\u0646\u062C\u0627\u062D.",
+          message: externalSync.detail,
           externalSync,
           data: {
             profile: db.profile,
@@ -1543,6 +2197,7 @@ function registerApiRoutes(app) {
 registerApiRoutes(apiApp);
 var server_default = apiApp;
 export {
+  DEFAULT_SPREADSHEET_ID,
   REQUIRED_WORKSHEETS,
   apiApp,
   server_default as default

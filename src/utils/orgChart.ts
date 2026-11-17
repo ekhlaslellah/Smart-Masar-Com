@@ -186,7 +186,7 @@ export const SMART_MASAR_ORG_STRUCTURE: SmartMasarOrgStructure = {
       departmentNameEn: 'Institutional Development & Training',
       head: {
         id: 'head-ekhlaslellah',
-        linkedEmployeeId: 'emp-ekhlaslellah-alsharafat',
+        linkedEmployeeId: 'emp-ekhlaslellah-alshalabi',
         nameEn: 'Ekhlaslellah Al-Shalabi',
         nameAr: 'إخلاص لله الشلبي',
         titleEn: 'Head of Institutional Development & Training',
@@ -226,6 +226,7 @@ export const SMART_MASAR_ORG_STRUCTURE: SmartMasarOrgStructure = {
       departmentNameEn: 'Human Resources',
       head: {
         id: 'head-rahaf',
+        linkedEmployeeId: 'emp-rahaf-alsharafat',
         nameEn: 'Rahaf Al-Sharafat',
         nameAr: 'رهف الشرفات',
         titleEn: 'Head of Human Resources',
@@ -305,7 +306,7 @@ export const SMART_MASAR_ORG_STRUCTURE: SmartMasarOrgStructure = {
       departmentNameEn: 'Finance & Accounting',
       head: {
         id: 'head-ekram',
-        linkedEmployeeId: 'emp-ikram-alsharafat',
+        linkedEmployeeId: 'emp-ekram-alsharafat',
         nameEn: 'Ekram Al-Sharafat',
         nameAr: 'إكرام الشرفات',
         titleEn: 'Head of Finance & Accounting',
@@ -385,6 +386,7 @@ export const SMART_MASAR_ORG_STRUCTURE: SmartMasarOrgStructure = {
       departmentNameEn: 'Operations & Projects',
       head: {
         id: 'head-doaa',
+        linkedEmployeeId: 'emp-doaa-tareq',
         nameEn: 'Doaa Tareq',
         nameAr: 'دعاء طارق',
         titleEn: 'Head of Operations & Projects',
@@ -424,6 +426,7 @@ export const SMART_MASAR_ORG_STRUCTURE: SmartMasarOrgStructure = {
       departmentNameEn: 'Business Development & Partnerships',
       head: {
         id: 'head-roaa',
+        linkedEmployeeId: 'emp-roaa',
         nameEn: 'Roaa',
         nameAr: 'رؤى',
         titleEn: 'Head of Business Development & Partnerships',
@@ -463,7 +466,7 @@ export const SMART_MASAR_ORG_STRUCTURE: SmartMasarOrgStructure = {
       departmentNameEn: 'Customer Experience & Services',
       head: {
         id: 'head-haneen',
-        linkedEmployeeId: 'emp-haneen-alkasaji',
+        linkedEmployeeId: 'emp-haneen-ziad',
         nameEn: 'Haneen Ziad',
         nameAr: 'حنين زياد',
         titleEn: 'Head of Customer Experience & Services',
@@ -503,6 +506,7 @@ export const SMART_MASAR_ORG_STRUCTURE: SmartMasarOrgStructure = {
       departmentNameEn: 'Quality & Performance',
       head: {
         id: 'head-sumaya',
+        linkedEmployeeId: 'emp-sumaya-alsharafat',
         nameEn: 'Sumaya Al-Sharafat',
         nameAr: 'سمية الشرفات',
         titleEn: 'Head of Quality & Performance',

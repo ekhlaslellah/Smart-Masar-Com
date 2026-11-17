@@ -6,3 +6,11 @@ coverage/
 *.log
 .env*
 !.env.example
+public/backups/
+public/*.zip
+public/smart-masar.html
+data/backups/*.zip
+data/backups/smart-masar-recovery-bundle.json
+data/backups/legacy-db-backup.json
+data/org-staff-review.json
+

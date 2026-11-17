@@ -29,7 +29,9 @@ import {
   syncAllToRemote,
   fetchServerPublicData,
   syncStateToServer,
+  mutateSingleRecordOnServer,
 } from '../services/apiService';
+import { preserveExistingImageFields } from '../utils/imageUrl';
 
 interface AppContextType {
   // Selected entities for modals
@@ -119,26 +121,73 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // Load authoritative server & external SheetDB data on initial mount
   useEffect(() => {
-    refreshFromServer(false);
+    refreshFromServer(true);
   }, []);
 
-  // Persist changes to Express server & external SheetDB/Apps Script when admin mutations occur
-  const persistBundleToServer = (nextBundle: {
-    profile?: CompanyProfile;
-    departments?: Department[];
-    employees?: Employee[];
-    jobs?: JobVacancy[];
-    services?: ServiceItem[];
-    pages?: PageMetadata[];
-  }) => {
-    syncStateToServer(backendConfig.adminApiKey || '', {
-      profile: nextBundle.profile || profile,
-      departments: nextBundle.departments || departments,
-      employees: nextBundle.employees || employees,
-      jobs: nextBundle.jobs || jobs,
-      services: nextBundle.services || services,
-      pages: nextBundle.pages || pages,
-    }).catch(() => {});
+  // Persist full bundle when explicitly requested (e.g. JSON import or full sync)
+  const persistBundleToServer = async (
+    nextBundle: {
+      profile?: CompanyProfile;
+      departments?: Department[];
+      employees?: Employee[];
+      jobs?: JobVacancy[];
+      services?: ServiceItem[];
+      pages?: PageMetadata[];
+    },
+    successMessageAr: string
+  ) => {
+    try {
+      const res = await syncStateToServer(backendConfig.adminApiKey || '', {
+        profile: nextBundle.profile || profile,
+        departments: nextBundle.departments || departments,
+        employees: nextBundle.employees || employees,
+        jobs: nextBundle.jobs || jobs,
+        services: nextBundle.services || services,
+        pages: nextBundle.pages || pages,
+      });
+
+      if (res.success && res.externalSync?.synced !== false) {
+        showToast(successMessageAr);
+      } else {
+        const errDetail =
+          res.externalSync?.detail ||
+          res.message ||
+          'تعذر تأكيد الحفظ في قاعدة البيانات الدائمة (SheetDB / Google Sheets).';
+        showToast(`خطأ في المزامنة السحابية: ${errDetail}`);
+      }
+    } catch (err: any) {
+      showToast(
+        `خطأ في الاتصال بقاعدة البيانات الدائمة: ${err?.message || 'تعذر حفظ التغييرات'}`
+      );
+    }
+  };
+
+  // Persist a single record mutation (upsert or delete) without rewriting all 6 worksheets
+  const persistSingleRecord = async (
+    payload: {
+      entityType: 'team' | 'services' | 'jobs' | 'pages';
+      operation: 'upsert' | 'delete';
+      recordId?: string;
+      record?: any;
+    },
+    successMessageAr: string
+  ) => {
+    try {
+      const res = await mutateSingleRecordOnServer(backendConfig.adminApiKey || '', payload);
+      if (res.success && res.externalSync?.synced !== false) {
+        showToast(successMessageAr);
+      } else {
+        const errDetail =
+          res.externalSync?.detail ||
+          res.message ||
+          'تعذر تأكيد الحفظ في قاعدة البيانات الدائمة (SheetDB / Google Sheets).';
+        showToast(`خطأ في المزامنة السحابية: ${errDetail}`);
+      }
+    } catch (err: any) {
+      showToast(
+        `خطأ في الاتصال بقاعدة البيانات الدائمة: ${err?.message || 'تعذر حفظ التغييرات'}`
+      );
+    }
   };
 
   const setBackendConfig = (config: BackendConfig) => {
@@ -149,17 +198,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => {
-      setToastMessage(null);
-    }, 4000);
+      setToastMessage((prev) => (prev === msg ? null : prev));
+    }, 5500);
   };
 
   const updateProfile = (updates: Partial<CompanyProfile>) => {
     setProfile((prev) => {
-      const next = { ...prev, ...updates };
-      persistBundleToServer({ profile: next });
+      const next = preserveExistingImageFields({ ...prev, ...updates }, prev);
+      void persistBundleToServer(
+        { profile: next },
+        'تم حفظ إعدادات المؤسسة ومزامنتها في قاعدة البيانات الدائمة (Google Sheets) بنجاح'
+      );
       return next;
     });
-    showToast('تم حفظ إعدادات المؤسسة ومزامنتها مع الخادم بنجاح');
   };
 
   const addEmployee = (empData: Omit<Employee, 'id' | 'order'>) => {
@@ -183,54 +234,73 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
     setEmployees((prev) => {
       const next = [...prev, newEmp];
-      persistBundleToServer({ employees: next });
+      void persistSingleRecord(
+        { entityType: 'team', operation: 'upsert', record: newEmp },
+        `تمت إضافة الموظف "${newEmp.nameAr}" وتأكيد حفظه في Google Sheets بنجاح`
+      );
       return next;
     });
-    showToast(`تمت إضافة الموظف "${newEmp.nameAr}" بنجاح`);
   };
 
   const updateEmployee = (id: string, updates: Partial<Employee>) => {
     setEmployees((prev) => {
+      let updatedEmp: Employee | null = null;
       const next = prev.map((emp) => {
         if (emp.id !== id) return emp;
-        const merged = { ...emp, ...updates };
-        if (updates.image_url !== undefined && updates.avatarUrl === undefined) {
+        const merged = preserveExistingImageFields({ ...emp, ...updates }, emp);
+        if (updates.image_url && !updates.avatarUrl) {
           merged.avatarUrl = updates.image_url;
-        } else if (updates.avatarUrl !== undefined && updates.image_url === undefined) {
+        } else if (updates.avatarUrl && !updates.image_url) {
           merged.image_url = updates.avatarUrl;
         }
+        updatedEmp = merged;
         return merged;
       });
-      persistBundleToServer({ employees: next });
+      if (updatedEmp) {
+        void persistSingleRecord(
+          { entityType: 'team', operation: 'upsert', record: updatedEmp },
+          'تم تحديث بيانات الموظف وتأكيد الحفظ في Google Sheets بنجاح'
+        );
+      }
       return next;
     });
-    showToast('تم تحديث بيانات الموظف بنجاح');
   };
 
   const deleteEmployee = (id: string) => {
     const emp = employees.find((e) => e.id === id);
     if (!emp) return;
     if (emp.id === 'emp-ahmed-alabed') {
-      showToast('لا يمكن حذف المدير العام من الهيكل التنظيمي الرئيسي');
+      showToast('لا يمكن حذف الرئيس التنفيذي من الهيكل التنظيمي الرئيسي');
       return;
     }
     setEmployees((prev) => {
       const next = prev
         .filter((e) => e.id !== id)
         .map((e) => (e.managerId === id ? { ...e, managerId: 'emp-ahmed-alabed' } : e));
-      persistBundleToServer({ employees: next });
+      void persistSingleRecord(
+        { entityType: 'team', operation: 'delete', recordId: id },
+        `تم حذف الموظف "${emp.nameAr}" وتحديث السجل السحابي`
+      );
       return next;
     });
-    showToast(`تم حذف الموظف "${emp.nameAr}" من السجل`);
   };
 
   const updateJob = (id: string, updates: Partial<JobVacancy>) => {
     setJobs((prev) => {
-      const next = prev.map((job) => (job.id === id ? { ...job, ...updates } : job));
-      persistBundleToServer({ jobs: next });
+      let updatedJob: JobVacancy | null = null;
+      const next = prev.map((job) => {
+        if (job.id !== id) return job;
+        updatedJob = { ...job, ...updates };
+        return updatedJob;
+      });
+      if (updatedJob) {
+        void persistSingleRecord(
+          { entityType: 'jobs', operation: 'upsert', record: updatedJob },
+          'تم تحديث تفاصيل الوظيفة وتأكيد الحفظ في Google Sheets بنجاح'
+        );
+      }
       return next;
     });
-    showToast('تم تحديث تفاصيل الوظيفة ورابط التقديم بنجاح');
   };
 
   const addJob = (jobData: Omit<JobVacancy, 'id' | 'postedDate'>) => {
@@ -241,10 +311,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
     setJobs((prev) => {
       const next = [newJob, ...prev];
-      persistBundleToServer({ jobs: next });
+      void persistSingleRecord(
+        { entityType: 'jobs', operation: 'upsert', record: newJob },
+        `تم نشر الشاغر الوظيفي "${newJob.titleAr}" وحفظه في Google Sheets بنجاح`
+      );
       return next;
     });
-    showToast(`تم نشر الشاغر الوظيفي "${newJob.titleAr}"`);
   };
 
   const deleteJob = (id: string) => {
@@ -252,19 +324,30 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (!job) return;
     setJobs((prev) => {
       const next = prev.filter((j) => j.id !== id);
-      persistBundleToServer({ jobs: next });
+      void persistSingleRecord(
+        { entityType: 'jobs', operation: 'delete', recordId: id },
+        `تم حذف الشاغر الوظيفي "${job.titleAr}" وتحديث السجل السحابي`
+      );
       return next;
     });
-    showToast(`تم حذف الشاغر الوظيفي "${job.titleAr}"`);
   };
 
   const updateService = (id: string, updates: Partial<ServiceItem>) => {
     setServices((prev) => {
-      const next = prev.map((s) => (s.id === id ? { ...s, ...updates } : s));
-      persistBundleToServer({ services: next });
+      let updatedSrv: ServiceItem | null = null;
+      const next = prev.map((s) => {
+        if (s.id !== id) return s;
+        updatedSrv = preserveExistingImageFields({ ...s, ...updates }, s);
+        return updatedSrv;
+      });
+      if (updatedSrv) {
+        void persistSingleRecord(
+          { entityType: 'services', operation: 'upsert', record: updatedSrv },
+          'تم تحديث بيانات الخدمة وتأكيد الحفظ في Google Sheets بنجاح'
+        );
+      }
       return next;
     });
-    showToast('تم تحديث بيانات الخدمة وصورتها بنجاح');
   };
 
   const addService = (serviceData: Omit<ServiceItem, 'id'>) => {
@@ -274,10 +357,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
     setServices((prev) => {
       const next = [...prev, newService];
-      persistBundleToServer({ services: next });
+      void persistSingleRecord(
+        { entityType: 'services', operation: 'upsert', record: newService },
+        `تمت إضافة الخدمة "${newService.titleAr}" وتأكيد حفظها في Google Sheets بنجاح`
+      );
       return next;
     });
-    showToast(`تمت إضافة الخدمة "${newService.titleAr}" بنجاح`);
   };
 
   const deleteService = (id: string) => {
@@ -285,19 +370,30 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (!srv) return;
     setServices((prev) => {
       const next = prev.filter((s) => s.id !== id);
-      persistBundleToServer({ services: next });
+      void persistSingleRecord(
+        { entityType: 'services', operation: 'delete', recordId: id },
+        `تم حذف الخدمة "${srv.titleAr}" وتحديث السجل السحابي`
+      );
       return next;
     });
-    showToast(`تم حذف الخدمة "${srv.titleAr}"`);
   };
 
   const updatePage = (id: string, updates: Partial<PageMetadata>) => {
     setPages((prev) => {
-      const next = prev.map((p) => (p.id === id ? { ...p, ...updates } : p));
-      persistBundleToServer({ pages: next });
+      let updatedPage: PageMetadata | null = null;
+      const next = prev.map((p) => {
+        if (p.id !== id) return p;
+        updatedPage = preserveExistingImageFields({ ...p, ...updates }, p);
+        return updatedPage;
+      });
+      if (updatedPage) {
+        void persistSingleRecord(
+          { entityType: 'pages', operation: 'upsert', record: updatedPage },
+          'تم تحديث إعدادات الصفحة وتأكيد الحفظ في Google Sheets بنجاح'
+        );
+      }
       return next;
     });
-    showToast('تم تحديث إعدادات وصورة الصفحة بنجاح');
   };
 
   const resetToDefaults = () => {
@@ -343,15 +439,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setJobs(parsed.jobs);
         if (Array.isArray(parsed.services)) setServices(parsed.services);
         if (Array.isArray(parsed.pages)) setPages(parsed.pages);
-        persistBundleToServer({
-          profile: parsed.profile,
-          departments: parsed.departments || departments,
-          employees: parsed.employees,
-          jobs: parsed.jobs,
-          services: parsed.services || services,
-          pages: parsed.pages || pages,
-        });
-        showToast('تم استيراد البيانات بنجاح');
+        void persistBundleToServer(
+          {
+            profile: parsed.profile,
+            departments: parsed.departments || departments,
+            employees: parsed.employees,
+            jobs: parsed.jobs,
+            services: parsed.services || services,
+            pages: parsed.pages || pages,
+          },
+          'تم استيراد البيانات ومزامنتها مع قاعدة البيانات الدائمة بنجاح'
+        );
         return true;
       }
       return false;
@@ -377,12 +475,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
 
     if (!backendConfig.webAppUrl) {
+      const syncedOk = Boolean(serverRes.success && serverRes.externalSync?.synced !== false);
+      const msg =
+        serverRes.externalSync?.detail ||
+        serverRes.message ||
+        (syncedOk
+          ? 'تم حفظ البيانات ومزامنتها عبر SheetDB بنجاح.'
+          : 'فشل تأكيد الحفظ في قاعدة البيانات الدائمة.');
+      showToast(syncedOk ? msg : `خطأ في المزامنة: ${msg}`);
       return {
-        success: serverRes.success,
-        message:
-          serverRes.externalSync?.detail ||
-          serverRes.message ||
-          'تم حفظ البيانات ومزامنتها عبر الخادم.',
+        success: syncedOk,
+        message: msg,
       };
     }
 

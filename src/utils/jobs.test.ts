@@ -105,6 +105,7 @@ test('INITIAL_JOBS has Accountant and HR Specialist pointing to https://forms.gl
   const accountant = INITIAL_JOBS.find((j) => j.id === 'job-accountant-01');
   assert.ok(accountant, 'Accountant vacancy must exist');
   assert.strictEqual(accountant.titleEn, 'Accountant');
+  assert.strictEqual(accountant.departmentId, 'dept-finance');
   assert.strictEqual(accountant.googleFormsUrl, 'https://forms.gle/ZKfYUcUxoW6YgcKw6');
   assert.strictEqual(accountant.status, 'active');
 
@@ -112,7 +113,7 @@ test('INITIAL_JOBS has Accountant and HR Specialist pointing to https://forms.gl
   assert.ok(hr, 'HR Specialist vacancy must exist');
   assert.strictEqual(hr.titleEn, 'Human Resources Specialist (HR Specialist)');
   assert.strictEqual(hr.titleAr, 'أخصائي موارد بشرية – HR Specialist');
-  assert.strictEqual(hr.departmentId, 'hr');
+  assert.strictEqual(hr.departmentId, 'dept-hr');
   assert.strictEqual(hr.locationAr, 'العقبة، الأردن — Aqaba, Jordan');
   assert.strictEqual(hr.employmentTypeAr, 'دوام كامل — Full-Time');
   assert.strictEqual(hr.status, 'active');

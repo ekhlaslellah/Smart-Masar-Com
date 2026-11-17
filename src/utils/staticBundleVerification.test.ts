@@ -32,8 +32,10 @@ test('Static Hosting Bundle & Security Verification Suite', async (t) => {
     assert.equal(INITIAL_JOBS[1].googleFormsUrl, 'https://forms.gle/ZKfYUcUxoW6YgcKw6');
   });
 
-  await t.test('2. Preserves SheetDB public read endpoint configuration', () => {
-    assert.equal(DEFAULT_SHEETDB_ENDPOINT, 'https://sheetdb.io/api/v1/gnn52l70oflrp');
+  await t.test('2. Preserves SheetDB public read endpoint configuration (https://sheetdb.io/api/v1/9537p5ct7m308)', () => {
+    assert.equal(DEFAULT_SHEETDB_ENDPOINT, 'https://sheetdb.io/api/v1/9537p5ct7m308');
+    const dbJson = JSON.parse(fs.readFileSync(path.resolve('data/db.json'), 'utf8'));
+    assert.equal(dbJson.backendMeta.sheetDbUrl, 'https://sheetdb.io/api/v1/9537p5ct7m308');
   });
 
   await t.test('3. Verifies production build (dist/) and static hosting ZIP exist and have valid ZIP signature', () => {

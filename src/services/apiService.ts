@@ -21,7 +21,16 @@ export interface BackendConfig {
   lastSyncTime?: string;
 }
 
-export const DEFAULT_SHEETDB_ENDPOINT = 'https://sheetdb.io/api/v1/gnn52l70oflrp';
+export const DEFAULT_SHEETDB_ENDPOINT = 'https://sheetdb.io/api/v1/9537p5ct7m308';
+const LEGACY_SHEETDB_ENDPOINT = 'https://sheetdb.io/api/v1/gnn52l70oflrp';
+
+function normalizeClientSheetDbUrl(url?: string): string {
+  const trimmed = (url || '').trim();
+  if (!trimmed || trimmed === LEGACY_SHEETDB_ENDPOINT) {
+    return DEFAULT_SHEETDB_ENDPOINT;
+  }
+  return trimmed;
+}
 
 // In-memory runtime state only (zero localStorage / browser storage usage)
 let runtimeBackendConfig: BackendConfig = {
@@ -40,7 +49,7 @@ export function saveBackendConfig(config: BackendConfig): void {
   runtimeBackendConfig = {
     webAppUrl: config.webAppUrl || '',
     adminApiKey: config.adminApiKey || runtimeBackendConfig.adminApiKey || '',
-    sheetDbUrl: config.sheetDbUrl || DEFAULT_SHEETDB_ENDPOINT,
+    sheetDbUrl: normalizeClientSheetDbUrl(config.sheetDbUrl),
     driveFolderId: config.driveFolderId || '',
     isConfigured: Boolean(config.isConfigured),
     lastSyncTime: config.lastSyncTime || runtimeBackendConfig.lastSyncTime,
@@ -108,9 +117,10 @@ export async function fetchDirectSheetDbPublicData(
   availableSheets?: string[];
 }> {
   try {
-    const cleanUrl = sheetDbUrl.replace(/\/+$/, '');
+    const cleanUrl = normalizeClientSheetDbUrl(sheetDbUrl).replace(/\/+$/, '');
     const sheetsRes = await fetch(`${cleanUrl}/sheets`, {
       method: 'GET',
+      cache: 'no-store',
       headers: { Accept: 'application/json' },
     });
     if (!sheetsRes.ok) return { success: false };
@@ -130,15 +140,23 @@ export async function fetchDirectSheetDbPublicData(
     let hydratedAny = false;
 
     if (availableSheets.includes('SiteSettings')) {
-      const res = await fetch(`${cleanUrl}?sheet=SiteSettings`);
+      const res = await fetch(`${cleanUrl}?sheet=SiteSettings`, { cache: 'no-store' });
       if (res.ok) {
         const rows: any[] = await res.json().catch(() => []);
         if (Array.isArray(rows) && rows.length > 0) {
           const settingsObj: Record<string, any> = {};
           for (const r of rows) {
             if (r.Key) settingsObj[r.Key] = r.Value;
+            if (r.logo_url) settingsObj.logo_url = r.logo_url;
+            if (r.logo_file_id) settingsObj.logo_file_id = r.logo_file_id;
           }
           if (Object.keys(settingsObj).length > 0) {
+            if (settingsObj.logo_url || settingsObj.logo_file_id) {
+              settingsObj.logo_url = resolveClientStaticImageUrl(
+                settingsObj.logo_url,
+                settingsObj.logo_file_id
+              );
+            }
             data.profile = settingsObj;
             hydratedAny = true;
           }
@@ -147,7 +165,7 @@ export async function fetchDirectSheetDbPublicData(
     }
 
     if (availableSheets.includes('Departments')) {
-      const res = await fetch(`${cleanUrl}?sheet=Departments`);
+      const res = await fetch(`${cleanUrl}?sheet=Departments`, { cache: 'no-store' });
       if (res.ok) {
         const rows: any[] = await res.json().catch(() => []);
         if (Array.isArray(rows) && rows.length > 0) {
@@ -158,7 +176,7 @@ export async function fetchDirectSheetDbPublicData(
     }
 
     if (availableSheets.includes('Team')) {
-      const res = await fetch(`${cleanUrl}?sheet=Team`);
+      const res = await fetch(`${cleanUrl}?sheet=Team`, { cache: 'no-store' });
       if (res.ok) {
         const rows: any[] = await res.json().catch(() => []);
         if (Array.isArray(rows) && rows.length > 0) {
@@ -183,7 +201,7 @@ export async function fetchDirectSheetDbPublicData(
     }
 
     if (availableSheets.includes('Services')) {
-      const res = await fetch(`${cleanUrl}?sheet=Services`);
+      const res = await fetch(`${cleanUrl}?sheet=Services`, { cache: 'no-store' });
       if (res.ok) {
         const rows: any[] = await res.json().catch(() => []);
         if (Array.isArray(rows) && rows.length > 0) {
@@ -198,7 +216,7 @@ export async function fetchDirectSheetDbPublicData(
     }
 
     if (availableSheets.includes('Pages')) {
-      const res = await fetch(`${cleanUrl}?sheet=Pages`);
+      const res = await fetch(`${cleanUrl}?sheet=Pages`, { cache: 'no-store' });
       if (res.ok) {
         const rows: any[] = await res.json().catch(() => []);
         if (Array.isArray(rows) && rows.length > 0) {
@@ -215,7 +233,7 @@ export async function fetchDirectSheetDbPublicData(
     }
 
     if (availableSheets.includes('Jobs')) {
-      const res = await fetch(`${cleanUrl}?sheet=Jobs`);
+      const res = await fetch(`${cleanUrl}?sheet=Jobs`, { cache: 'no-store' });
       if (res.ok) {
         const rows: any[] = await res.json().catch(() => []);
         if (Array.isArray(rows) && rows.length > 0) {
@@ -245,7 +263,7 @@ export async function fetchDirectSheetDbPublicData(
  * Fetches sanitized public data from the Express server (/api/public/data),
  * or falls back directly to read-only SheetDB API when hosted on external static HTML/CSS/JS hosting.
  */
-export async function fetchServerPublicData(forceExternalRefresh = false): Promise<{
+export async function fetchServerPublicData(forceExternalRefresh = true): Promise<{
   success: boolean;
   isStaticHostFallback?: boolean;
   data?: {
@@ -270,6 +288,7 @@ export async function fetchServerPublicData(forceExternalRefresh = false): Promi
     const query = forceExternalRefresh ? '?refresh=1' : '';
     const res = await fetch(`/api/public/data${query}`, {
       method: 'GET',
+      cache: 'no-store',
       headers: { Accept: 'application/json' },
     });
     const contentType = res.headers.get('content-type') || '';
@@ -277,7 +296,9 @@ export async function fetchServerPublicData(forceExternalRefresh = false): Promi
       const json = await res.json();
       if (json.success && json.data) {
         if (json.meta?.sheetDbUrl) {
-          runtimeBackendConfig.sheetDbUrl = json.meta.sheetDbUrl;
+          runtimeBackendConfig.sheetDbUrl = normalizeClientSheetDbUrl(
+            json.meta.sheetDbUrl
+          );
         }
         if (json.meta?.lastSyncTime) {
           runtimeBackendConfig.lastSyncTime = json.meta.lastSyncTime;
@@ -291,7 +312,7 @@ export async function fetchServerPublicData(forceExternalRefresh = false): Promi
 
   // Fallback for static hosting: query SheetDB directly in read-only mode
   const directRes = await fetchDirectSheetDbPublicData(
-    runtimeBackendConfig.sheetDbUrl || DEFAULT_SHEETDB_ENDPOINT
+    normalizeClientSheetDbUrl(runtimeBackendConfig.sheetDbUrl)
   );
   if (directRes.success && directRes.data) {
     return {
@@ -301,7 +322,7 @@ export async function fetchServerPublicData(forceExternalRefresh = false): Promi
       meta: {
         hasAppsScript: false,
         hasDriveFolder: false,
-        sheetDbUrl: runtimeBackendConfig.sheetDbUrl || DEFAULT_SHEETDB_ENDPOINT,
+        sheetDbUrl: normalizeClientSheetDbUrl(runtimeBackendConfig.sheetDbUrl),
         lastSyncTime: null,
         externalSource: 'sheetdb_static_client',
         availableSheets: directRes.availableSheets || [],
@@ -345,7 +366,9 @@ export async function establishAdminSession(adminKey?: string): Promise<{
         ...runtimeBackendConfig,
         adminApiKey: '',
         webAppUrl: json.config.webAppUrl || runtimeBackendConfig.webAppUrl,
-        sheetDbUrl: json.config.sheetDbUrl || runtimeBackendConfig.sheetDbUrl,
+        sheetDbUrl: normalizeClientSheetDbUrl(
+          json.config.sheetDbUrl || runtimeBackendConfig.sheetDbUrl
+        ),
         driveFolderId: json.config.driveFolderId || runtimeBackendConfig.driveFolderId,
         lastSyncTime: json.config.lastSyncTime || runtimeBackendConfig.lastSyncTime,
       };
@@ -405,7 +428,7 @@ export async function verifyAdminKeyOnServer(adminKey: string): Promise<{
         ...runtimeBackendConfig,
         adminApiKey: '',
         webAppUrl: json.config.webAppUrl || '',
-        sheetDbUrl: json.config.sheetDbUrl || DEFAULT_SHEETDB_ENDPOINT,
+        sheetDbUrl: normalizeClientSheetDbUrl(json.config.sheetDbUrl),
         driveFolderId: json.config.driveFolderId || '',
         lastSyncTime: json.config.lastSyncTime,
       };
@@ -441,24 +464,39 @@ export async function logoutAdminSession(): Promise<void> {
   }
 }
 
-/**
- * Queries SheetDB & Google Drive status via server-authenticated endpoint.
- */
-export async function fetchSheetDbDiagnostics(adminKey: string): Promise<{
+export interface SheetDbWorksheetCheck {
+  exists: boolean;
+  readOk?: boolean;
+  headersOk?: boolean;
+  status: number;
+  rowCount: number;
+  headers?: string[];
+}
+
+export interface SheetDbDiagnosticsResult {
   success: boolean;
   reachable?: boolean;
   spreadsheetName?: string;
   sheets?: string[];
   requiredSheets?: string[];
   missingSheets?: string[];
-  worksheetChecks?: Record<string, { exists: boolean; status: number; rowCount: number }>;
+  worksheetChecks?: Record<string, SheetDbWorksheetCheck>;
+  readAccess?: { ok: boolean; verifiedTabs: number; totalRows: number; detailAr: string };
+  writeAccess?: { ok: boolean; status: number; method: string; detailAr: string };
   keys?: string[];
   isEmptyHeader?: boolean;
   messageAr: string;
   sheetDbUrl?: string;
   webAppUrl?: string;
   driveFolderId?: string;
-}> {
+}
+
+/**
+ * Queries SheetDB & Google Drive status via server-authenticated endpoint.
+ */
+export async function fetchSheetDbDiagnostics(
+  adminKey: string
+): Promise<SheetDbDiagnosticsResult> {
   try {
     const headers: Record<string, string> = { Accept: 'application/json' };
     const keyToUse = adminKey || runtimeBackendConfig.adminApiKey;
@@ -669,6 +707,47 @@ export async function removeImageOnServer(params: {
 }
 
 /**
+ * Mutates a single record (upsert or delete) on the Express server and SheetDB
+ * without triggering a full 6-worksheet rewrite.
+ */
+export async function mutateSingleRecordOnServer(
+  adminKey: string,
+  payload: {
+    entityType: 'team' | 'services' | 'jobs' | 'pages';
+    operation: 'upsert' | 'delete';
+    recordId?: string;
+    record?: any;
+    allowClearImages?: boolean;
+  }
+): Promise<{
+  success: boolean;
+  message?: string;
+  externalSync?: { synced: boolean; detail: string };
+}> {
+  try {
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    const keyToUse = adminKey || runtimeBackendConfig.adminApiKey;
+    if (keyToUse) {
+      headers['x-admin-key'] = keyToUse;
+    }
+    const res = await fetch('/api/admin/record', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers,
+      body: JSON.stringify(payload),
+    });
+    const json = await res.json();
+    return {
+      success: Boolean(res.ok && json.success),
+      message: json.message || json.error,
+      externalSync: json.externalSync,
+    };
+  } catch (e: any) {
+    return { success: false, message: e?.message || String(e) };
+  }
+}
+
+/**
  * Syncs full application state to the Express server database and external SheetDB / Apps Script.
  */
 export async function syncStateToServer(
@@ -680,6 +759,7 @@ export async function syncStateToServer(
     jobs: JobVacancy[];
     services: ServiceItem[];
     pages: PageMetadata[];
+    allowClearImages?: boolean;
   }
 ): Promise<{
   success: boolean;

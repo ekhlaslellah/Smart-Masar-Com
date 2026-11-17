@@ -10,6 +10,8 @@ import {
   extractGoogleDriveFileId,
   resolvePublicImageUrl,
   buildGoogleDriveDirectUrls,
+  sanitizeRecordForSheetPatch,
+  preserveExistingImageFields,
 } from './imageUrl';
 
 describe('validateImageFile', () => {
@@ -111,3 +113,61 @@ describe('extractGoogleDriveFileId & resolvePublicImageUrl', () => {
     );
   });
 });
+
+describe('sanitizeRecordForSheetPatch & preserveExistingImageFields', () => {
+  it('omits empty image fields on normal PATCH updates so existing SheetDB images are never overwritten with empty strings', () => {
+    const patchPayload = sanitizeRecordForSheetPatch({
+      id: 'emp-ahmed-alabed',
+      nameAr: 'د. أحمد العابد',
+      avatarUrl: '',
+      image_url: '',
+      image_file_id: '',
+    });
+    assert.equal('avatarUrl' in patchPayload, false);
+    assert.equal('image_url' in patchPayload, false);
+    assert.equal('image_file_id' in patchPayload, false);
+    assert.equal(patchPayload.nameAr, 'د. أحمد العابد');
+  });
+
+  it('keeps empty image fields when allowClearImages is explicitly true (confirmed image removal)', () => {
+    const clearPayload = sanitizeRecordForSheetPatch(
+      {
+        id: 'emp-ahmed-alabed',
+        nameAr: 'د. أحمد العابد',
+        avatarUrl: '',
+        image_url: '',
+        image_file_id: '',
+      },
+      { allowClearImages: true }
+    );
+    assert.equal(clearPayload.avatarUrl, '');
+    assert.equal(clearPayload.image_url, '');
+    assert.equal(clearPayload.image_file_id, '');
+  });
+
+  it('preserves existing non-empty image URLs when merging updates unless allowClearImages is true', () => {
+    const existing = {
+      id: 'emp-ahmed-alabed',
+      nameAr: 'د. أحمد العابد',
+      avatarUrl: '/api/images/drive/1SNWYU3SGMajk5_O_Io0CNRETO-zhffQW',
+      image_url: '/api/images/drive/1SNWYU3SGMajk5_O_Io0CNRETO-zhffQW',
+      image_file_id: '1SNWYU3SGMajk5_O_Io0CNRETO-zhffQW',
+    };
+    const incomingEmpty = {
+      id: 'emp-ahmed-alabed',
+      nameAr: 'د. أحمد العابد — الرئيس التنفيذي',
+      avatarUrl: '',
+      image_url: '',
+      image_file_id: '',
+    };
+
+    const preserved = preserveExistingImageFields(incomingEmpty, existing);
+    assert.equal(preserved.image_url, '/api/images/drive/1SNWYU3SGMajk5_O_Io0CNRETO-zhffQW');
+    assert.equal(preserved.image_file_id, '1SNWYU3SGMajk5_O_Io0CNRETO-zhffQW');
+
+    const cleared = preserveExistingImageFields(incomingEmpty, existing, { allowClearImages: true });
+    assert.equal(cleared.image_url, '');
+    assert.equal(cleared.image_file_id, '');
+  });
+});
+

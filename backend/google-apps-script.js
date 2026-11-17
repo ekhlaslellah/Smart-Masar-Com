@@ -1,25 +1,31 @@
 /**
  * @file Google Apps Script Backend for Smart Masar (سمارت مسار)
- * Includes Google Drive Image Upload + Google Sheets Metadata Synchronization
+ * Includes Google Drive Image Upload, Private Admin Backups, and Google Sheets Synchronization
  * @license Apache-2.0
  *
  * Instructions:
- * 1. Open your Google Sheet ("مؤسسة Masar Smart" connected to SheetDB https://sheetdb.io/api/v1/gnn52l70oflrp)
+ * 1. Open your Google Sheet ("قاعدة بيانات سمارت مسار" — Spreadsheet ID: 1-7tcV3S0YMuee7mpFvqtUj9SCsC1acb-_qrw5uqa1yE)
  * 2. Extensions > Apps Script
  * 3. Replace Code.gs with this script
- * 4. Run `initialSetup()` once from the editor to create/initialize all sheets (Team, Services, Pages, SiteSettings, Departments, Jobs) and create the dedicated Google Drive folder
- * 5. Project Settings > Script Properties:
+ * 4. Project Settings > Script Properties:
  *    - `SMART_MASAR_ADMIN_KEY`: Your secret admin key (must match SMART_MASAR_ADMIN_KEY on your server)
- *    - `SMART_MASAR_DRIVE_FOLDER_ID`: Your Google Drive Folder ID (created automatically by initialSetup if empty)
- * 6. Deploy > New Deployment > Web App:
+ *    - `SMART_MASAR_DRIVE_FOLDER_ID`: 1ss80vbtewFJ09876Re5uIH2g3Xu7tB0l
+ *    - `SMART_MASAR_SERVICES_FOLDER_ID`: 1qS_b1gOnR66V9WoPxjgj69IoGn5Yc_f3
+ * 5. Deploy > New Deployment > Web App:
  *    - Execute as: Me
  *    - Who has access: Anyone
- * 7. Copy the Web App URL and enter it in Smart Masar Admin Settings (/admin/settings).
+ * 6. Copy the Web App URL and set it as `GOOGLE_APPS_SCRIPT_URL` in environment variables or Admin Settings.
  */
 
 const SCRIPT_PROP_KEY = 'SMART_MASAR_ADMIN_KEY';
 const DRIVE_FOLDER_PROP_KEY = 'SMART_MASAR_DRIVE_FOLDER_ID';
+const SERVICES_FOLDER_PROP_KEY = 'SMART_MASAR_SERVICES_FOLDER_ID';
+const PRIVATE_BACKUP_FOLDER_PROP_KEY = 'SMART_MASAR_PRIVATE_BACKUP_FOLDER_ID';
+const DEFAULT_SPREADSHEET_ID = '1-7tcV3S0YMuee7mpFvqtUj9SCsC1acb-_qrw5uqa1yE';
+const DEFAULT_EMPLOYEES_FOLDER_ID = '1ss80vbtewFJ09876Re5uIH2g3Xu7tB0l';
+const DEFAULT_SERVICES_FOLDER_ID = '1qS_b1gOnR66V9WoPxjgj69IoGn5Yc_f3';
 const DEFAULT_FOLDER_NAME = 'Smart Masar Website Images';
+const PRIVATE_BACKUP_FOLDER_NAME = 'Smart Masar Private Admin Backups';
 
 function getAdminApiKey() {
   var props = PropertiesService.getScriptProperties();
@@ -27,12 +33,25 @@ function getAdminApiKey() {
   return key ? String(key).trim() : '';
 }
 
+function getTargetSpreadsheet(customSpreadsheetId) {
+  try {
+    var active = SpreadsheetApp.getActiveSpreadsheet();
+    if (active) return active;
+  } catch (e) {}
+  var targetId = customSpreadsheetId || DEFAULT_SPREADSHEET_ID;
+  return SpreadsheetApp.openById(targetId);
+}
+
 /**
  * Gets or creates the dedicated Google Drive folder for storing website images.
  */
-function getOrCreateImageFolder(customFolderId) {
+function getOrCreateImageFolder(customFolderId, entityType) {
   var props = PropertiesService.getScriptProperties();
-  var folderId = customFolderId || props.getProperty(DRIVE_FOLDER_PROP_KEY);
+  var fallbackFolderId =
+    entityType === 'services'
+      ? props.getProperty(SERVICES_FOLDER_PROP_KEY) || DEFAULT_SERVICES_FOLDER_ID
+      : props.getProperty(DRIVE_FOLDER_PROP_KEY) || DEFAULT_EMPLOYEES_FOLDER_ID;
+  var folderId = customFolderId || fallbackFolderId;
 
   if (folderId) {
     try {
@@ -43,15 +62,40 @@ function getOrCreateImageFolder(customFolderId) {
     }
   }
 
-  // Search for existing folder by name or create a new one
   var folders = DriveApp.getFoldersByName(DEFAULT_FOLDER_NAME);
   var folder = folders.hasNext()
     ? folders.next()
     : DriveApp.createFolder(DEFAULT_FOLDER_NAME);
 
-  // Ensure folder is publicly viewable by link so direct image delivery works
   folder.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
   props.setProperty(DRIVE_FOLDER_PROP_KEY, folder.getId());
+  return folder;
+}
+
+/**
+ * Gets or creates a strictly PRIVATE Google Drive folder for storing sensitive admin backups.
+ * Restricted to `DriveApp.Access.PRIVATE` so no public link can access employee/review backups.
+ */
+function getOrCreatePrivateBackupFolder() {
+  var props = PropertiesService.getScriptProperties();
+  var folderId = props.getProperty(PRIVATE_BACKUP_FOLDER_PROP_KEY);
+  if (folderId) {
+    try {
+      var existing = DriveApp.getFolderById(folderId);
+      if (existing) {
+        existing.setSharing(DriveApp.Access.PRIVATE, DriveApp.Permission.NONE);
+        return existing;
+      }
+    } catch (e) {}
+  }
+
+  var folders = DriveApp.getFoldersByName(PRIVATE_BACKUP_FOLDER_NAME);
+  var folder = folders.hasNext()
+    ? folders.next()
+    : DriveApp.createFolder(PRIVATE_BACKUP_FOLDER_NAME);
+
+  folder.setSharing(DriveApp.Access.PRIVATE, DriveApp.Permission.NONE);
+  props.setProperty(PRIVATE_BACKUP_FOLDER_PROP_KEY, folder.getId());
   return folder;
 }
 
@@ -72,12 +116,13 @@ function doGet(e) {
     var params = e && e.parameter ? e.parameter : {};
     var action = params.action || 'getPublicData';
 
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var ss = getTargetSpreadsheet(params.spreadsheetId);
 
     if (action === 'ping') {
       return createJsonResponse({
         success: true,
         status: 'healthy',
+        spreadsheetId: ss ? ss.getId() : DEFAULT_SPREADSHEET_ID,
         service: 'Smart Masar Google Sheets & Drive Backend',
         timestamp: new Date().toISOString(),
       });
@@ -148,7 +193,26 @@ function doPost(e) {
     }
 
     var action = payload.action;
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
+
+    // ---------------------------------------------------------
+    // ACTION: savePrivateBackupToDrive
+    // Saves full recovery JSON in a strictly PRIVATE Drive folder
+    // ---------------------------------------------------------
+    if (action === 'savePrivateBackupToDrive') {
+      var privateFolder = getOrCreatePrivateBackupFolder();
+      var backupName = payload.fileName || 'smart-masar-private-backup-' + new Date().getTime() + '.json';
+      var jsonContent = JSON.stringify(payload.backupData || {}, null, 2);
+      var backupBlob = Utilities.newBlob(jsonContent, 'application/json', backupName);
+      var backupFile = privateFolder.createFile(backupBlob);
+      backupFile.setSharing(DriveApp.Access.PRIVATE, DriveApp.Permission.NONE);
+
+      return createJsonResponse({
+        success: true,
+        fileId: backupFile.getId(),
+        folderId: privateFolder.getId(),
+        accessLevel: 'PRIVATE',
+      });
+    }
 
     // ---------------------------------------------------------
     // ACTION: uploadImageToDrive
@@ -176,8 +240,11 @@ function doPost(e) {
         });
       }
 
+      var entityType = payload.entityType;
+      var entityId = payload.entityId;
+      var altAr = payload.altAr || '';
       var fileName = payload.fileName || 'smart-masar-image-' + new Date().getTime() + '.png';
-      var folder = getOrCreateImageFolder(payload.folderId);
+      var folder = getOrCreateImageFolder(payload.folderId, entityType);
       var blob = Utilities.newBlob(decodedBytes, mimeType, fileName);
       var driveFile = folder.createFile(blob);
 
@@ -185,12 +252,11 @@ function doPost(e) {
       driveFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
       var fileId = driveFile.getId();
 
-      // Direct image display URLs (never use the HTML /view page as an <img src>)
+      var proxyUrl = '/api/images/drive/' + fileId;
       var directUrl = 'https://lh3.googleusercontent.com/d/' + fileId;
       var thumbnailUrl = 'https://drive.google.com/thumbnail?id=' + fileId + '&sz=w1600';
       var viewUrl = 'https://drive.google.com/file/d/' + fileId + '/view';
 
-      // Optionally move replaced image to trash without touching sheet data
       if (payload.previousFileId && payload.previousFileId !== fileId) {
         try {
           DriveApp.getFileById(payload.previousFileId).setTrashed(true);
@@ -199,45 +265,50 @@ function doPost(e) {
         }
       }
 
-      // Automatically save the resulting public display URL into the corresponding Google Sheets record
-      var entityType = payload.entityType;
-      var entityId = payload.entityId;
-      var altAr = payload.altAr || '';
-
-      if (entityType === 'team' && entityId) {
-        updateRowById(ss, 'Team', entityId, {
-          avatarUrl: directUrl,
-          image_url: directUrl,
-          image_file_id: fileId,
-          image_alt_ar: altAr,
-        });
-      } else if (entityType === 'services' && entityId) {
-        updateRowById(ss, 'Services', entityId, {
-          image_url: directUrl,
-          image_file_id: fileId,
-          image_alt_ar: altAr,
-        });
-      } else if (entityType === 'pages' && entityId) {
-        updateRowById(ss, 'Pages', entityId, {
-          hero_image_url: directUrl,
-          hero_image_file_id: fileId,
-        });
-      } else if (entityType === 'settings') {
-        var currentSettings = readSiteSettings(ss);
-        currentSettings.logo_url = directUrl;
-        currentSettings.logo_file_id = fileId;
-        writeSiteSettings(ss, currentSettings);
+      try {
+        var ssForImg = getTargetSpreadsheet(payload.spreadsheetId);
+        if (ssForImg) {
+          if (entityType === 'team' && entityId) {
+            updateRowById(ssForImg, 'Team', entityId, {
+              avatarUrl: proxyUrl,
+              image_url: proxyUrl,
+              image_file_id: fileId,
+              image_alt_ar: altAr,
+            });
+          } else if (entityType === 'services' && entityId) {
+            updateRowById(ssForImg, 'Services', entityId, {
+              image_url: proxyUrl,
+              image_file_id: fileId,
+              image_alt_ar: altAr,
+            });
+          } else if (entityType === 'pages' && entityId) {
+            updateRowById(ssForImg, 'Pages', entityId, {
+              hero_image_url: proxyUrl,
+              hero_image_file_id: fileId,
+            });
+          } else if (entityType === 'settings') {
+            var currentSettings = readSiteSettings(ssForImg);
+            currentSettings.logo_url = proxyUrl;
+            currentSettings.logo_file_id = fileId;
+            writeSiteSettings(ssForImg, currentSettings);
+          }
+        }
+      } catch (sheetUpdateErr) {
+        Logger.log('Optional sheet update inside uploadImageToDrive skipped: ' + sheetUpdateErr);
       }
 
       return createJsonResponse({
         success: true,
         fileId: fileId,
+        proxyUrl: proxyUrl,
         directUrl: directUrl,
         thumbnailUrl: thumbnailUrl,
         viewUrl: viewUrl,
         folderId: folder.getId(),
       });
     }
+
+    var ss = getTargetSpreadsheet(payload.spreadsheetId);
 
     if (action === 'updateJob') {
       var jobData = payload.job;

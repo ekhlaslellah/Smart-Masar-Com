@@ -8,6 +8,7 @@ import { useApp } from '../../context/AppContext';
 import { ImageUploadField } from './ImageUploadField';
 import {
   fetchSheetDbDiagnostics,
+  SheetDbDiagnosticsResult,
   saveServerCloudConfig,
   DEFAULT_SHEETDB_ENDPOINT,
 } from '../../services/apiService';
@@ -66,6 +67,7 @@ export const AdminSettings: React.FC = () => {
   );
 
   const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
+  const [sheetDbDiag, setSheetDbDiag] = useState<SheetDbDiagnosticsResult | null>(null);
   const [isTesting, setIsTesting] = useState(false);
   const [isCheckingSheetDb, setIsCheckingSheetDb] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -123,9 +125,16 @@ export const AdminSettings: React.FC = () => {
   const handleCheckSheetDbStatus = async () => {
     setIsCheckingSheetDb(true);
     setTestResult(null);
+    setSheetDbDiag(null);
     const diag = await fetchSheetDbDiagnostics('');
+    setSheetDbDiag(diag);
     setTestResult({
-      success: Boolean(diag.reachable),
+      success: Boolean(
+        diag.reachable &&
+          diag.readAccess?.ok !== false &&
+          diag.writeAccess?.ok !== false &&
+          (!diag.missingSheets || diag.missingSheets.length === 0)
+      ),
       message: diag.messageAr,
     });
     setIsCheckingSheetDb(false);
@@ -233,7 +242,7 @@ export const AdminSettings: React.FC = () => {
                 type="url"
                 value={sheetDbUrl}
                 onChange={(e) => setSheetDbUrl(e.target.value)}
-                placeholder="https://sheetdb.io/api/v1/gnn52l70oflrp"
+                placeholder="https://sheetdb.io/api/v1/9537p5ct7m308"
                 className="w-full px-3.5 py-2 text-xs rounded-xl border border-[#CBD5E1] bg-[#F5F8FC] focus:outline-none focus:border-[#2563EB] font-mono"
                 dir="ltr"
               />
@@ -283,18 +292,83 @@ export const AdminSettings: React.FC = () => {
           {/* Test connection results */}
           {testResult && (
             <div
-              className={`p-3.5 rounded-xl border text-xs flex items-start gap-2.5 leading-relaxed ${
+              className={`p-3.5 rounded-xl border text-xs space-y-3 leading-relaxed ${
                 testResult.success
                   ? 'bg-emerald-50 text-emerald-900 border-emerald-200'
                   : 'bg-amber-50 text-amber-900 border-amber-200'
               }`}
             >
-              {testResult.success ? (
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-              ) : (
-                <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-2.5">
+                {testResult.success ? (
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                ) : (
+                  <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                )}
+                <span className="font-semibold">{testResult.message}</span>
+              </div>
+
+              {sheetDbDiag && sheetDbDiag.worksheetChecks && (
+                <div className="pt-2 border-t border-emerald-200/70 space-y-2.5 text-[11px]">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {sheetDbDiag.readAccess && (
+                      <div className="p-2.5 rounded-lg bg-white/90 border border-slate-200 text-slate-800">
+                        <div className="font-bold text-[#142B4F] mb-0.5">
+                          فحص صلاحية القراءة (GET):{' '}
+                          <span
+                            className={
+                              sheetDbDiag.readAccess.ok ? 'text-emerald-700' : 'text-red-600'
+                            }
+                          >
+                            {sheetDbDiag.readAccess.ok ? 'متاحة (6/6)' : 'غير مكتملة'}
+                          </span>
+                        </div>
+                        <div className="text-slate-600">{sheetDbDiag.readAccess.detailAr}</div>
+                      </div>
+                    )}
+                    {sheetDbDiag.writeAccess && (
+                      <div className="p-2.5 rounded-lg bg-white/90 border border-slate-200 text-slate-800">
+                        <div className="font-bold text-[#142B4F] mb-0.5">
+                          فحص صلاحية الكتابة الآمن (PATCH Probe):{' '}
+                          <span
+                            className={
+                              sheetDbDiag.writeAccess.ok ? 'text-emerald-700' : 'text-red-600'
+                            }
+                          >
+                            {sheetDbDiag.writeAccess.ok ? 'مفعّلة ومؤكدة' : 'مقيدة / معطلة'}
+                          </span>
+                        </div>
+                        <div className="text-slate-600">{sheetDbDiag.writeAccess.detailAr}</div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+                    {Object.entries(sheetDbDiag.worksheetChecks).map(([tabName, info]) => (
+                      <div
+                        key={tabName}
+                        className="p-2 rounded-lg bg-white border border-slate-200 text-slate-800 flex flex-col justify-between"
+                      >
+                        <div className="flex items-center justify-between gap-1">
+                          <span className="font-mono font-bold text-[#142B4F]">{tabName}</span>
+                          <span
+                            className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                              info.exists && info.headersOk !== false
+                                ? 'bg-emerald-100 text-emerald-800'
+                                : 'bg-red-100 text-red-800'
+                            }`}
+                          >
+                            {info.exists && info.headersOk !== false ? 'جاهز' : 'ناقص'}
+                          </span>
+                        </div>
+                        <div className="mt-1 text-[10px] text-slate-600">
+                          الأعمدة: {info.headers ? info.headers.length : '—'} | السجلات:{' '}
+                          {info.rowCount}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
-              <span>{testResult.message}</span>
             </div>
           )}
 

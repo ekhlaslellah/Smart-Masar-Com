@@ -30,6 +30,8 @@ import {
   DEFAULT_MAX_IMAGE_SIZE_BYTES,
   extractGoogleDriveFileId,
   resolvePublicImageUrl,
+  sanitizeRecordForSheetPatch,
+  preserveExistingImageFields,
 } from './src/utils/imageUrl';
 import {
   getConfiguredAdminKey,
@@ -49,8 +51,12 @@ const __dirname =
     : MODULE_DIR;
 
 const PORT = Number(process.env.PORT) || 3000;
+const LEGACY_SHEETDB_URL = 'https://sheetdb.io/api/v1/gnn52l70oflrp';
 const DEFAULT_SHEETDB_URL =
-  process.env.SHEETDB_API_URL || 'https://sheetdb.io/api/v1/gnn52l70oflrp';
+  process.env.SHEETDB_API_URL || 'https://sheetdb.io/api/v1/9537p5ct7m308';
+export const DEFAULT_SPREADSHEET_ID =
+  process.env.GOOGLE_SPREADSHEET_ID ||
+  '1-7tcV3S0YMuee7mpFvqtUj9SCsC1acb-_qrw5uqa1yE';
 
 export const REQUIRED_WORKSHEETS = [
   'Team',
@@ -100,13 +106,23 @@ export interface ServerDatabase {
   backendMeta: {
     webAppUrl: string;
     sheetDbUrl: string;
+    spreadsheetId?: string;
     driveFolderId: string;
+    servicesDriveFolderId?: string;
     lastSyncTime?: string;
     lastSheetDbStatus?: string;
     externalSource?: string;
     availableSheets?: string[];
     missingRequiredSheets?: string[];
   };
+}
+
+function resolveConfiguredSheetDbUrl(candidateUrl?: string): string {
+  const trimmed = (candidateUrl || '').trim();
+  if (!trimmed || trimmed === LEGACY_SHEETDB_URL) {
+    return DEFAULT_SHEETDB_URL;
+  }
+  return trimmed;
 }
 
 function loadDatabase(): ServerDatabase {
@@ -138,7 +154,9 @@ function loadDatabase(): ServerDatabase {
               parsed.backendMeta?.webAppUrl ||
               process.env.GOOGLE_APPS_SCRIPT_URL ||
               '',
-            sheetDbUrl: parsed.backendMeta?.sheetDbUrl || DEFAULT_SHEETDB_URL,
+            sheetDbUrl: resolveConfiguredSheetDbUrl(
+              parsed.backendMeta?.sheetDbUrl
+            ),
             driveFolderId:
               parsed.backendMeta?.driveFolderId ||
               process.env.GOOGLE_DRIVE_FOLDER_ID ||
@@ -288,76 +306,191 @@ function parseJsonStringArray(val: unknown): string[] {
   return [];
 }
 
+export interface WorksheetDiagnostic {
+  exists: boolean;
+  readOk: boolean;
+  headersOk: boolean;
+  status: number;
+  rowCount: number;
+  headers: string[];
+}
+
 /**
- * Queries SheetDB API status (name, sheets, keys, and all 6 required worksheet tabs)
- * without exposing write credentials.
+ * Safely tests SheetDB API connectivity across all 6 required worksheet tabs
+ * (Team, Services, Pages, SiteSettings, Departments, Jobs), verifying both
+ * read access and non-destructive write permission without mutating data or exposing credentials.
  */
 async function checkSheetDbStatus(sheetDbUrl: string): Promise<{
   reachable: boolean;
   spreadsheetName?: string;
+  spreadsheetId?: string;
   sheets?: string[];
   requiredSheets?: string[];
   missingSheets?: string[];
-  worksheetChecks?: Record<string, { exists: boolean; status: number; rowCount: number }>;
+  worksheetChecks?: Record<string, WorksheetDiagnostic>;
+  readAccess?: { ok: boolean; verifiedTabs: number; totalRows: number; detailAr: string };
+  writeAccess?: { ok: boolean; status: number; method: string; detailAr: string };
   keys?: string[];
   isEmptyHeader?: boolean;
   messageAr: string;
 }> {
   try {
-    const cleanUrl = sheetDbUrl.replace(/\/+$/, '');
+    const cleanUrl = resolveConfiguredSheetDbUrl(sheetDbUrl).replace(/\/+$/, '');
     const [nameRes, sheetsRes, keysRes] = await Promise.all([
       fetch(`${cleanUrl}/name`),
       fetch(`${cleanUrl}/sheets`),
       fetch(`${cleanUrl}/keys`),
     ]);
 
+    if (!sheetsRes.ok) {
+      return {
+        reachable: false,
+        messageAr: `تعذر الوصول إلى نقطة نهاية SheetDB (HTTP ${sheetsRes.status}). تحقق من صحة الرابط وصلاحيات الوصول.`,
+      };
+    }
+
     const nameJson: any = nameRes.ok ? await nameRes.json().catch(() => ({})) : {};
-    const sheetsJson: any = sheetsRes.ok ? await sheetsRes.json().catch(() => ({})) : {};
+    const sheetsJson: any = await sheetsRes.json().catch(() => ({}));
     const keysJson: any = await keysRes.json().catch(() => ({}));
 
     const spreadsheetName = nameJson?.name || 'Google Sheet';
     const sheets: string[] = Array.isArray(sheetsJson?.sheets) ? sheetsJson.sheets : [];
-    const isEmptyHeader =
-      Boolean(keysJson?.error) &&
-      String(keysJson.error).toLowerCase().includes('spreadsheet is empty');
     const keys: string[] = Array.isArray(keysJson) ? keysJson : [];
 
     const missingSheets: string[] = [];
-    const worksheetChecks: Record<
-      string,
-      { exists: boolean; status: number; rowCount: number }
-    > = {};
+    const tabsWithoutHeaders: string[] = [];
+    const worksheetChecks: Record<string, WorksheetDiagnostic> = {};
+    let verifiedReadTabs = 0;
+    let totalRowsAcrossTabs = 0;
 
     for (const reqSheet of REQUIRED_WORKSHEETS) {
       const existsInList = sheets.includes(reqSheet);
       if (!existsInList) {
         missingSheets.push(reqSheet);
-        worksheetChecks[reqSheet] = { exists: false, status: 404, rowCount: 0 };
+        worksheetChecks[reqSheet] = {
+          exists: false,
+          readOk: false,
+          headersOk: false,
+          status: 404,
+          rowCount: 0,
+          headers: [],
+        };
       } else {
         try {
-          const tabRes = await fetch(
-            `${cleanUrl}?sheet=${encodeURIComponent(reqSheet)}`
-          );
+          const sheetParam = `?sheet=${encodeURIComponent(reqSheet)}`;
+          const [tabRes, tabKeysRes] = await Promise.all([
+            fetch(`${cleanUrl}${sheetParam}`),
+            fetch(`${cleanUrl}/keys${sheetParam}`),
+          ]);
+
           const tabRows: any = tabRes.ok
             ? await tabRes.json().catch(() => [])
             : [];
+          const tabKeysJson: any = await tabKeysRes.json().catch(() => []);
+          const tabHeaders: string[] = Array.isArray(tabKeysJson)
+            ? tabKeysJson.map(String)
+            : [];
+          const headersOk = tabKeysRes.ok && tabHeaders.length > 0 && !tabKeysJson?.error;
+          const readOk = tabRes.ok && Array.isArray(tabRows);
+          const rowCount = Array.isArray(tabRows) ? tabRows.length : 0;
+
           worksheetChecks[reqSheet] = {
-            exists: tabRes.ok,
+            exists: true,
+            readOk,
+            headersOk,
             status: tabRes.status,
-            rowCount: Array.isArray(tabRows) ? tabRows.length : 0,
+            rowCount,
+            headers: tabHeaders,
           };
-          if (!tabRes.ok) missingSheets.push(reqSheet);
+
+          if (readOk) {
+            verifiedReadTabs += 1;
+            totalRowsAcrossTabs += rowCount;
+          } else {
+            missingSheets.push(reqSheet);
+          }
+          if (!headersOk) {
+            tabsWithoutHeaders.push(reqSheet);
+          }
         } catch {
-          worksheetChecks[reqSheet] = { exists: false, status: 500, rowCount: 0 };
+          worksheetChecks[reqSheet] = {
+            exists: false,
+            readOk: false,
+            headersOk: false,
+            status: 500,
+            rowCount: 0,
+            headers: [],
+          };
           missingSheets.push(reqSheet);
         }
       }
     }
 
+    // Safe non-destructive write permission probe:
+    // Sends a PATCH for a guaranteed non-existent key (__smart_masar_connectivity_probe__) on SiteSettings.
+    // SheetDB returns 200 {"updated":0} or 404 {"error":"No results found"} when PATCH write access is enabled,
+    // without inserting, modifying, or deleting any row. If write access is disabled/blocked, it returns 401/403/405.
+    let writeAccess = {
+      ok: false,
+      status: 0,
+      method: 'PATCH (Non-Destructive Probe)',
+      detailAr: 'لم يتم التحقق من صلاحية الكتابة بعد.',
+    };
+
+    if (sheets.includes('SiteSettings')) {
+      try {
+        const probeUrl = `${cleanUrl}/Key/__smart_masar_connectivity_probe__?sheet=SiteSettings`;
+        const probeRes = await fetch(probeUrl, {
+          method: 'PATCH',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ data: { Value: 'probe' } }),
+        });
+        const probeJson: any = await probeRes.json().catch(() => ({}));
+        const isNotFoundAfterWriteAuth =
+          probeRes.status === 404 &&
+          String(probeJson?.error || '')
+            .toLowerCase()
+            .includes('no results found');
+        const writePermitted = probeRes.ok || isNotFoundAfterWriteAuth;
+
+        writeAccess = {
+          ok: writePermitted,
+          status: probeRes.status,
+          method: 'PATCH (Non-Destructive Probe)',
+          detailAr: writePermitted
+            ? 'صلاحية الكتابة والتحديث (POST / PATCH) مفعّلة ومتاحة دون أخطاء.'
+            : `صلاحية الكتابة مقيدة أو مرفوضة من SheetDB (HTTP ${probeRes.status}: ${
+                probeJson?.error || 'Write disabled'
+              }).`,
+        };
+      } catch (probeErr: any) {
+        writeAccess = {
+          ok: false,
+          status: 500,
+          method: 'PATCH (Non-Destructive Probe)',
+          detailAr: `تعذر اختبار صلاحية الكتابة: ${probeErr?.message || String(probeErr)}`,
+        };
+      }
+    }
+
+    const isEmptyHeader = tabsWithoutHeaders.length > 0;
+    const readAccess = {
+      ok: missingSheets.length === 0 && verifiedReadTabs === REQUIRED_WORKSHEETS.length,
+      verifiedTabs: verifiedReadTabs,
+      totalRows: totalRowsAcrossTabs,
+      detailAr:
+        verifiedReadTabs === REQUIRED_WORKSHEETS.length
+          ? `صلاحية القراءة (GET) مفعّلة لجميع الأوراق الست (${verifiedReadTabs}/6) — إجمالي السجلات الحالية: ${totalRowsAcrossTabs} سجل.`
+          : `تم التحقق من قراءة ${verifiedReadTabs} من أصل 6 أوراق مطلوبة.`,
+    };
+
     db.backendMeta.availableSheets = sheets;
     db.backendMeta.missingRequiredSheets = missingSheets;
 
-    if (isEmptyHeader || missingSheets.length > 0) {
+    if (missingSheets.length > 0 || isEmptyHeader) {
       return {
         reachable: true,
         spreadsheetName,
@@ -365,28 +498,42 @@ async function checkSheetDbStatus(sheetDbUrl: string): Promise<{
         requiredSheets: [...REQUIRED_WORKSHEETS],
         missingSheets,
         worksheetChecks,
-        keys: [],
+        readAccess,
+        writeAccess,
+        keys,
         isEmptyHeader,
-        messageAr: `متصل بـ SheetDB (ملف "${spreadsheetName}") — الأوراق الحالية في الملف: [${sheets.join(
+        messageAr: `متصل بـ SheetDB (ملف "${spreadsheetName}") — الأوراق المتوفرة: [${sheets.join(
           '، '
-        )}]. الأوراق الست المطلوبة (${REQUIRED_WORKSHEETS.join(
-          ', '
-        )}) غير مهيأة بعد؛ يرجى تشغيل دالة initialSetup() مرة واحدة في Google Apps Script لإنشاء الأوراق الست وعناوين الأعمدة تلقائياً.`,
+        )}]. الأوراق الناقصة أو غير المهيأة بالأعمدة: [${[
+          ...new Set([...missingSheets, ...tabsWithoutHeaders]),
+        ].join('، ')}]. يرجى التأكد من وجود الأوراق الست وعناوين الأعمدة في الصف الأول.`,
       };
     }
+
+    const emptyDataNotice =
+      totalRowsAcrossTabs === 0
+        ? ' (ملاحظة: الأوراق الست مهيأة بعناوين الأعمدة الصحيحة ولكنها فارغة من السجلات حالياً — جاهزة لاستقبال البيانات المعتمدة).'
+        : ` (إجمالي السجلات المحفوظة: ${totalRowsAcrossTabs} سجل).`;
 
     return {
       reachable: true,
       spreadsheetName,
+      spreadsheetId: db.backendMeta.spreadsheetId || DEFAULT_SPREADSHEET_ID,
       sheets,
       requiredSheets: [...REQUIRED_WORKSHEETS],
       missingSheets: [],
       worksheetChecks,
+      readAccess,
+      writeAccess,
       keys,
       isEmptyHeader: false,
-      messageAr: `متصل بنجاح بـ SheetDB (ملف "${spreadsheetName}") — كافة الأوراق الست (${REQUIRED_WORKSHEETS.join(
+      messageAr: `متصل بنجاح بـ SheetDB (ملف "${spreadsheetName}" — Spreadsheet ID: ${
+        db.backendMeta.spreadsheetId || DEFAULT_SPREADSHEET_ID
+      }) — كافة الأوراق الست (${REQUIRED_WORKSHEETS.join(
         '، '
-      )}) جاهزة ومتصلة.`,
+      )}) موجودة ومهيأة؛ القراءة: ${readAccess.ok ? 'متاحة (6/6)' : 'غير مكتملة'}، الكتابة: ${
+        writeAccess.ok ? 'متاحة ومؤكدة' : 'غير مفعلة'
+      }${emptyDataNotice}`,
     };
   } catch (err: any) {
     return {
@@ -399,6 +546,7 @@ async function checkSheetDbStatus(sheetDbUrl: string): Promise<{
 /**
  * Hydrates server database (`db`) from the real external database (Google Apps Script or SheetDB)
  * whenever the external worksheets exist and contain records.
+ * Never overwrites or seeds outdated demo records into an empty external database.
  */
 async function hydrateFromExternalDatabase(force = false): Promise<void> {
   const now = Date.now();
@@ -420,7 +568,14 @@ async function hydrateFromExternalDatabase(force = false): Promise<void> {
         if (json?.success && json?.data) {
           const d = json.data;
           if (d.profile && Object.keys(d.profile).length > 0) {
-            db.profile = { ...db.profile, ...d.profile };
+            db.profile = {
+              ...db.profile,
+              ...d.profile,
+              logo_url: resolvePublicImageUrl(
+                d.profile.logo_url,
+                d.profile.logo_file_id
+              ),
+            };
           }
           if (Array.isArray(d.departments) && d.departments.length > 0) {
             db.departments = d.departments;
@@ -477,11 +632,10 @@ async function hydrateFromExternalDatabase(force = false): Promise<void> {
     }
   }
 
-  // 2. Query SheetDB (`https://sheetdb.io/api/v1/gnn52l70oflrp`)
-  const sheetDbUrl = (db.backendMeta.sheetDbUrl || DEFAULT_SHEETDB_URL).replace(
-    /\/+$/,
-    ''
-  );
+  // 2. Query SheetDB (`https://sheetdb.io/api/v1/9537p5ct7m308`)
+  const sheetDbUrl = resolveConfiguredSheetDbUrl(
+    db.backendMeta.sheetDbUrl
+  ).replace(/\/+$/, '');
   if (!sheetDbUrl) return;
 
   try {
@@ -507,10 +661,51 @@ async function hydrateFromExternalDatabase(force = false): Promise<void> {
         if (Array.isArray(rows) && rows.length > 0) {
           const settingsObj: Record<string, any> = {};
           for (const r of rows) {
-            if (r.Key) settingsObj[r.Key] = r.Value;
+            if (r.Key) {
+              if (r.Key === 'valuesAr') {
+                try {
+                  const parsedValues =
+                    typeof r.Value === 'string' ? JSON.parse(r.Value) : r.Value;
+                  if (Array.isArray(parsedValues) && parsedValues.length > 0) {
+                    settingsObj.valuesAr = parsedValues;
+                  }
+                } catch {
+                  // Preserve existing valuesAr array if JSON parse fails
+                }
+              } else {
+                settingsObj[r.Key] = r.Value;
+              }
+            }
+            if (r.logo_url) {
+              settingsObj.logo_url = r.logo_url;
+            }
+            if (r.logo_file_id) {
+              settingsObj.logo_file_id = r.logo_file_id;
+            }
           }
           if (Object.keys(settingsObj).length > 0) {
-            db.profile = { ...db.profile, ...settingsObj };
+            if (settingsObj.services_drive_folder_id) {
+              db.backendMeta.servicesDriveFolderId = String(
+                settingsObj.services_drive_folder_id
+              );
+            }
+            if (settingsObj.google_spreadsheet_id) {
+              db.backendMeta.spreadsheetId = String(
+                settingsObj.google_spreadsheet_id
+              );
+            }
+            const resolvedLogo = resolvePublicImageUrl(
+              settingsObj.logo_url ?? db.profile.logo_url,
+              settingsObj.logo_file_id ?? db.profile.logo_file_id
+            );
+            db.profile = {
+              ...db.profile,
+              ...settingsObj,
+              valuesAr: Array.isArray(settingsObj.valuesAr)
+                ? settingsObj.valuesAr
+                : db.profile.valuesAr,
+              logo_url: resolvedLogo,
+            };
             hydratedAnyTab = true;
           }
         }
@@ -522,7 +717,13 @@ async function hydrateFromExternalDatabase(force = false): Promise<void> {
       if (res.ok) {
         const rows: any[] = await res.json().catch(() => []);
         if (Array.isArray(rows) && rows.length > 0) {
-          db.departments = rows as Department[];
+          db.departments = rows.map((d: any) => ({
+            id: String(d.id || ''),
+            nameAr: String(d.nameAr || ''),
+            nameEn: String(d.nameEn || ''),
+            iconName: String(d.iconName || 'Building2'),
+            badgeBg: String(d.badgeBg || '#101B32'),
+          }));
           hydratedAnyTab = true;
         }
       }
@@ -604,7 +805,7 @@ async function hydrateFromExternalDatabase(force = false): Promise<void> {
 
     db.backendMeta.externalSource = hydratedAnyTab
       ? 'sheetdb_live'
-      : 'server_db_awaiting_sheet_init';
+      : 'sheetdb_connected_empty_rows';
     saveDatabase(db);
   } catch {
     // Keep existing server db state if network call fails
@@ -612,18 +813,20 @@ async function hydrateFromExternalDatabase(force = false): Promise<void> {
 }
 
 /**
- * Updates a record in SheetDB (https://sheetdb.io/api/v1/gnn52l70oflrp) when the sheet tab & headers exist.
+ * Updates or inserts a record in SheetDB (https://sheetdb.io/api/v1/9537p5ct7m308) when the sheet tab & headers exist.
+ * When `options.allowClearImages` is false (default), empty image fields (`image_url`, `avatarUrl`, `image_file_id`, etc.)
+ * are omitted from the PATCH body so existing images in Google Sheets are never overwritten with empty strings.
  */
 async function syncRecordToSheetDb(
   sheetName: WorksheetName,
   matchField: string,
   matchValue: string,
-  recordData: Record<string, any>
+  recordData: Record<string, any>,
+  options?: { allowClearImages?: boolean }
 ): Promise<{ synced: boolean; detail: string }> {
-  const sheetDbUrl = (db.backendMeta.sheetDbUrl || DEFAULT_SHEETDB_URL).replace(
-    /\/+$/,
-    ''
-  );
+  const sheetDbUrl = resolveConfiguredSheetDbUrl(
+    db.backendMeta.sheetDbUrl
+  ).replace(/\/+$/, '');
   if (!sheetDbUrl) {
     return { synced: false, detail: 'لم يتم تكوين رابط SheetDB' };
   }
@@ -642,9 +845,9 @@ async function syncRecordToSheetDb(
     if (!hasTargetSheet) {
       return {
         synced: false,
-        detail: `تم الحفظ في قاعدة بيانات الخادم. الورقة "${sheetName}" غير موجودة بعد في ملف Google Sheets المرتبط بـ SheetDB (الأوراق الموجودة حالياً: ${availableSheets.join(
+        detail: `فشل الحفظ الدائم: الورقة "${sheetName}" غير موجودة في ملف Google Sheets المرتبط بـ SheetDB (الأوراق المتوفرة: ${availableSheets.join(
           ', '
-        )}). شغّل initialSetup() في Apps Script لإنشاء الأوراق الست.`,
+        )}).`,
       };
     }
 
@@ -653,15 +856,19 @@ async function syncRecordToSheetDb(
     // Check if the target sheet has headers initialized
     const keysRes = await fetch(`${sheetDbUrl}/keys${sheetQuery}`);
     const keysJson: any = await keysRes.json().catch(() => ({}));
-    if (keysJson?.error) {
+    if (!keysRes.ok || keysJson?.error) {
       return {
         synced: false,
-        detail:
-          'تم الحفظ في خادم سمارت مسار. جدول Google Sheets المرتبط بـ SheetDB يحتاج تهيئة الصف الأول (أسماء الأعمدة) عبر تشغيل initialSetup() في Apps Script.',
+        detail: `فشل الحفظ الدائم: الورقة "${sheetName}" في Google Sheets تفتقر إلى عناوين الأعمدة في الصف الأول.`,
       };
     }
 
-    // Try PATCH first (updates existing row by matchField/matchValue)
+    const sanitizedPatchPayload = sanitizeRecordForSheetPatch(
+      recordData,
+      options
+    );
+
+    // Try PATCH first (updates existing row by matchField/matchValue without overwriting images with empty strings)
     const patchUrl = `${sheetDbUrl}/${encodeURIComponent(
       matchField
     )}/${encodeURIComponent(matchValue)}${sheetQuery}`;
@@ -671,7 +878,7 @@ async function syncRecordToSheetDb(
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ data: recordData }),
+      body: JSON.stringify({ data: sanitizedPatchPayload }),
     });
 
     const patchJson: any = await patchRes.json().catch(() => ({}));
@@ -695,7 +902,8 @@ async function syncRecordToSheetDb(
       body: JSON.stringify({ data: [recordData] }),
     });
 
-    if (postRes.ok) {
+    const postJson: any = await postRes.json().catch(() => ({}));
+    if (postRes.ok && (Number(postJson?.created) > 0 || !postJson?.error)) {
       db.backendMeta.lastSyncTime = new Date().toLocaleTimeString('ar-JO');
       saveDatabase(db);
       return {
@@ -706,7 +914,9 @@ async function syncRecordToSheetDb(
 
     return {
       synced: false,
-      detail: `استجابة SheetDB: HTTP ${postRes.status}`,
+      detail: `رفض SheetDB كتابة السجل في "${sheetName}" (HTTP ${postRes.status}${
+        postJson?.error ? `: ${postJson.error}` : ''
+      })`,
     };
   } catch (err: any) {
     return {
@@ -717,7 +927,55 @@ async function syncRecordToSheetDb(
 }
 
 /**
- * Pushes full state bundle to Google Apps Script (if configured) or checks SheetDB tabs.
+ * Deletes a single record from a specific worksheet in SheetDB without touching other rows or tabs.
+ */
+async function deleteRecordFromSheetDb(
+  sheetName: WorksheetName,
+  matchField: string,
+  matchValue: string
+): Promise<{ synced: boolean; detail: string }> {
+  const sheetDbUrl = resolveConfiguredSheetDbUrl(
+    db.backendMeta.sheetDbUrl
+  ).replace(/\/+$/, '');
+  if (!sheetDbUrl) {
+    return { synced: false, detail: 'لم يتم تكوين رابط SheetDB' };
+  }
+
+  try {
+    const sheetQuery = `?sheet=${encodeURIComponent(sheetName)}`;
+    const deleteUrl = `${sheetDbUrl}/${encodeURIComponent(
+      matchField
+    )}/${encodeURIComponent(matchValue)}${sheetQuery}`;
+    const delRes = await fetch(deleteUrl, {
+      method: 'DELETE',
+      headers: { Accept: 'application/json' },
+    });
+    const delJson: any = await delRes.json().catch(() => ({}));
+    if (delRes.ok && !delJson?.error) {
+      db.backendMeta.lastSyncTime = new Date().toLocaleTimeString('ar-JO');
+      saveDatabase(db);
+      return {
+        synced: true,
+        detail: `تم حذف السجل (${matchValue}) من ورقة ${sheetName} في Google Sheets عبر SheetDB.`,
+      };
+    }
+    return {
+      synced: false,
+      detail: `فشل حذف السجل من "${sheetName}" في SheetDB (HTTP ${delRes.status}${
+        delJson?.error ? `: ${delJson.error}` : ''
+      })`,
+    };
+  } catch (err: any) {
+    return {
+      synced: false,
+      detail: `تعذر حذف السجل من SheetDB: ${err?.message || String(err)}`,
+    };
+  }
+}
+
+/**
+ * Pushes full state bundle across all 6 worksheets (SiteSettings, Departments, Team, Services, Pages, Jobs)
+ * to Google Apps Script (if configured) or SheetDB, and confirms every write succeeded.
  */
 async function syncBundleToExternalDatabase(): Promise<{
   synced: boolean;
@@ -750,7 +1008,7 @@ async function syncBundleToExternalDatabase(): Promise<{
         };
       }
     } catch {
-      // Fall through to SheetDB check
+      // Fall through to SheetDB sync
     }
   }
 
@@ -758,44 +1016,173 @@ async function syncBundleToExternalDatabase(): Promise<{
     db.backendMeta.sheetDbUrl || DEFAULT_SHEETDB_URL
   );
   if (
-    sheetStatus.reachable &&
-    (!sheetStatus.missingSheets || sheetStatus.missingSheets.length === 0) &&
-    !sheetStatus.isEmptyHeader
+    !sheetStatus.reachable ||
+    (sheetStatus.missingSheets && sheetStatus.missingSheets.length > 0) ||
+    sheetStatus.isEmptyHeader
   ) {
-    // Sync departments, employees, services, pages, and jobs to external SheetDB
-    for (const dept of db.departments) {
-      await syncRecordToSheetDb('Departments', 'id', dept.id, dept as any);
-    }
-    for (const emp of db.employees) {
-      await syncRecordToSheetDb('Team', 'id', emp.id, emp as any);
-    }
-    for (const srv of db.services) {
-      await syncRecordToSheetDb('Services', 'id', srv.id, {
-        ...srv,
-        featuresAr: JSON.stringify(srv.featuresAr),
-      });
-    }
-    for (const pg of db.pages) {
-      await syncRecordToSheetDb('Pages', 'id', pg.id, pg as any);
-    }
-    for (const job of db.jobs) {
-      await syncRecordToSheetDb('Jobs', 'id', job.id, {
-        ...job,
-        responsibilitiesAr: JSON.stringify(job.responsibilitiesAr),
-        qualificationsAr: JSON.stringify(job.qualificationsAr),
-        accountingSkillsAr: JSON.stringify(job.accountingSkillsAr),
-        softwareExperienceAr: JSON.stringify(job.softwareExperienceAr),
-      });
-    }
     return {
-      synced: true,
-      detail: 'تمت مزامنة السجلات مع Google Sheets عبر SheetDB بنجاح.',
+      synced: false,
+      detail: sheetStatus.messageAr,
     };
   }
 
+  if (sheetStatus.writeAccess && !sheetStatus.writeAccess.ok) {
+    return {
+      synced: false,
+      detail: sheetStatus.writeAccess.detailAr,
+    };
+  }
+
+  const failedWrites: string[] = [];
+
+  // 1. Sync SiteSettings (Tab: SiteSettings — 4 columns: Key, Value, logo_url, logo_file_id)
+  // Preserves all 19 original CompanyProfile keys + 3 cloud linkage keys = 22 total keys without losing any data.
+  const settingsEntries: Array<{
+    Key: string;
+    Value: string;
+    logo_url: string;
+    logo_file_id: string;
+  }> = [
+    { Key: 'nameAr', Value: db.profile.nameAr || '', logo_url: '', logo_file_id: '' },
+    { Key: 'nameEn', Value: db.profile.nameEn || '', logo_url: '', logo_file_id: '' },
+    { Key: 'taglineAr', Value: db.profile.taglineAr || '', logo_url: '', logo_file_id: '' },
+    { Key: 'taglineEn', Value: db.profile.taglineEn || '', logo_url: '', logo_file_id: '' },
+    { Key: 'industryAr', Value: db.profile.industryAr || '', logo_url: '', logo_file_id: '' },
+    { Key: 'industryEn', Value: db.profile.industryEn || '', logo_url: '', logo_file_id: '' },
+    { Key: 'visionAr', Value: db.profile.visionAr || '', logo_url: '', logo_file_id: '' },
+    { Key: 'missionAr', Value: db.profile.missionAr || '', logo_url: '', logo_file_id: '' },
+    {
+      Key: 'valuesAr',
+      Value: JSON.stringify(db.profile.valuesAr || []),
+      logo_url: '',
+      logo_file_id: '',
+    },
+    {
+      Key: 'aboutDescriptionAr',
+      Value: db.profile.aboutDescriptionAr || '',
+      logo_url: '',
+      logo_file_id: '',
+    },
+    { Key: 'email', Value: db.profile.email || '', logo_url: '', logo_file_id: '' },
+    { Key: 'phone', Value: db.profile.phone || '', logo_url: '', logo_file_id: '' },
+    { Key: 'locationAr', Value: db.profile.locationAr || '', logo_url: '', logo_file_id: '' },
+    {
+      Key: 'workingHoursAr',
+      Value: db.profile.workingHoursAr || '',
+      logo_url: '',
+      logo_file_id: '',
+    },
+    {
+      Key: 'googleFormsPlaceholderUrl',
+      Value: db.profile.googleFormsPlaceholderUrl || 'https://forms.gle/ZKfYUcUxoW6YgcKw6',
+      logo_url: '',
+      logo_file_id: '',
+    },
+    {
+      Key: 'logo_url',
+      Value: db.profile.logo_url || '',
+      logo_url: db.profile.logo_url || '',
+      logo_file_id: db.profile.logo_file_id || '',
+    },
+    {
+      Key: 'logo_file_id',
+      Value: db.profile.logo_file_id || '',
+      logo_url: db.profile.logo_url || '',
+      logo_file_id: db.profile.logo_file_id || '',
+    },
+    { Key: 'logo_alt_ar', Value: db.profile.logo_alt_ar || '', logo_url: '', logo_file_id: '' },
+    {
+      Key: 'drive_folder_id',
+      Value: db.profile.drive_folder_id || db.backendMeta.driveFolderId || '1ss80vbtewFJ09876Re5uIH2g3Xu7tB0l',
+      logo_url: '',
+      logo_file_id: '',
+    },
+    {
+      Key: 'services_drive_folder_id',
+      Value: db.backendMeta.servicesDriveFolderId || '1qS_b1gOnR66V9WoPxjgj69IoGn5Yc_f3',
+      logo_url: '',
+      logo_file_id: '',
+    },
+    {
+      Key: 'google_spreadsheet_id',
+      Value: db.backendMeta.spreadsheetId || DEFAULT_SPREADSHEET_ID,
+      logo_url: '',
+      logo_file_id: '',
+    },
+    {
+      Key: 'sheetdb_endpoint',
+      Value: resolveConfiguredSheetDbUrl(db.backendMeta.sheetDbUrl),
+      logo_url: '',
+      logo_file_id: '',
+    },
+  ];
+
+  for (const item of settingsEntries) {
+    const r = await syncRecordToSheetDb('SiteSettings', 'Key', item.Key, item);
+    if (!r.synced) failedWrites.push(`SiteSettings(${item.Key}): ${r.detail}`);
+  }
+
+  // 2. Sync Departments (Tab: Departments — strictly 5 columns: id, nameAr, nameEn, iconName, badgeBg)
+  for (const dept of db.departments) {
+    const deptRow: Department = {
+      id: dept.id,
+      nameAr: dept.nameAr,
+      nameEn: dept.nameEn,
+      iconName: dept.iconName,
+      badgeBg: dept.badgeBg,
+    };
+    const r = await syncRecordToSheetDb('Departments', 'id', dept.id, deptRow as any);
+    if (!r.synced) failedWrites.push(`Departments(${dept.id}): ${r.detail}`);
+  }
+
+  // 3. Sync Team (Tab: Team)
+  for (const emp of db.employees) {
+    const r = await syncRecordToSheetDb('Team', 'id', emp.id, emp as any);
+    if (!r.synced) failedWrites.push(`Team(${emp.id}): ${r.detail}`);
+  }
+
+  // 4. Sync Services (Tab: Services)
+  for (const srv of db.services) {
+    const r = await syncRecordToSheetDb('Services', 'id', srv.id, {
+      ...srv,
+      featuresAr: JSON.stringify(srv.featuresAr),
+    });
+    if (!r.synced) failedWrites.push(`Services(${srv.id}): ${r.detail}`);
+  }
+
+  // 5. Sync Pages (Tab: Pages)
+  for (const pg of db.pages) {
+    const r = await syncRecordToSheetDb('Pages', 'id', pg.id, pg as any);
+    if (!r.synced) failedWrites.push(`Pages(${pg.id}): ${r.detail}`);
+  }
+
+  // 6. Sync Jobs (Tab: Jobs)
+  for (const job of db.jobs) {
+    const r = await syncRecordToSheetDb('Jobs', 'id', job.id, {
+      ...job,
+      responsibilitiesAr: JSON.stringify(job.responsibilitiesAr),
+      qualificationsAr: JSON.stringify(job.qualificationsAr),
+      accountingSkillsAr: JSON.stringify(job.accountingSkillsAr),
+      softwareExperienceAr: JSON.stringify(job.softwareExperienceAr),
+    });
+    if (!r.synced) failedWrites.push(`Jobs(${job.id}): ${r.detail}`);
+  }
+
+  if (failedWrites.length > 0) {
+    return {
+      synced: false,
+      detail: `فشل تأكيد حفظ بعض السجلات في Google Sheets عبر SheetDB: ${failedWrites[0]}`,
+    };
+  }
+
+  db.backendMeta.lastSyncTime = new Date().toLocaleTimeString('ar-JO');
+  db.backendMeta.externalSource = 'sheetdb_live';
+  saveDatabase(db);
+
   return {
-    synced: false,
-    detail: sheetStatus.messageAr,
+    synced: true,
+    detail:
+      'تمت مزامنة وتأكيد حفظ جميع الجداول الستة (Team, Services, Pages, SiteSettings, Departments, Jobs) في Google Sheets عبر SheetDB بنجاح.',
   };
 }
 
@@ -822,9 +1209,16 @@ async function uploadToGoogleDriveViaAppsScript(params: {
     return {
       uploadedToDrive: false,
       error:
-        'رابط Google Apps Script غير مضبوط بعد — تم حفظ الصورة وتقديمها مباشرة عبر خادم الموقع.',
+        'التخزين الدائم للصور (Google Drive) غير متاح: لم يتم ضبط رابط Google Apps Script Web App بعد. لا يتم قبول روابط /uploads/ المحلية كبديل دائم.',
     };
   }
+
+  const targetFolderId =
+    params.entityType === 'services'
+      ? db.backendMeta.servicesDriveFolderId ||
+        '1qS_b1gOnR66V9WoPxjgj69IoGn5Yc_f3'
+      : db.backendMeta.driveFolderId ||
+        '1ss80vbtewFJ09876Re5uIH2g3Xu7tB0l';
 
   try {
     const res = await fetch(webAppUrl, {
@@ -835,7 +1229,7 @@ async function uploadToGoogleDriveViaAppsScript(params: {
       body: JSON.stringify({
         action: 'uploadImageToDrive',
         apiKey: getConfiguredAdminKey(),
-        folderId: db.backendMeta.driveFolderId || '',
+        folderId: targetFolderId,
         fileName: params.fileName,
         mimeType: params.mimeType,
         base64Data: params.base64Data,
@@ -849,7 +1243,7 @@ async function uploadToGoogleDriveViaAppsScript(params: {
     if (!res.ok) {
       return {
         uploadedToDrive: false,
-        error: `Apps Script HTTP ${res.status}`,
+        error: `فشل الاتصال بخدمة Google Drive عبر Apps Script (HTTP ${res.status})`,
       };
     }
 
@@ -867,7 +1261,7 @@ async function uploadToGoogleDriveViaAppsScript(params: {
 
     return {
       uploadedToDrive: false,
-      error: json?.error || 'لم يرجع Apps Script معرف ملف Google Drive',
+      error: json?.error || 'لم يرجع Apps Script معرف ملف Google Drive الدائم',
     };
   } catch (err: any) {
     return {
@@ -911,12 +1305,15 @@ function registerApiRoutes(app: express.Express) {
 
   /**
    * GET /api/public/data
-   * Hydrates from external SheetDB / Google Apps Script when worksheets are initialized,
+   * Always refreshes from the persistent external database (SheetDB / Google Apps Script)
    * and returns sanitized public website records (no keys, no admin credentials).
    */
-  app.get('/api/public/data', async (req: Request, res: Response) => {
-    const forceRefresh = req.query.refresh === '1';
-    await hydrateFromExternalDatabase(forceRefresh);
+  app.get('/api/public/data', async (_req: Request, res: Response) => {
+    res.setHeader(
+      'Cache-Control',
+      'no-store, no-cache, must-revalidate, proxy-revalidate'
+    );
+    await hydrateFromExternalDatabase(true);
 
     res.json({
       success: true,
@@ -931,10 +1328,10 @@ function registerApiRoutes(app: express.Express) {
       meta: {
         hasAppsScript: Boolean(db.backendMeta.webAppUrl),
         hasDriveFolder: Boolean(db.backendMeta.driveFolderId),
-        sheetDbUrl: db.backendMeta.sheetDbUrl || DEFAULT_SHEETDB_URL,
+        sheetDbUrl: resolveConfiguredSheetDbUrl(db.backendMeta.sheetDbUrl),
         lastSyncTime: db.backendMeta.lastSyncTime || null,
         externalSource:
-          db.backendMeta.externalSource || 'server_db_awaiting_sheet_init',
+          db.backendMeta.externalSource || 'sheetdb_connected_empty_rows',
         availableSheets: db.backendMeta.availableSheets || [],
         missingRequiredSheets:
           db.backendMeta.missingRequiredSheets || [...REQUIRED_WORKSHEETS],
@@ -943,57 +1340,238 @@ function registerApiRoutes(app: express.Express) {
   });
 
   /**
-   * GET /api/download-static-zip
-   * Downloads the ready-to-upload Static Hosting Production Build ZIP
-   * (index.html, compiled CSS/JS assets, images, standalone HTML, routing configs, and step-by-step README.md).
+   * GET /api/download-static-zip (Admin-Authenticated Only)
    */
-  app.get('/api/download-static-zip', (_req: Request, res: Response) => {
-    if (!fs.existsSync(STATIC_HOSTING_ZIP_PATH)) {
-      res.status(404).json({
-        success: false,
-        error: 'ملف حزمة الاستضافة الثابتة غير موجود حالياً على الخادم.',
-      });
-      return;
+  app.get(
+    '/api/download-static-zip',
+    requireAdminAuth,
+    (_req: Request, res: Response) => {
+      if (!fs.existsSync(STATIC_HOSTING_ZIP_PATH)) {
+        res.status(404).json({
+          success: false,
+          error: 'ملف حزمة الاستضافة الثابتة غير موجود حالياً على الخادم.',
+        });
+        return;
+      }
+      res.download(STATIC_HOSTING_ZIP_PATH, 'smart-masar-static-hosting.zip');
     }
-    res.download(STATIC_HOSTING_ZIP_PATH, 'smart-masar-static-hosting.zip');
-  });
+  );
 
   /**
-   * GET /api/download-project-zip
-   * Downloads the complete Smart Masar project archive (frontend, server.ts, backend/google-apps-script.js, configs, DEPLOYMENT.md).
+   * GET /api/download-project-zip (Admin-Authenticated Only)
    */
-  app.get('/api/download-project-zip', (_req: Request, res: Response) => {
-    if (!fs.existsSync(PROJECT_ZIP_PATH)) {
-      res.status(404).json({
-        success: false,
-        error: 'ملف الأرشيف غير موجود حالياً على الخادم.',
-      });
-      return;
+  app.get(
+    '/api/download-project-zip',
+    requireAdminAuth,
+    (_req: Request, res: Response) => {
+      if (!fs.existsSync(PROJECT_ZIP_PATH)) {
+        res.status(404).json({
+          success: false,
+          error: 'ملف الأرشيف غير موجود حالياً على الخادم.',
+        });
+        return;
+      }
+      res.download(PROJECT_ZIP_PATH, 'smart-masar-complete-project.zip');
     }
-    res.download(PROJECT_ZIP_PATH, 'smart-masar-complete-project.zip');
-  });
+  );
 
   /**
-   * GET /api/download-html
-   * Downloads the complete standalone single-file HTML version of Smart Masar.
+   * GET /api/download-html (Admin-Authenticated Only)
    */
-  app.get('/api/download-html', (_req: Request, res: Response) => {
-    const htmlPath = path.join(__dirname, 'public', 'smart-masar.html');
-    if (!fs.existsSync(htmlPath)) {
-      res.status(404).json({
-        success: false,
-        error: 'ملف HTML غير موجود حالياً على الخادم.',
-      });
-      return;
+  app.get(
+    '/api/download-html',
+    requireAdminAuth,
+    (_req: Request, res: Response) => {
+      const htmlPath = path.join(DATA_DIR, 'backups', 'smart-masar.html');
+      if (!fs.existsSync(htmlPath)) {
+        res.status(404).json({
+          success: false,
+          error: 'ملف HTML غير موجود حالياً على الخادم.',
+        });
+        return;
+      }
+      res.download(htmlPath, 'smart-masar.html');
     }
-    res.download(htmlPath, 'smart-masar.html');
-  });
+  );
+
+  /**
+   * GET /api/download-recovery-backup
+   * Strictly protected by `requireAdminAuth` (Server-Verified Admin Authorization).
+   * Serves the private recovery ZIP archive from `data/backups/smart-masar-recovery-backup.zip`
+   * (never exposed in `public/`).
+   */
+  app.get(
+    '/api/download-recovery-backup',
+    requireAdminAuth,
+    (_req: Request, res: Response) => {
+      const zipPath = path.join(
+        DATA_DIR,
+        'backups',
+        'smart-masar-recovery-backup.zip'
+      );
+      if (!fs.existsSync(zipPath)) {
+        res.status(404).json({
+          success: false,
+          error: 'ملف النسخة الاحتياطية الخاصة غير موجود حالياً على الخادم.',
+        });
+        return;
+      }
+      res.setHeader(
+        'Cache-Control',
+        'private, no-store, no-cache, must-revalidate'
+      );
+      res.download(zipPath, 'smart-masar-recovery-backup.zip');
+    }
+  );
+
+  /**
+   * GET /api/download-recovery-json
+   * Strictly protected by `requireAdminAuth` (Server-Verified Admin Authorization).
+   * Serves the complete JSON recovery bundle from private `data/backups/` storage
+   * (or generates it dynamically for the authenticated administrator).
+   */
+  app.get(
+    '/api/download-recovery-json',
+    requireAdminAuth,
+    (_req: Request, res: Response) => {
+      res.setHeader(
+        'Cache-Control',
+        'private, no-store, no-cache, must-revalidate'
+      );
+      const jsonPath = path.join(
+        DATA_DIR,
+        'backups',
+        'smart-masar-recovery-bundle.json'
+      );
+      if (fs.existsSync(jsonPath)) {
+        res.download(jsonPath, 'smart-masar-recovery-bundle.json');
+        return;
+      }
+
+      const manifestPath = path.join(
+        DATA_DIR,
+        'backups',
+        'recoverable-images-manifest.json'
+      );
+      const reviewPath = path.join(DATA_DIR, 'org-staff-review.json');
+      const manifest = fs.existsSync(manifestPath)
+        ? JSON.parse(fs.readFileSync(manifestPath, 'utf-8'))
+        : null;
+      const orgStaffReview = fs.existsSync(reviewPath)
+        ? JSON.parse(fs.readFileSync(reviewPath, 'utf-8'))
+        : null;
+
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      res.setHeader(
+        'Content-Disposition',
+        'attachment; filename="smart-masar-recovery-bundle.json"'
+      );
+      res.send(
+        JSON.stringify(
+          {
+            generatedAt: new Date().toISOString(),
+            spreadsheetId: db.backendMeta.spreadsheetId || DEFAULT_SPREADSHEET_ID,
+            sheetDbEndpoint: resolveConfiguredSheetDbUrl(
+              db.backendMeta.sheetDbUrl
+            ),
+            worksheetsReadyForMigration: {
+              Departments: db.departments,
+              Team: db.employees,
+              Services: db.services,
+              Pages: db.pages,
+              Jobs: db.jobs,
+              Profile: db.profile,
+            },
+            orgStaffReview,
+            recoverableImagesManifest: manifest,
+          },
+          null,
+          2
+        )
+      );
+    }
+  );
+
+  /**
+   * POST /api/admin/backup-to-drive
+   * Strictly protected by `requireAdminAuth`.
+   * Pushes the complete JSON recovery backup to a strictly PRIVATE Google Drive folder
+   * (`DriveApp.Access.PRIVATE`) via Google Apps Script (`action: 'savePrivateBackupToDrive'`).
+   */
+  app.post(
+    '/api/admin/backup-to-drive',
+    requireAdminAuth,
+    async (_req: Request, res: Response) => {
+      const webAppUrl = (db.backendMeta.webAppUrl || '').trim();
+      if (!webAppUrl || !webAppUrl.startsWith('https://script.google.com/')) {
+        res.status(502).json({
+          success: false,
+          error:
+            'تعذر رفع النسخة الاحتياطية الخاصة إلى Google Drive: لم يتم ضبط رابط Google Apps Script Web App في إعدادات الخادم بعد.',
+        });
+        return;
+      }
+
+      try {
+        const jsonPath = path.join(
+          DATA_DIR,
+          'backups',
+          'smart-masar-recovery-bundle.json'
+        );
+        const backupPayload = fs.existsSync(jsonPath)
+          ? JSON.parse(fs.readFileSync(jsonPath, 'utf-8'))
+          : {
+              generatedAt: new Date().toISOString(),
+              spreadsheetId:
+                db.backendMeta.spreadsheetId || DEFAULT_SPREADSHEET_ID,
+              data: db,
+            };
+
+        const upstream = await fetch(webAppUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({
+            action: 'savePrivateBackupToDrive',
+            apiKey: getConfiguredAdminKey(),
+            fileName: `smart-masar-private-backup-${Date.now()}.json`,
+            backupData: backupPayload,
+          }),
+        });
+
+        const json: any = await upstream.json().catch(() => ({}));
+        if (!upstream.ok || !json?.success) {
+          res.status(502).json({
+            success: false,
+            error:
+              json?.error ||
+              `فشل حفظ النسخة الاحتياطية الخاصة في Google Drive (HTTP ${upstream.status})`,
+          });
+          return;
+        }
+
+        res.json({
+          success: true,
+          message:
+            'تم حفظ النسخة الاحتياطية بنجاح داخل مجلد خاص (Private) في Google Drive يقتصر الوصول إليه على المسؤول المخوّل فقط.',
+          fileId: json.fileId,
+          folderId: json.folderId,
+          accessLevel: json.accessLevel || 'PRIVATE',
+        });
+      } catch (err: any) {
+        res.status(500).json({
+          success: false,
+          error: `تعذر رفع النسخة الاحتياطية إلى Google Drive: ${
+            err?.message || String(err)
+          }`,
+        });
+      }
+    }
+  );
 
   /**
    * GET /api/images/drive/:fileId
    * Server-side image delivery proxy for Google Drive files.
-   * Ensures images stored in Google Drive render in unauthenticated browser sessions
-   * even when browsers block third-party Google cookies or redirect chains.
+   * Serves ONLY validated image binaries by fileId — never exposes directory listings or JSON backups.
    */
   app.get('/api/images/drive/:fileId', async (req: Request, res: Response) => {
     const fileId = String(req.params.fileId || '').trim();
@@ -1002,15 +1580,22 @@ function registerApiRoutes(app: express.Express) {
       return;
     }
 
-    // 1. Check if we have a cached local copy in /public/uploads
-    const localMatches = fs.existsSync(UPLOADS_DIR)
-      ? fs.readdirSync(UPLOADS_DIR).filter((f) => f.includes(fileId))
-      : [];
-    if (localMatches.length > 0) {
-      const filePath = path.join(UPLOADS_DIR, localMatches[0]);
-      res.setHeader('Cache-Control', 'public, max-age=86400');
-      res.sendFile(filePath);
-      return;
+    // 1. Check if we have a verified local copy in private /data/backups/drive-images or /public/uploads
+    const candidateCacheDirs = [
+      path.join(DATA_DIR, 'backups', 'drive-images', 'employees'),
+      path.join(DATA_DIR, 'backups', 'drive-images', 'services'),
+      UPLOADS_DIR,
+    ];
+    for (const dir of candidateCacheDirs) {
+      if (fs.existsSync(dir)) {
+        const matches = fs.readdirSync(dir).filter((f) => f.includes(fileId));
+        if (matches.length > 0) {
+          const filePath = path.join(dir, matches[0]);
+          res.setHeader('Cache-Control', 'public, max-age=86400');
+          res.sendFile(filePath);
+          return;
+        }
+      }
     }
 
     // 2. Otherwise fetch from Google Drive public endpoints on the server
@@ -1102,7 +1687,7 @@ function registerApiRoutes(app: express.Express) {
           configured: true,
           config: {
             webAppUrl: db.backendMeta.webAppUrl,
-            sheetDbUrl: db.backendMeta.sheetDbUrl,
+            sheetDbUrl: resolveConfiguredSheetDbUrl(db.backendMeta.sheetDbUrl),
             driveFolderId: db.backendMeta.driveFolderId,
             lastSyncTime: db.backendMeta.lastSyncTime,
           },
@@ -1182,7 +1767,7 @@ function registerApiRoutes(app: express.Express) {
         configured: true,
         config: {
           webAppUrl: db.backendMeta.webAppUrl,
-          sheetDbUrl: db.backendMeta.sheetDbUrl,
+          sheetDbUrl: resolveConfiguredSheetDbUrl(db.backendMeta.sheetDbUrl),
           driveFolderId: db.backendMeta.driveFolderId,
           lastSyncTime: db.backendMeta.lastSyncTime,
         },
@@ -1200,20 +1785,19 @@ function registerApiRoutes(app: express.Express) {
 
   /**
    * GET /api/admin/sheetdb-status
-   * Checks live connection to SheetDB (https://sheetdb.io/api/v1/gnn52l70oflrp) & all 6 required worksheets.
+   * Checks live connection to SheetDB (https://sheetdb.io/api/v1/9537p5ct7m308) & all 6 required worksheets.
    */
   app.get(
     '/api/admin/sheetdb-status',
     requireAdminAuth,
     async (_req: Request, res: Response) => {
-      const status = await checkSheetDbStatus(
-        db.backendMeta.sheetDbUrl || DEFAULT_SHEETDB_URL
-      );
+      const targetUrl = resolveConfiguredSheetDbUrl(db.backendMeta.sheetDbUrl);
+      const status = await checkSheetDbStatus(targetUrl);
       db.backendMeta.lastSheetDbStatus = status.messageAr;
       saveDatabase(db);
       res.json({
         success: true,
-        sheetDbUrl: db.backendMeta.sheetDbUrl || DEFAULT_SHEETDB_URL,
+        sheetDbUrl: targetUrl,
         webAppUrl: db.backendMeta.webAppUrl || '',
         driveFolderId: db.backendMeta.driveFolderId || '',
         ...status,
@@ -1232,7 +1816,7 @@ function registerApiRoutes(app: express.Express) {
       db.backendMeta.webAppUrl = webAppUrl.trim();
     }
     if (typeof sheetDbUrl === 'string' && sheetDbUrl.trim()) {
-      db.backendMeta.sheetDbUrl = sheetDbUrl.trim();
+      db.backendMeta.sheetDbUrl = resolveConfiguredSheetDbUrl(sheetDbUrl);
     }
     if (typeof driveFolderId === 'string') {
       db.backendMeta.driveFolderId = driveFolderId.trim();
@@ -1244,7 +1828,7 @@ function registerApiRoutes(app: express.Express) {
       message: 'تم حفظ إعدادات الربط السحابي ومجلد Google Drive في الخادم بنجاح.',
       config: {
         webAppUrl: db.backendMeta.webAppUrl,
-        sheetDbUrl: db.backendMeta.sheetDbUrl,
+        sheetDbUrl: resolveConfiguredSheetDbUrl(db.backendMeta.sheetDbUrl),
         driveFolderId: db.backendMeta.driveFolderId,
         lastSyncTime: db.backendMeta.lastSyncTime,
       },
@@ -1258,8 +1842,9 @@ function registerApiRoutes(app: express.Express) {
   /**
    * POST /api/admin/upload-image
    * Validates image format (JPG, PNG, WebP) and size, uploads to Google Drive
-   * (when Apps Script is configured) + local server storage, and updates the
-   * corresponding Google Sheets / SheetDB record.
+   * via Google Apps Script, and updates the corresponding Google Sheets / SheetDB record.
+   * Fails explicitly if Google Drive persistent storage is unavailable — never returns
+   * fake /uploads/ links as permanent uploads.
    */
   app.post(
     '/api/admin/upload-image',
@@ -1343,7 +1928,7 @@ function registerApiRoutes(app: express.Express) {
           .toLowerCase();
         const timestamp = Date.now();
 
-        // 1. Attempt upload to Google Drive via Apps Script if configured
+        // 1. Require upload to Google Drive persistent storage via Apps Script
         const driveResult = await uploadToGoogleDriveViaAppsScript({
           fileName: `${safeEntity}-${safeId}-${timestamp}${ext}`,
           mimeType: magicCheck.detectedMime || normalizedMime,
@@ -1354,42 +1939,49 @@ function registerApiRoutes(app: express.Express) {
           previousFileId,
         });
 
-        const fileId =
-          driveResult.uploadedToDrive && driveResult.driveFileId
-            ? driveResult.driveFileId
-            : `sm-${safeEntity}-${safeId}-${timestamp}`;
+        if (
+          !driveResult.uploadedToDrive ||
+          !driveResult.driveFileId ||
+          !driveResult.driveDirectUrl
+        ) {
+          res.status(502).json({
+            success: false,
+            driveUploaded: false,
+            error:
+              driveResult.error ||
+              'فشل رفع الصورة: التخزين الدائم في Google Drive غير متاح حالياً. يرجى ضبط رابط Google Apps Script ومعرف مجلد Google Drive في الإعدادات.',
+          });
+          return;
+        }
 
-        // 2. Always prefer external Google Drive URL for permanent storage; only cache locally in non-Vercel dev mode
-        const diskFileName = `${fileId}${ext}`;
-        const diskFilePath = path.join(UPLOADS_DIR, diskFileName);
+        const fileId = driveResult.driveFileId;
+        const publicDisplayUrl = resolvePublicImageUrl(
+          driveResult.driveDirectUrl,
+          fileId
+        );
+
+        // Cache the newly uploaded image in private data/backups/drive-images when filesystem is writable
         if (process.env.VERCEL_BUNDLE !== '1' && !process.env.VERCEL) {
           try {
-            if (fs.existsSync(UPLOADS_DIR)) {
-              fs.writeFileSync(diskFilePath, imageBuffer);
-            }
-            if (previousFileId && previousFileId !== fileId && fs.existsSync(UPLOADS_DIR)) {
-              const oldFiles = fs
-                .readdirSync(UPLOADS_DIR)
-                .filter((f) => f.startsWith(String(previousFileId)));
-              for (const oldFile of oldFiles) {
-                try {
-                  fs.unlinkSync(path.join(UPLOADS_DIR, oldFile));
-                } catch {
-                  // ignore cleanup errors
-                }
-              }
-            }
+            const subFolder =
+              safeEntity === 'services' ? 'services' : 'employees';
+            const cacheDir = path.join(
+              DATA_DIR,
+              'backups',
+              'drive-images',
+              subFolder
+            );
+            fs.mkdirSync(cacheDir, { recursive: true });
+            fs.writeFileSync(
+              path.join(cacheDir, `${fileId}_${safeEntity}-${safeId}${ext}`),
+              imageBuffer
+            );
           } catch {
-            // Ignore local cache write errors
+            // Ignore local cache write errors on read-only environments
           }
         }
 
-        const publicDisplayUrl =
-          driveResult.uploadedToDrive && driveResult.driveDirectUrl
-            ? driveResult.driveDirectUrl
-            : `/uploads/${diskFileName}`;
-
-        // 3. Automatically update corresponding record in Server Database & SheetDB
+        // 2. Persist image URL and fileId in the corresponding Google Sheets / SheetDB worksheet
         let sheetSyncResult = { synced: false, detail: '' };
 
         if (entityType === 'team') {
@@ -1411,6 +2003,11 @@ function registerApiRoutes(app: express.Express) {
               updatedEmp.id,
               updatedEmp
             );
+          } else {
+            sheetSyncResult = {
+              synced: true,
+              detail: 'تم رفع الصورة إلى Google Drive؛ سيتم ربطها بالسجل عند حفظ بيانات الموظف.',
+            };
           }
         } else if (entityType === 'services') {
           const srvIndex = db.services.findIndex((s) => s.id === entityId);
@@ -1433,6 +2030,11 @@ function registerApiRoutes(app: express.Express) {
                 featuresAr: JSON.stringify(updatedSrv.featuresAr),
               }
             );
+          } else {
+            sheetSyncResult = {
+              synced: true,
+              detail: 'تم رفع الصورة إلى Google Drive؛ سيتم ربطها بالخدمة عند الحفظ.',
+            };
           }
         } else if (entityType === 'pages') {
           const pageIndex = db.pages.findIndex((p) => p.id === entityId);
@@ -1475,14 +2077,26 @@ function registerApiRoutes(app: express.Express) {
           );
         }
 
+        if (!sheetSyncResult.synced) {
+          res.status(502).json({
+            success: false,
+            driveUploaded: true,
+            fileId,
+            driveDirectUrl: driveResult.driveDirectUrl,
+            sheetSync: sheetSyncResult,
+            error: `تم رفع الصورة إلى Google Drive ولكن فشل حفظ الرابط في قاعدة البيانات الدائمة (SheetDB): ${sheetSyncResult.detail}`,
+          });
+          return;
+        }
+
         res.json({
           success: true,
           imageUrl: publicDisplayUrl,
           fileId,
-          driveUploaded: driveResult.uploadedToDrive,
-          driveDirectUrl: driveResult.driveDirectUrl || null,
+          driveUploaded: true,
+          driveDirectUrl: driveResult.driveDirectUrl,
           driveViewUrl: driveResult.driveViewUrl || null,
-          driveNotice: driveResult.error || null,
+          driveNotice: null,
           sheetSync: sheetSyncResult,
         });
       } catch (err: any) {
@@ -1496,7 +2110,7 @@ function registerApiRoutes(app: express.Express) {
 
   /**
    * POST /api/admin/remove-image
-   * Removes an image reference from a record without deleting unrelated record data.
+   * Removes an image reference from a record and confirms the update in SheetDB.
    */
   app.post(
     '/api/admin/remove-image',
@@ -1547,7 +2161,8 @@ function registerApiRoutes(app: express.Express) {
               'Team',
               'id',
               db.employees[idx].id,
-              db.employees[idx]
+              db.employees[idx],
+              { allowClearImages: true }
             );
           }
         } else if (entityType === 'services') {
@@ -1566,7 +2181,8 @@ function registerApiRoutes(app: express.Express) {
               {
                 ...db.services[idx],
                 featuresAr: JSON.stringify(db.services[idx].featuresAr),
-              }
+              },
+              { allowClearImages: true }
             );
           }
         } else if (entityType === 'pages') {
@@ -1582,7 +2198,8 @@ function registerApiRoutes(app: express.Express) {
               'Pages',
               'id',
               db.pages[idx].id,
-              db.pages[idx]
+              db.pages[idx],
+              { allowClearImages: true }
             );
           }
         } else if (entityType === 'settings') {
@@ -1601,14 +2218,24 @@ function registerApiRoutes(app: express.Express) {
               Value: '',
               logo_url: '',
               logo_file_id: '',
-            }
+            },
+            { allowClearImages: true }
           );
+        }
+
+        if (!sheetSyncResult.synced) {
+          res.status(502).json({
+            success: false,
+            error: `فشل تأكيد إزالة الصورة في قاعدة البيانات الدائمة (SheetDB): ${sheetSyncResult.detail}`,
+            sheetSync: sheetSyncResult,
+          });
+          return;
         }
 
         res.json({
           success: true,
           message:
-            'تمت إزالة الصورة وتحديث السجل بنجاح دون المساس بالبيانات الأخرى.',
+            'تمت إزالة الصورة وتحديث السجل في قاعدة البيانات الدائمة (Google Sheets) بنجاح.',
           sheetSync: sheetSyncResult,
         });
       } catch (err: any) {
@@ -1621,32 +2248,283 @@ function registerApiRoutes(app: express.Express) {
   );
 
   /**
+   * POST /api/admin/record
+   * Single-record mutation endpoint (upsert or delete) so modifying a single employee,
+   * service, job, page, or setting only writes/deletes that exact row in SheetDB
+   * instead of overwriting all 6 worksheets.
+   * Never overwrites existing image links with empty strings unless `allowClearImages: true`.
+   */
+  app.post(
+    '/api/admin/record',
+    requireAdminAuth,
+    async (req: Request, res: Response) => {
+      try {
+        const {
+          entityType,
+          operation = 'upsert',
+          recordId,
+          record,
+          allowClearImages = false,
+        } = req.body || {};
+
+        if (!entityType) {
+          res.status(400).json({
+            success: false,
+            error: 'نوع السجل (entityType) مطلوب.',
+          });
+          return;
+        }
+
+        let externalSync = { synced: false, detail: '' };
+
+        if (entityType === 'team') {
+          if (operation === 'delete') {
+            const targetId = String(recordId || record?.id || '').trim();
+            if (!targetId || targetId === 'emp-ahmed-alabed') {
+              res.status(400).json({
+                success: false,
+                error: 'لا يمكن حذف الرئيس التنفيذي أو معرف السجل غير صالح.',
+              });
+              return;
+            }
+            db.employees = db.employees
+              .filter((e) => e.id !== targetId)
+              .map((e) =>
+                e.managerId === targetId
+                  ? { ...e, managerId: 'emp-ahmed-alabed' }
+                  : e
+              );
+            saveDatabase(db);
+            externalSync = await deleteRecordFromSheetDb('Team', 'id', targetId);
+          } else {
+            const incoming = record as Employee;
+            const existing = db.employees.find((e) => e.id === incoming.id);
+            const preserved = preserveExistingImageFields(incoming, existing, {
+              allowClearImages: Boolean(allowClearImages),
+            });
+            const normalizedUrl = resolvePublicImageUrl(
+              preserved.image_url || preserved.avatarUrl,
+              preserved.image_file_id
+            );
+            const extractedId =
+              preserved.image_file_id ||
+              extractGoogleDriveFileId(
+                preserved.image_url || preserved.avatarUrl
+              ) ||
+              '';
+            const finalEmp: Employee = {
+              ...preserved,
+              avatarUrl: normalizedUrl,
+              image_url: normalizedUrl,
+              image_file_id: extractedId,
+            };
+            const idx = db.employees.findIndex((e) => e.id === finalEmp.id);
+            if (idx !== -1) {
+              db.employees[idx] = finalEmp;
+            } else {
+              db.employees.push(finalEmp);
+            }
+            saveDatabase(db);
+            externalSync = await syncRecordToSheetDb(
+              'Team',
+              'id',
+              finalEmp.id,
+              finalEmp as any,
+              { allowClearImages: Boolean(allowClearImages) }
+            );
+          }
+        } else if (entityType === 'services') {
+          if (operation === 'delete') {
+            const targetId = String(recordId || record?.id || '').trim();
+            db.services = db.services.filter((s) => s.id !== targetId);
+            saveDatabase(db);
+            externalSync = await deleteRecordFromSheetDb(
+              'Services',
+              'id',
+              targetId
+            );
+          } else {
+            const incoming = record as ServiceItem;
+            const existing = db.services.find((s) => s.id === incoming.id);
+            const preserved = preserveExistingImageFields(incoming, existing, {
+              allowClearImages: Boolean(allowClearImages),
+            });
+            const normalizedUrl = resolvePublicImageUrl(
+              preserved.image_url,
+              preserved.image_file_id
+            );
+            const extractedId =
+              preserved.image_file_id ||
+              extractGoogleDriveFileId(preserved.image_url) ||
+              '';
+            const finalSrv: ServiceItem = {
+              ...preserved,
+              image_url: normalizedUrl,
+              image_file_id: extractedId,
+            };
+            const idx = db.services.findIndex((s) => s.id === finalSrv.id);
+            if (idx !== -1) {
+              db.services[idx] = finalSrv;
+            } else {
+              db.services.push(finalSrv);
+            }
+            saveDatabase(db);
+            externalSync = await syncRecordToSheetDb(
+              'Services',
+              'id',
+              finalSrv.id,
+              {
+                ...finalSrv,
+                featuresAr: JSON.stringify(finalSrv.featuresAr || []),
+              },
+              { allowClearImages: Boolean(allowClearImages) }
+            );
+          }
+        } else if (entityType === 'jobs') {
+          if (operation === 'delete') {
+            const targetId = String(recordId || record?.id || '').trim();
+            db.jobs = db.jobs.filter((j) => j.id !== targetId);
+            saveDatabase(db);
+            externalSync = await deleteRecordFromSheetDb('Jobs', 'id', targetId);
+          } else {
+            const finalJob = record as JobVacancy;
+            const idx = db.jobs.findIndex((j) => j.id === finalJob.id);
+            if (idx !== -1) {
+              db.jobs[idx] = finalJob;
+            } else {
+              db.jobs.unshift(finalJob);
+            }
+            saveDatabase(db);
+            externalSync = await syncRecordToSheetDb('Jobs', 'id', finalJob.id, {
+              ...finalJob,
+              responsibilitiesAr: JSON.stringify(
+                finalJob.responsibilitiesAr || []
+              ),
+              qualificationsAr: JSON.stringify(finalJob.qualificationsAr || []),
+              accountingSkillsAr: JSON.stringify(
+                finalJob.accountingSkillsAr || []
+              ),
+              softwareExperienceAr: JSON.stringify(
+                finalJob.softwareExperienceAr || []
+              ),
+            });
+          }
+        } else if (entityType === 'pages') {
+          const incoming = record as PageMetadata;
+          const existing = db.pages.find((p) => p.id === incoming.id);
+          const preserved = preserveExistingImageFields(incoming, existing, {
+            allowClearImages: Boolean(allowClearImages),
+          });
+          const normalizedUrl = resolvePublicImageUrl(
+            preserved.hero_image_url,
+            preserved.hero_image_file_id
+          );
+          const extractedId =
+            preserved.hero_image_file_id ||
+            extractGoogleDriveFileId(preserved.hero_image_url) ||
+            '';
+          const finalPage: PageMetadata = {
+            ...preserved,
+            hero_image_url: normalizedUrl,
+            hero_image_file_id: extractedId,
+          };
+          const idx = db.pages.findIndex((p) => p.id === finalPage.id);
+          if (idx !== -1) {
+            db.pages[idx] = finalPage;
+          } else {
+            db.pages.push(finalPage);
+          }
+          saveDatabase(db);
+          externalSync = await syncRecordToSheetDb(
+            'Pages',
+            'id',
+            finalPage.id,
+            finalPage as any,
+            { allowClearImages: Boolean(allowClearImages) }
+          );
+        }
+
+        if (!externalSync.synced) {
+          res.status(502).json({
+            success: false,
+            error: externalSync.detail,
+            message: externalSync.detail,
+            externalSync,
+          });
+          return;
+        }
+
+        res.json({
+          success: true,
+          message: externalSync.detail,
+          externalSync,
+          data: {
+            profile: db.profile,
+            departments: db.departments,
+            employees: db.employees,
+            jobs: db.jobs,
+            services: db.services,
+            pages: db.pages,
+          },
+        });
+      } catch (err: any) {
+        res.status(500).json({
+          success: false,
+          error: err?.message || String(err),
+        });
+      }
+    }
+  );
+
+  /**
    * POST /api/admin/sync-state
    * Persists full state changes (employees, jobs, services, pages, profile, departments)
-   * on the server and pushes changes to SheetDB / Google Apps Script when initialized.
+   * across all 6 worksheets in Google Sheets (via SheetDB or Apps Script).
+   * Preserves existing non-empty image URLs unless `allowClearImages: true`.
    */
   app.post(
     '/api/admin/sync-state',
     requireAdminAuth,
     async (req: Request, res: Response) => {
       try {
-        const { profile, departments, employees, jobs, services, pages } =
-          req.body || {};
+        const {
+          profile,
+          departments,
+          employees,
+          jobs,
+          services,
+          pages,
+          allowClearImages = false,
+        } = req.body || {};
 
-        if (profile) db.profile = { ...db.profile, ...profile };
+        if (profile) {
+          db.profile = preserveExistingImageFields(
+            { ...db.profile, ...profile },
+            db.profile,
+            { allowClearImages: Boolean(allowClearImages) }
+          );
+        }
         if (Array.isArray(departments)) db.departments = departments;
         if (Array.isArray(employees)) {
+          const existingMap = new Map(db.employees.map((e) => [e.id, e]));
           db.employees = employees.map((emp: Employee) => {
+            const preserved = preserveExistingImageFields(
+              emp,
+              existingMap.get(emp.id),
+              { allowClearImages: Boolean(allowClearImages) }
+            );
             const normalizedUrl = resolvePublicImageUrl(
-              emp.image_url || emp.avatarUrl,
-              emp.image_file_id
+              preserved.image_url || preserved.avatarUrl,
+              preserved.image_file_id
             );
             const extractedId =
-              emp.image_file_id ||
-              extractGoogleDriveFileId(emp.image_url || emp.avatarUrl) ||
+              preserved.image_file_id ||
+              extractGoogleDriveFileId(
+                preserved.image_url || preserved.avatarUrl
+              ) ||
               '';
             return {
-              ...emp,
+              ...preserved,
               avatarUrl: normalizedUrl,
               image_url: normalizedUrl,
               image_file_id: extractedId,
@@ -1655,46 +2533,74 @@ function registerApiRoutes(app: express.Express) {
         }
         if (Array.isArray(jobs)) db.jobs = jobs;
         if (Array.isArray(services)) {
+          const existingMap = new Map(db.services.map((s) => [s.id, s]));
           db.services = services.map((srv: ServiceItem) => {
+            const preserved = preserveExistingImageFields(
+              srv,
+              existingMap.get(srv.id),
+              { allowClearImages: Boolean(allowClearImages) }
+            );
             const normalizedUrl = resolvePublicImageUrl(
-              srv.image_url,
-              srv.image_file_id
+              preserved.image_url,
+              preserved.image_file_id
             );
             const extractedId =
-              srv.image_file_id || extractGoogleDriveFileId(srv.image_url) || '';
+              preserved.image_file_id ||
+              extractGoogleDriveFileId(preserved.image_url) ||
+              '';
             return {
-              ...srv,
+              ...preserved,
               image_url: normalizedUrl,
               image_file_id: extractedId,
             };
           });
         }
         if (Array.isArray(pages)) {
+          const existingMap = new Map(db.pages.map((p) => [p.id, p]));
           db.pages = pages.map((pg: PageMetadata) => {
+            const preserved = preserveExistingImageFields(
+              pg,
+              existingMap.get(pg.id),
+              { allowClearImages: Boolean(allowClearImages) }
+            );
             const normalizedUrl = resolvePublicImageUrl(
-              pg.hero_image_url,
-              pg.hero_image_file_id
+              preserved.hero_image_url,
+              preserved.hero_image_file_id
             );
             const extractedId =
-              pg.hero_image_file_id ||
-              extractGoogleDriveFileId(pg.hero_image_url) ||
+              preserved.hero_image_file_id ||
+              extractGoogleDriveFileId(preserved.hero_image_url) ||
               '';
             return {
-              ...pg,
+              ...preserved,
               hero_image_url: normalizedUrl,
               hero_image_file_id: extractedId,
             };
           });
         }
 
+        const externalSync = await syncBundleToExternalDatabase();
+
+        if (!externalSync.synced) {
+          res.status(502).json({
+            success: false,
+            error:
+              externalSync.detail ||
+              'فشل تأكيد الحفظ في قاعدة البيانات الدائمة (SheetDB / Google Sheets).',
+            message:
+              externalSync.detail ||
+              'فشل تأكيد الحفظ في قاعدة البيانات الدائمة (SheetDB / Google Sheets).',
+            externalSync,
+          });
+          return;
+        }
+
         db.backendMeta.lastSyncTime = new Date().toLocaleTimeString('ar-JO');
         saveDatabase(db);
 
-        const externalSync = await syncBundleToExternalDatabase();
-
         res.json({
           success: true,
-          message: 'تم حفظ ومزامنة البيانات على الخادم بنجاح.',
+          message: externalSync.detail,
           externalSync,
           data: {
             profile: db.profile,

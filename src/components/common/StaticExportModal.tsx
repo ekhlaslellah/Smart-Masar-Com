@@ -31,7 +31,7 @@ export const StaticExportModal: React.FC<StaticExportModalProps> = ({ isOpen, on
   if (!isOpen) return null;
 
   const handleCopyUrl = () => {
-    navigator.clipboard.writeText('https://sheetdb.io/api/v1/gnn52l70oflrp');
+    navigator.clipboard.writeText('https://sheetdb.io/api/v1/9537p5ct7m308');
     setCopiedCmd(true);
     setTimeout(() => setCopiedCmd(false), 2000);
   };
@@ -246,7 +246,7 @@ export const StaticExportModal: React.FC<StaticExportModalProps> = ({ isOpen, on
                   className="px-3 py-1.5 bg-white hover:bg-[#F0F6FD] border border-[#CBD5E1] rounded-lg text-[11px] font-mono text-[#142B4F] flex items-center gap-1.5 shrink-0 self-end sm:self-center cursor-pointer"
                 >
                   {copiedCmd ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-[#2563EB]" />}
-                  <span>https://sheetdb.io/api/v1/gnn52l70oflrp</span>
+                  <span>https://sheetdb.io/api/v1/9537p5ct7m308</span>
                 </button>
               </div>
             </div>

@@ -168,3 +168,76 @@ export function buildGoogleDriveDirectUrls(fileId: string): {
     viewUrl: `https://drive.google.com/file/d/${encodeURIComponent(cleanId)}/view`,
   };
 }
+
+export const IMAGE_COLUMN_NAMES = [
+  'image_url',
+  'avatarUrl',
+  'image_file_id',
+  'hero_image_url',
+  'hero_image_file_id',
+  'logo_url',
+  'logo_file_id',
+] as const;
+
+/**
+ * Strips empty image fields from a SheetDB PATCH payload when `allowClearImages` is false
+ * so that editing text fields on a record never overwrites existing image links in Google Sheets with `""`.
+ * When `allowClearImages` is true (explicit image deletion action), empty strings are kept to clear the columns.
+ */
+export function sanitizeRecordForSheetPatch(
+  recordData: Record<string, any>,
+  options?: { allowClearImages?: boolean }
+): Record<string, any> {
+  if (options?.allowClearImages) {
+    return { ...recordData };
+  }
+
+  const sanitized: Record<string, any> = {};
+  for (const [key, val] of Object.entries(recordData)) {
+    if ((IMAGE_COLUMN_NAMES as readonly string[]).includes(key)) {
+      if (typeof val === 'string' && val.trim().length > 0) {
+        sanitized[key] = val.trim();
+      }
+      continue;
+    }
+    // In SiteSettings, if Key === 'logo_url' and Value is empty, do not overwrite Value with '' unless allowClearImages
+    if (
+      key === 'Value' &&
+      recordData.Key === 'logo_url' &&
+      (val === '' || val === null || val === undefined)
+    ) {
+      continue;
+    }
+    sanitized[key] = val;
+  }
+
+  return sanitized;
+}
+
+/**
+ * Preserves existing non-empty image fields on a record when merging incoming updates,
+ * unless `allowClearImages` is explicitly true or a new non-empty image value is provided.
+ */
+export function preserveExistingImageFields<T extends Record<string, any>>(
+  incoming: T,
+  existing?: T | null,
+  options?: { allowClearImages?: boolean }
+): T {
+  if (!existing || options?.allowClearImages) {
+    return { ...incoming };
+  }
+
+  const merged: Record<string, any> = { ...incoming };
+  for (const col of IMAGE_COLUMN_NAMES) {
+    if (col in existing || col in incoming) {
+      const incomingVal = typeof incoming[col] === 'string' ? incoming[col].trim() : '';
+      const existingVal = typeof existing[col] === 'string' ? existing[col].trim() : '';
+      if (!incomingVal && existingVal) {
+        merged[col] = existingVal;
+      }
+    }
+  }
+
+  return merged as T;
+}
+

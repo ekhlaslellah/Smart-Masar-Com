@@ -162,7 +162,13 @@ test('Admin Authentication & Vercel Serverless Compatibility Suite', async (t) =
       const publicDataJson: any = await publicDataRes.json();
       assert.equal(publicDataJson.success, true);
       assert.ok(Array.isArray(publicDataJson.data.employees));
-      assert.equal(publicDataJson.data.employees.length, 6);
+      assert.equal(publicDataJson.data.employees.length, 10);
+      assert.ok(Array.isArray(publicDataJson.data.departments));
+      assert.equal(publicDataJson.data.departments.length, 10);
+      assert.ok(Array.isArray(publicDataJson.data.services));
+      assert.equal(publicDataJson.data.services.length, 4);
+      assert.ok(Array.isArray(publicDataJson.data.pages));
+      assert.equal(publicDataJson.data.pages.length, 7);
       assert.ok(Array.isArray(publicDataJson.data.jobs));
       assert.equal(publicDataJson.data.jobs.length, 2);
 
@@ -252,4 +258,250 @@ test('Admin Authentication & Vercel Serverless Compatibility Suite', async (t) =
       await new Promise<void>((resolve) => server.close(() => resolve()));
     }
   });
+
+  await t.test('6. Verifies 6-tab SheetDB read/write, safe connectivity test, explicit image upload failure without Drive, and strict save confirmation', async () => {
+    const bundleUrl = pathToFileURL(path.resolve('api/index.js')).href;
+    const vercelBundleMod = await import(bundleUrl);
+    const serverlessHandler = vercelBundleMod.default;
+
+    const runtimeSecret = 'vercel_preview_admin_secret_2026_verified';
+    process.env.SMART_MASAR_ADMIN_KEY = runtimeSecret;
+
+    // Spin up a local mock SheetDB server so tests never write demo data to the live SheetDB endpoint
+    const mockTabs: Record<string, any[]> = {
+      Team: [],
+      Services: [],
+      Pages: [],
+      SiteSettings: [],
+      Departments: [],
+      Jobs: [],
+    };
+    const mockHeaders: Record<string, string[]> = {
+      Team: ['id', 'nameAr', 'nameEn', 'jobTitleAr', 'jobTitleEn', 'departmentId', 'managerId', 'avatarUrl', 'image_url', 'image_file_id', 'image_alt_ar', 'initials', 'bioAr', 'email', 'isConfirmedPosition', 'order'],
+      Services: ['id', 'titleAr', 'titleEn', 'shortDescAr', 'featuresAr', 'iconName', 'image_url', 'image_file_id', 'image_alt_ar'],
+      Pages: ['id', 'slug', 'titleAr', 'titleEn', 'subtitleAr', 'hero_image_url', 'hero_image_file_id', 'hero_image_alt_ar'],
+      SiteSettings: ['Key', 'Value', 'logo_url', 'logo_file_id'],
+      Departments: ['id', 'nameAr', 'nameEn', 'iconName', 'badgeBg'],
+      Jobs: ['id', 'titleAr', 'titleEn', 'departmentId', 'departmentNameAr', 'status', 'employmentTypeAr', 'locationAr', 'experienceLevelAr', 'googleFormsUrl', 'summaryAr', 'responsibilitiesAr', 'qualificationsAr', 'accountingSkillsAr', 'softwareExperienceAr', 'applicationInstructionsAr', 'postedDate'],
+    };
+    let allowWrite = true;
+
+    const mockSheetDbServer = http.createServer((req, res) => {
+      const u = new URL(req.url || '/', 'http://127.0.0.1');
+      const sheet = u.searchParams.get('sheet') || 'Team';
+      res.setHeader('Content-Type', 'application/json');
+
+      if (req.method === 'GET' && u.pathname === '/name') {
+        res.end(JSON.stringify({ name: 'مؤسسة Masar Smart' }));
+        return;
+      }
+      if (req.method === 'GET' && u.pathname === '/sheets') {
+        res.end(JSON.stringify({ sheets: Object.keys(mockTabs) }));
+        return;
+      }
+      if (req.method === 'GET' && u.pathname === '/keys') {
+        res.end(JSON.stringify(mockHeaders[sheet] || []));
+        return;
+      }
+      if (req.method === 'GET' && u.pathname === '/') {
+        res.end(JSON.stringify(mockTabs[sheet] || []));
+        return;
+      }
+
+      if (req.method === 'PATCH' || req.method === 'POST') {
+        if (!allowWrite) {
+          res.statusCode = 403;
+          res.end(JSON.stringify({ error: 'Write access disabled on SheetDB' }));
+          return;
+        }
+        let body = '';
+        req.on('data', (chunk) => (body += chunk));
+        req.on('end', () => {
+          const parsed = JSON.parse(body || '{}');
+          if (req.method === 'PATCH') {
+            const parts = u.pathname.split('/').filter(Boolean);
+            const matchCol = decodeURIComponent(parts[0] || '');
+            const matchVal = decodeURIComponent(parts[1] || '');
+            if (matchVal === '__smart_masar_connectivity_probe__') {
+              res.statusCode = 404;
+              res.end(JSON.stringify({ error: 'No results found' }));
+              return;
+            }
+            const rows = mockTabs[sheet] || [];
+            const idx = rows.findIndex((r) => String(r[matchCol]) === matchVal);
+            if (idx !== -1) {
+              rows[idx] = { ...rows[idx], ...(parsed.data || {}) };
+              res.end(JSON.stringify({ updated: 1 }));
+            } else {
+              res.statusCode = 404;
+              res.end(JSON.stringify({ error: 'No results found' }));
+            }
+            return;
+          }
+          if (req.method === 'POST') {
+            const items = Array.isArray(parsed.data) ? parsed.data : [parsed.data];
+            mockTabs[sheet] = [...(mockTabs[sheet] || []), ...items];
+            res.statusCode = 201;
+            res.end(JSON.stringify({ created: items.length }));
+            return;
+          }
+        });
+        return;
+      }
+
+      res.statusCode = 404;
+      res.end(JSON.stringify({ error: 'Not found' }));
+    });
+
+    await new Promise<void>((resolve) => mockSheetDbServer.listen(0, '127.0.0.1', resolve));
+    const mockPort = (mockSheetDbServer.address() as { port: number }).port;
+    const mockSheetDbUrl = `http://127.0.0.1:${mockPort}`;
+
+    const appServer = http.createServer(serverlessHandler);
+    await new Promise<void>((resolve) => appServer.listen(0, '127.0.0.1', resolve));
+    const appPort = (appServer.address() as { port: number }).port;
+    const baseUrl = `http://127.0.0.1:${appPort}`;
+
+    try {
+      // Login as admin
+      const loginRes = await fetch(`${baseUrl}/api/admin/auth/verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adminKey: runtimeSecret }),
+      });
+      const cookiePair = (loginRes.headers.get('set-cookie') || '').split(';')[0];
+
+      // Point server to mock SheetDB for isolated write/upload testing
+      await fetch(`${baseUrl}/api/admin/config`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Cookie: cookiePair },
+        body: JSON.stringify({ sheetDbUrl: mockSheetDbUrl, webAppUrl: '' }),
+      });
+
+      // A) Safe connectivity test checks all 6 tabs, read access, and non-destructive write probe without mutating rows
+      const statusRes = await fetch(`${baseUrl}/api/admin/sheetdb-status`, {
+        headers: { Cookie: cookiePair },
+      });
+      assert.equal(statusRes.status, 200);
+      const statusJson: any = await statusRes.json();
+      assert.equal(statusJson.reachable, true);
+      assert.equal(statusJson.readAccess.ok, true);
+      assert.equal(statusJson.readAccess.verifiedTabs, 6);
+      assert.equal(statusJson.writeAccess.ok, true);
+      assert.equal(mockTabs.SiteSettings.length, 0, 'Connectivity probe must not insert any rows');
+      assert.equal(JSON.stringify(statusJson).includes(runtimeSecret), false, 'Must not expose credentials');
+
+      // B) Image upload fails explicitly (502, success: false) when Google Drive persistent storage is unavailable, never returning fake /uploads/ links
+      const onePxPngBase64 =
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
+      const uploadFailRes = await fetch(`${baseUrl}/api/admin/upload-image`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Cookie: cookiePair },
+        body: JSON.stringify({
+          fileName: 'avatar.png',
+          mimeType: 'image/png',
+          base64Data: onePxPngBase64,
+          entityType: 'team',
+          entityId: 'emp-ahmed-alabed',
+        }),
+      });
+      assert.equal(uploadFailRes.status, 502);
+      const uploadFailJson: any = await uploadFailRes.json();
+      assert.equal(uploadFailJson.success, false);
+      assert.equal(uploadFailJson.driveUploaded, false);
+      assert.equal(
+        String(uploadFailJson.imageUrl || '').includes('/uploads/'),
+        false,
+        'Must never return fake /uploads/ links as permanent uploads'
+      );
+
+      // C) When write access is disabled on persistent storage, /api/admin/sync-state fails with 502 and success: false
+      allowWrite = false;
+      const failedSyncRes = await fetch(`${baseUrl}/api/admin/sync-state`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Cookie: cookiePair },
+        body: JSON.stringify({}),
+      });
+      assert.equal(failedSyncRes.status, 502);
+      const failedSyncJson: any = await failedSyncRes.json();
+      assert.equal(failedSyncJson.success, false);
+      assert.equal(failedSyncJson.externalSync.synced, false);
+
+      // D) When write access is enabled, /api/admin/sync-state writes all 6 tabs and confirms the write
+      allowWrite = true;
+      const okSyncRes = await fetch(`${baseUrl}/api/admin/sync-state`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Cookie: cookiePair },
+        body: JSON.stringify({}),
+      });
+      assert.equal(okSyncRes.status, 200);
+      const okSyncJson: any = await okSyncRes.json();
+      assert.equal(okSyncJson.success, true);
+      assert.equal(okSyncJson.externalSync.synced, true);
+      assert.ok(mockTabs.SiteSettings.length > 0, 'SiteSettings tab must be written');
+      assert.ok(mockTabs.Departments.length > 0, 'Departments tab must be written');
+      assert.ok(mockTabs.Team.length > 0, 'Team tab must be written');
+      assert.ok(mockTabs.Services.length > 0, 'Services tab must be written');
+      assert.ok(mockTabs.Pages.length > 0, 'Pages tab must be written');
+      assert.ok(mockTabs.Jobs.length > 0, 'Jobs tab must be written');
+
+      // E) Verify backup security: zero backup files in public/, 401 for unauthenticated visitors, 200 for authenticated admin
+      assert.equal(
+        fs.existsSync(path.resolve('public/backups')),
+        false,
+        'public/backups must not exist in public directory'
+      );
+      assert.equal(
+        fs.existsSync(path.resolve('public/smart-masar-complete-project.zip')),
+        false,
+        'project zip must not exist in public directory'
+      );
+
+      const unauthBackupZip = await fetch(`${baseUrl}/api/download-recovery-backup`);
+      assert.equal(
+        unauthBackupZip.status,
+        401,
+        'Unauthenticated visitor must get 401 on /api/download-recovery-backup'
+      );
+
+      const unauthBackupJson = await fetch(`${baseUrl}/api/download-recovery-json`);
+      assert.equal(
+        unauthBackupJson.status,
+        401,
+        'Unauthenticated visitor must get 401 on /api/download-recovery-json'
+      );
+
+      const authBackupZip = await fetch(`${baseUrl}/api/download-recovery-backup`, {
+        headers: { Cookie: cookiePair },
+      });
+      assert.equal(
+        authBackupZip.status,
+        200,
+        'Authenticated admin must get 200 on /api/download-recovery-backup'
+      );
+
+      const authBackupJson = await fetch(`${baseUrl}/api/download-recovery-json`, {
+        headers: { Cookie: cookiePair },
+      });
+      assert.equal(
+        authBackupJson.status,
+        200,
+        'Authenticated admin must get 200 on /api/download-recovery-json'
+      );
+
+      // Reset server sheetDbUrl back to production default https://sheetdb.io/api/v1/9537p5ct7m308
+      await fetch(`${baseUrl}/api/admin/config`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Cookie: cookiePair },
+        body: JSON.stringify({
+          sheetDbUrl: 'https://sheetdb.io/api/v1/9537p5ct7m308',
+          webAppUrl: '',
+        }),
+      });
+    } finally {
+      await new Promise<void>((resolve) => appServer.close(() => resolve()));
+      await new Promise<void>((resolve) => mockSheetDbServer.close(() => resolve()));
+    }
+  });
 });
+
