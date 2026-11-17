@@ -90,7 +90,7 @@ export const CareersPage: React.FC = () => {
                 فرص العمل وبناء المسار المهني مع سمارت مسار
               </h1>
               <p className="text-sm sm:text-base text-slate-200 leading-relaxed">
-                نستقطب الكفاءات الطموحة الراغبة في المساهمة في قطاع التكنولوجيا والذكاء الاصطناعي والإدارة المالية الحديثة. تعرّف على الشواغر المتاحة وتقدم بطلبك مباشرة عبر Google Forms.
+                نستقطب الكفاءات الطموحة الراغبة في المساهمة في قطاع التكنولوجيا والذكاء الاصطناعي والإدارة المالية الحديثة. تعرّف على الشواغر المتاحة وتقدم بطلبك مباشرة عبر بوابة التوظيف الرسمية (Recruitment Portal).
               </p>
             </div>
 
@@ -111,7 +111,7 @@ export const CareersPage: React.FC = () => {
             <strong className="font-bold text-[#0A192F] block mb-0.5">
               تنويه تعليمي (نماذج شواغر لأغراض المشروع التدريبي):
             </strong>
-            الشواغر الوظيفية المعروضة في هذه الصفحة هي نماذج محاكاة افتراضية لأغراض المشروع التعليمي والتدريبي لشركة سمارت مسار (Smart Masar). تم ربط زري التقديم لكلا الشاغرين باستمارة التقديم الرسمية المعتمدة عبر رابط Google Forms الخارجي المباشر.
+            الشواغر الوظيفية المعروضة في هذه الصفحة هي نماذج محاكاة افتراضية لأغراض المشروع التعليمي والتدريبي لشركة سمارت مسار (Smart Masar). تم ربط زري التقديم لكلا الشاغرين ببوابة التوظيف الرسمية المعتمدة (Recruitment Portal / بوابة التوظيف).
           </div>
         </div>
 
@@ -199,7 +199,7 @@ export const CareersPage: React.FC = () => {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="py-2 px-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all inline-flex items-center gap-1.5 shrink-0 shadow-xs cursor-pointer"
-                          title="الانتقال المباشر لنموذج التقديم عبر Google Forms"
+                          title="الانتقال المباشر إلى بوابة التوظيف الرسمية (Recruitment Portal)"
                         >
                           <span>قدّم الآن</span>
                           <ExternalLink className="w-3.5 h-3.5" />
@@ -261,7 +261,7 @@ export const CareersPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Quick Actions: Apply Now to Google Forms */}
+              {/* Quick Actions: Apply Now to Recruitment Portal */}
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                 <a
                   href={currentJob.googleFormsUrl}
@@ -275,14 +275,14 @@ export const CareersPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Google Forms Notice Box */}
+            {/* Recruitment Portal Notice Box */}
             <div className="mx-6 sm:mx-8 mt-6 p-4 sm:p-5 rounded-2xl bg-[#F0F6FD] border border-[#BFDBFE] text-xs text-[#0A192F] space-y-1.5">
               <div className="flex items-center gap-2 font-bold text-[#2563EB]">
                 <HelpCircle className="w-4 h-4 shrink-0" />
-                <span>آلية التقديم الرقمية عبر استمارة Google Forms:</span>
+                <span>آلية التقديم الرقمية عبر بوابة التوظيف (Recruitment Portal):</span>
               </div>
               <p className="text-slate-600 leading-relaxed">
-                يتم استقبال طلبات التوظيف لهذا الشاغر إلكترونياً عبر <strong>نموذج Google Forms الرسمي المعتمد</strong> لدى قسم الموارد البشرية لضمان دقة وسرعة فرز الطلبات ومراجعة المؤهلات المهنية.
+                يتم استقبال طلبات التوظيف لهذا الشاغر إلكترونياً عبر <strong>بوابة التوظيف الرسمية المعتمدة (Recruitment Portal)</strong> لدى قسم الموارد البشرية لضمان دقة وسرعة فرز الطلبات ومراجعة المؤهلات المهنية.
               </p>
             </div>
 
@@ -496,7 +496,7 @@ export const CareersPage: React.FC = () => {
                           rel="noopener noreferrer"
                           className="px-6 py-3.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs sm:text-sm font-bold rounded-xl shadow-md transition-all inline-flex items-center gap-2 cursor-pointer border border-[#00D2FF]/40"
                         >
-                          <span>قدّم الآن عبر استمارة Google Forms الرسمية ↗</span>
+                          <span>قدّم الآن عبر بوابة التوظيف الرسمية (Recruitment Portal) ↗</span>
                           <ExternalLink className="w-4 h-4" />
                         </a>
                       </div>

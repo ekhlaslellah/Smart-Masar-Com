@@ -591,7 +591,7 @@ export const HomePage: React.FC = () => {
             <p className="text-xs sm:text-sm text-slate-700 leading-relaxed mb-5">
               انضم إلى بيئة عمل محفزة؛ تتوفر شواغر نشطة تشمل{' '}
               <strong className="text-[#0A192F]">محاسب عام</strong> و{' '}
-              <strong className="text-[#0A192F]">أخصائي موارد بشرية</strong> مع التقديم المباشر عبر رابط Google Forms المعتمد.
+              <strong className="text-[#0A192F]">أخصائي موارد بشرية</strong> مع التقديم المباشر عبر بوابة التوظيف الرسمية المعتمدة (Recruitment Portal).
             </p>
 
             {/* Featured Vacancies Highlight Box */}

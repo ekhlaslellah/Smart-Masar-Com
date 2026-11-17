@@ -96,7 +96,7 @@ Run `initialSetup()` inside `/backend/google-apps-script.js` to automatically cr
 | `employmentTypeAr`| String | Employment type |
 | `locationAr` | String | Job Location |
 | `experienceLevelAr`| String | Required experience |
-| `googleFormsUrl` | String | External Google Forms respondent URL |
+| `googleFormsUrl` | String | Official Recruitment Portal URL (`https://smart-masar-recruitment.onrender.com/`) |
 | `summaryAr` | Text | Full job summary |
 | `responsibilitiesAr`| JSON Array | List of job duties |
 | `qualificationsAr` | JSON Array | List of requirements |

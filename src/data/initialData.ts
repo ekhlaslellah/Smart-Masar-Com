@@ -412,7 +412,7 @@ export const INITIAL_JOBS: JobVacancy[] = [
     employmentTypeAr: 'دوام كامل (مكتبي / هجين)',
     locationAr: 'المقر الرئيسي — عمّان',
     experienceLevelAr: 'سنتان إلى 4 سنوات خبرة',
-    googleFormsUrl: 'https://forms.gle/ZKfYUcUxoW6YgcKw6',
+    googleFormsUrl: 'https://smart-masar-recruitment.onrender.com/',
     summaryAr: 'تبحث شركة سمارت مسار عن محاسب محترف وموثوق للانضمام إلى قسم المالية والمحاسبة، للمساهمة في إدارة العمليات المحاسبية اليومية، إعداد التقارير المالية الدقيقة، ومتابعة المطابقات البنكية وتطوير الإجراءات المالية الرقمية المتطابقة مع الأنظمة المحاسبية الحديثة.',
     responsibilitiesAr: [
       'تسجيل القيود المحاسبية اليومية ومراجعة فواتير المشتريات والمبيعات بدقة عالية.',
@@ -439,7 +439,7 @@ export const INITIAL_JOBS: JobVacancy[] = [
       'إلمام ببرامج مثل QuickBooks أو Odoo أو Zoho Books أو أي نظام مالي مؤسسي معتمد.',
       'الاستعداد للتعامل مع برمجيات التحول الرقمي والأتمتة المالية الداخلية لشركة سمارت مسار.',
     ],
-    applicationInstructionsAr: 'يرجى من المهتمين والمستوفين للشروط الضغط على زر "قدّم الآن / Apply Now" بالأسفل لفتح استمارة التقديم الرسمية المعتمدة عبر الرابط الخارجي (Google Forms) مع إرفاق السيرة الذاتية المحدثة. سيتم التواصل مع المرشحين المؤهلين لترتيب المقابلات.',
+    applicationInstructionsAr: 'للتقديم، اضغط على «التقدّم للوظيفة» للانتقال إلى بوابة التوظيف الخاصة بسمارت مسار، واختر الشاغر المتاح ثم أدخل بياناتك وأرفق السيرة الذاتية (CV) وأرسل طلبك.',
     postedDate: '2026-10-15',
   },
   {
@@ -452,7 +452,7 @@ export const INITIAL_JOBS: JobVacancy[] = [
     employmentTypeAr: 'دوام كامل — Full-Time',
     locationAr: 'العقبة، الأردن — Aqaba, Jordan',
     experienceLevelAr: 'سنة إلى 3 سنوات خبرة',
-    googleFormsUrl: 'https://forms.gle/ZKfYUcUxoW6YgcKw6',
+    googleFormsUrl: 'https://smart-masar-recruitment.onrender.com/',
     summaryAr: 'دعم عمليات الاستقطاب والتوظيف، تهيئة الموظفين الجدد، إدارة السجلات والملفات الوظيفية، متابعة إدارة الأداء، تنسيق البرامج التدريبية، والعمليات اليومية لشؤون الموارد البشرية (Support recruitment, onboarding, employee records, performance management, training coordination, and daily HR operations).',
     responsibilitiesAr: [
       'دعم عمليات استقطاب المواهب وفرز السير الذاتية وتنسيق مقابلات التوظيف (Support recruitment).',
@@ -478,7 +478,7 @@ export const INITIAL_JOBS: JobVacancy[] = [
       'معرفة جيدة بنماذج الاستبيانات والتقييم السحابية وتطبيقات Google Workspace.',
       'الاستعداد للعمل على أنظمة شؤون الموظفين السحابية (HRIS / HRMS) وأدوات تتبع طلبات التوظيف (ATS).',
     ],
-    applicationInstructionsAr: 'يرجى من المهتمين والمستوفين للشروط الضغط على زر "قدّم الآن / Apply Now" بالأسفل لفتح استمارة التقديم الرسمية المعتمدة على Google Forms، وتعبئة البيانات المطلوبة وإرفاق السيرة الذاتية. سيتم مراجعة الطلبات والتواصل مع المرشحين المؤهلين.',
+    applicationInstructionsAr: 'للتقديم، اضغط على «التقدّم للوظيفة» للانتقال إلى بوابة التوظيف الخاصة بسمارت مسار، واختر الشاغر المتاح ثم أدخل بياناتك وأرفق السيرة الذاتية (CV) وأرسل طلبك.',
     postedDate: '2026-11-01',
   },
 ];
@@ -519,7 +519,7 @@ export const INITIAL_COMPANY_PROFILE: CompanyProfile = {
   phone: '+962 6 500 0000',
   locationAr: 'مجمع واحة التقنية، عمّان — المملكة الأردنية الهاشمية',
   workingHoursAr: 'الأحد – الخميس: 8:30 صباحاً – 5:00 مساءً',
-  googleFormsPlaceholderUrl: 'https://forms.gle/ZKfYUcUxoW6YgcKw6',
+  googleFormsPlaceholderUrl: 'https://smart-masar-recruitment.onrender.com/',
   logo_url: '/assets/aistudio/D666B97C-619E-459D-8A6A-33BEDB06BB76_d5572475.png',
   logo_file_id: '',
   logo_alt_ar: 'شعار شركة سمارت مسار - Smart Masar',

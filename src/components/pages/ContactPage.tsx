@@ -169,7 +169,7 @@ export const ContactPage: React.FC = () => {
             <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#CBD5E1] shadow-2xs flex items-start gap-3 text-xs text-[#0A192F]">
               <ShieldAlert className="w-5 h-5 text-[#2563EB] shrink-0 mt-0.5" />
               <div className="leading-relaxed">
-                <strong>إيضاح المصداقية والشفافية:</strong> لتقديم طلبات التوظيف الرسمية، يرجى استخدام صفحة <strong>الوظائف</strong> ثم الضغط على رابط استمارة Google Forms المعتمدة. نموذج المراسلة يقوم بفتح تطبيق بريدك مباشرة دون محاكاة تسليم وهمي.
+                <strong>إيضاح المصداقية والشفافية:</strong> لتقديم طلبات التوظيف الرسمية، يرجى استخدام صفحة <strong>الوظائف</strong> ثم الضغط على رابط بوابة التوظيف الرسمية المعتمدة (Recruitment Portal). نموذج المراسلة يقوم بفتح تطبيق بريدك مباشرة دون محاكاة تسليم وهمي.
               </div>
             </div>
           </div>

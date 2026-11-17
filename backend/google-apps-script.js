@@ -620,7 +620,7 @@ function initialSetup() {
     locationAr: 'مجمع واحة التقنية، عمّان — المملكة الأردنية الهاشمية',
     workingHoursAr: 'الأحد – الخميس: 8:30 صباحاً – 5:00 مساءً',
     googleFormsPlaceholderUrl:
-      'https://docs.google.com/forms/d/e/1FAIpQLSc-placeholder-smart-masar-accountant-form/viewform',
+      'https://smart-masar-recruitment.onrender.com/',
     logo_url: '',
     logo_file_id: '',
     drive_folder_id: driveFolder.getId(),
@@ -949,7 +949,7 @@ function initialSetup() {
       locationAr: 'المقر الرئيسي — عمّان',
       experienceLevelAr: 'سنتان إلى 4 سنوات خبرة',
       googleFormsUrl:
-        'https://docs.google.com/forms/d/e/1FAIpQLSc-placeholder-smart-masar-accountant-form/viewform',
+        'https://smart-masar-recruitment.onrender.com/',
       summaryAr:
         'تبحث شركة سمارت مسار عن محاسب محترف وموثوق للانضمام إلى قسم المالية والمحاسبة، للمساهمة في إدارة العمليات المحاسبية اليومية، إعداد التقارير المالية الدقيقة، ومتابعة المطابقات البنكية وتطوير الإجراءات المالية الرقمية.',
       responsibilitiesAr: JSON.stringify([
@@ -972,7 +972,7 @@ function initialSetup() {
         'إلمام ببرامج مثل QuickBooks أو Odoo أو Zoho Books.',
       ]),
       applicationInstructionsAr:
-        'يرجى الضغط على زر "تقديم الطلب الآن" بالأسفل وتعبئة نموذج التقديم الرسمي عبر Google Forms مع إرفاق السيرة الذاتية المحدثة.',
+        'يرجى الضغط على زر "قدّم الآن / Apply Now" بالأسفل للانتقال إلى بوابة التوظيف الرسمية المعتمدة (Recruitment Portal) وتقديم الطلب مع إرفاق السيرة الذاتية المحدثة.',
       postedDate: '2026-10-15',
     },
   ];

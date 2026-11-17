@@ -104,7 +104,7 @@ export const AdminOverview: React.FC = () => {
               {activeJobsCount}
             </div>
             <span className="text-[11px] text-emerald-600 font-bold mt-1 block">
-              متصلة بـ Google Forms
+              متصلة بـ Recruitment Portal / بوابة التوظيف
             </span>
           </div>
           <div className="w-11 h-11 rounded-xl bg-[#F5F8FC] border border-[#CBD5E1] flex items-center justify-center text-[#2563EB]">
@@ -190,10 +190,10 @@ export const AdminOverview: React.FC = () => {
             <div>
               <div className="flex items-center gap-2 font-bold text-sm text-[#142B4F] group-hover:text-[#2563EB] mb-1">
                 <Briefcase className="w-4 h-4 text-[#2563EB]" />
-                <span>إدارة الشواغر ورابط Google Forms</span>
+                <span>إدارة الشواغر ورابط Recruitment Portal / بوابة التوظيف</span>
               </div>
               <p className="text-xs text-slate-500">
-                تعديل وصف شاغر المحاسب وتحديث رابط استمارة التقديم الخارجية.
+                تعديل وصف الشواغر الوظيفية وتحديث رابط بوابة التوظيف الرسمية (Recruitment Portal).
               </p>
             </div>
             <ArrowLeft className="w-4 h-4 text-slate-400 group-hover:text-[#2563EB] group-hover:-translate-x-1 transition-transform shrink-0 mt-1" />

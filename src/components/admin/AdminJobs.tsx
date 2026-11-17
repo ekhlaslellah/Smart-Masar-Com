@@ -153,7 +153,7 @@ export const AdminJobs: React.FC = () => {
   const [newDeptId, setNewDeptId] = useState('tech');
   const [newStatus, setNewStatus] = useState<'active' | 'closed'>('active');
   const [newGoogleFormsUrl, setNewGoogleFormsUrl] = useState(
-    'https://docs.google.com/forms/d/e/1FAIpQLSc-smart-masar-official-applicant-form/viewform'
+    'https://smart-masar-recruitment.onrender.com/'
   );
   const [newSummaryAr, setNewSummaryAr] = useState('');
   const [newEmploymentTypeAr, setNewEmploymentTypeAr] = useState('دوام كامل (مكتبي / هجين)');
@@ -164,7 +164,7 @@ export const AdminJobs: React.FC = () => {
   const [newSkillsText, setNewSkillsText] = useState('');
   const [newSoftwareText, setNewSoftwareText] = useState('');
   const [newInstructionsAr, setNewInstructionsAr] = useState(
-    'يرجى الضغط على زر "تقديم الطلب الآن" وتعبئة استمارة التقديم الرسمية عبر Google Forms مع إرفاق السيرة الذاتية المحدثة.'
+    'يرجى الضغط على زر "تقديم الطلب الآن" والانتقال إلى بوابة التوظيف الرسمية (Recruitment Portal / بوابة التوظيف) مع إرفاق السيرة الذاتية المحدثة.'
   );
 
   // Template Quick Fills for ease of demonstration
@@ -196,7 +196,7 @@ export const AdminJobs: React.FC = () => {
         'قيادة عمليات استقطاب الكفاءات والكوادر التقنية، تنظيم المقابلات وإجراءات التعيين، وتعزيز العلامة المؤسسية لصاحب العمل.'
       );
       setNewResponsibilitiesText(
-        'إدارة دورة التوظيف الكاملة من نشر الإعلانات حتى توقيع عقود العمل.\nفرز وتقييم السير الذاتية واستمارات التقديم عبر Google Forms والأنظمة الرقمية.\nإجراء المقابلات الأولية وتقييم الملاءمة الثقافية والمهنية للمرشحين.\nإدارة برنامج تزكية الموظفين الداخلي وضمان معايير النزاهة وتكافؤ الفرص.'
+        'إدارة دورة التوظيف الكاملة من نشر الإعلانات حتى توقيع عقود العمل.\nفرز وتقييم السير الذاتية وطلبات التقديم عبر بوابة التوظيف (Recruitment Portal) والأنظمة الرقمية.\nإجراء المقابلات الأولية وتقييم الملاءمة الثقافية والمهنية للمرشحين.\nإدارة برنامج تزكية الموظفين الداخلي وضمان معايير النزاهة وتكافؤ الفرص.'
       );
       setNewQualificationsText(
         'بكالوريوس في إدارة الأعمال، الموارد البشرية، أو علم النفس التنظيمي.\nخبرة سابقة لا تقل عن سنتين في التوظيف التقني (Tech Recruitment).\nإلمام بقوانين العمل والأنظمة المعمول بها.\nشخصية قيادية ومهارات تواصل ممتازة باللغتين العربية والإنجليزية.'
@@ -205,7 +205,7 @@ export const AdminJobs: React.FC = () => {
         'إتقان تقنيات البحث عن المواهب عبر LinkedIn Recruiter والمنصات المهنية.\nتحليل مؤشرات أداء التوظيف Time-to-hire و Quality-of-hire.\nتصميم خطط الاستقطاب وبناء بنوك السير الذاتية.'
       );
       setNewSoftwareText(
-        'أنظمة متابعة المتقدمين (ATS).\nGoogle Workspace و Google Forms و Sheets لإدارة الترشيحات.\nأدوات التقييم والمقابلات الرقمية.'
+        'أنظمة متابعة المتقدمين (ATS) وبوابة التوظيف الذكية.\nGoogle Workspace و Google Sheets لإدارة الترشيحات.\nأدوات التقييم والمقابلات الرقمية.'
       );
     } else if (presetType === 'dev') {
       setNewTitleAr('مهندس برمجيات سحابية وتطبيقات – Cloud Software Engineer');
@@ -306,7 +306,7 @@ export const AdminJobs: React.FC = () => {
             </h2>
           </div>
           <p className="text-xs sm:text-sm text-slate-500">
-            إضافة شواغر وظيفية جديدة، تعديل المتطلبات، وإدارة روابط التقديم الرقمية عبر Google Forms.
+            إضافة شواغر وظيفية جديدة، تعديل المتطلبات، وإدارة روابط التقديم الرقمية عبر Recruitment Portal / بوابة التوظيف.
           </p>
         </div>
 
@@ -339,10 +339,10 @@ export const AdminJobs: React.FC = () => {
         </div>
 
         <div className="p-4 rounded-2xl bg-[#F5F8FC] border border-[#2563EB]/30 shadow-2xs">
-          <div className="text-[11px] font-bold text-[#2563EB] mb-1">بوابة الاستقطاب</div>
+          <div className="text-[11px] font-bold text-[#2563EB] mb-1">Recruitment Portal / بوابة التوظيف</div>
           <div className="text-xs font-bold text-[#142B4F] flex items-center gap-1.5 mt-2">
             <CheckCircle2 className="w-4 h-4 text-[#2563EB]" />
-            <span>متصلة بـ Google Forms</span>
+            <span>متصلة ببوابة التوظيف الرسمية</span>
           </div>
         </div>
       </div>
@@ -433,14 +433,14 @@ export const AdminJobs: React.FC = () => {
                     )}
                   </button>
 
-                  {/* Test Form Link */}
+                  {/* Test Portal Link */}
                   {job.googleFormsUrl && (
                     <a
                       href={job.googleFormsUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-2 text-slate-600 hover:text-[#2563EB] hover:bg-white rounded-lg border border-slate-200 transition-colors cursor-pointer"
-                      title="فتح استمارة التقديم عبر Google Forms"
+                      title="فتح رابط التقديم عبر Recruitment Portal / بوابة التوظيف"
                     >
                       <ExternalLink className="w-4 h-4" />
                     </a>
@@ -501,19 +501,19 @@ export const AdminJobs: React.FC = () => {
                   rel="noopener noreferrer"
                   className="px-3.5 py-2 bg-[#F5F8FC] hover:bg-slate-100 text-[#142B4F] border border-[#CBD5E1] text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
                 >
-                  <span>اختبار رابط الاستمارة</span>
+                  <span>اختبار رابط بوابة التوظيف</span>
                   <ExternalLink className="w-3.5 h-3.5 text-[#2563EB]" />
                 </a>
               )}
             </div>
           </div>
 
-          {/* Google Forms URL Section (Prominent) */}
+          {/* Recruitment Portal URL Section (Prominent) */}
           <div className="p-5 rounded-xl bg-[#F5F8FC] border border-[#2563EB]/40 space-y-3">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold text-[#142B4F] flex items-center gap-2">
                 <ExternalLink className="w-4 h-4 text-[#2563EB]" />
-                <span>رابط استمارة التقديم عبر Google Forms *</span>
+                <span>رابط التقديم (Recruitment Portal / بوابة التوظيف) *</span>
               </label>
               <span className="text-[11px] font-bold text-[#2563EB]">
                 قابل للتعديل والتحديث الفوري
@@ -521,7 +521,7 @@ export const AdminJobs: React.FC = () => {
             </div>
 
             <p className="text-xs text-slate-600 leading-relaxed">
-              عند نقر المتقدم على "تقديم الطلب الآن" في صفحة الوظائف العامة، سيتم توجيهه مباشرة إلى هذا الرابط. ضع رابط نموذج Google Forms الفعلي هنا.
+              عند نقر المتقدم على &quot;تقديم الطلب الآن&quot; في صفحة الوظائف العامة، سيتم توجيهه مباشرة إلى هذا الرابط في بوابة التوظيف الرسمية (Recruitment Portal / بوابة التوظيف).
             </p>
 
             <input
@@ -529,7 +529,7 @@ export const AdminJobs: React.FC = () => {
               required
               value={googleFormsUrl}
               onChange={(e) => setGoogleFormsUrl(e.target.value)}
-              placeholder="https://docs.google.com/forms/d/e/.../viewform"
+              placeholder="https://smart-masar-recruitment.onrender.com/"
               className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#CBD5E1] bg-white font-mono focus:outline-none focus:border-[#2563EB]"
               dir="ltr"
             />
@@ -748,7 +748,7 @@ export const AdminJobs: React.FC = () => {
                     إضافة شاغر وظيفي جديد
                   </h3>
                   <p className="text-xs text-slate-500">
-                    أدخل تفاصيل الشاغر الجديد ورابط استمارة التقديم على Google Forms
+                    أدخل تفاصيل الشاغر الجديد ورابط التقديم على Recruitment Portal / بوابة التوظيف
                   </p>
                 </div>
               </div>
@@ -795,18 +795,18 @@ export const AdminJobs: React.FC = () => {
 
             {/* Creation Form */}
             <form onSubmit={handleCreateJob} className="space-y-5">
-              {/* Google Forms URL */}
+              {/* Recruitment Portal URL */}
               <div className="p-4 rounded-xl bg-blue-50 border border-[#2563EB]/40 space-y-2">
                 <label className="text-xs font-bold text-[#142B4F] flex items-center gap-2">
                   <ExternalLink className="w-4 h-4 text-[#2563EB]" />
-                  <span>رابط استمارة التقديم على Google Forms *</span>
+                  <span>رابط التقديم (Recruitment Portal / بوابة التوظيف) *</span>
                 </label>
                 <input
                   type="url"
                   required
                   value={newGoogleFormsUrl}
                   onChange={(e) => setNewGoogleFormsUrl(e.target.value)}
-                  placeholder="https://docs.google.com/forms/d/e/.../viewform"
+                  placeholder="https://smart-masar-recruitment.onrender.com/"
                   className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#CBD5E1] bg-white font-mono"
                   dir="ltr"
                 />

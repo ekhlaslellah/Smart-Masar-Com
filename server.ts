@@ -1074,7 +1074,7 @@ async function syncBundleToExternalDatabase(): Promise<{
     },
     {
       Key: 'googleFormsPlaceholderUrl',
-      Value: db.profile.googleFormsPlaceholderUrl || 'https://forms.gle/ZKfYUcUxoW6YgcKw6',
+      Value: db.profile.googleFormsPlaceholderUrl || 'https://smart-masar-recruitment.onrender.com/',
       logo_url: '',
       logo_file_id: '',
     },
@@ -2671,7 +2671,7 @@ async function startServer() {
   } else {
     const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: { middlewareMode: true, hmr: false, watch: null },
       appType: 'spa',
     });
     apiApp.use(vite.middlewares);

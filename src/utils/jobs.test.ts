@@ -20,7 +20,7 @@ export function validateJobInput(data: Partial<JobVacancy>): { valid: boolean; e
     errors.push('Job title in English is required');
   }
   if (!data.googleFormsUrl || !data.googleFormsUrl.trim()) {
-    errors.push('رابط استمارة التقديم على Google Forms مطلوب');
+    errors.push('رابط التقديم عبر بوابة التوظيف (Recruitment Portal) مطلوب');
   }
   return {
     valid: errors.length === 0,
@@ -42,7 +42,7 @@ const sampleJobs: JobVacancy[] = [
     status: 'active',
     employmentTypeAr: 'دوام كامل',
     locationAr: 'عمان',
-    googleFormsUrl: 'https://docs.google.com/forms/d/e/.../viewform',
+    googleFormsUrl: 'https://smart-masar-recruitment.onrender.com/',
     summaryAr: 'وصف المحاسب',
     responsibilitiesAr: ['إعداد التقارير'],
     qualificationsAr: ['بكالوريوس محاسبة'],
@@ -61,7 +61,7 @@ const sampleJobs: JobVacancy[] = [
     status: 'closed',
     employmentTypeAr: 'دوام كامل',
     locationAr: 'عمان',
-    googleFormsUrl: 'https://docs.google.com/forms/d/e/.../viewform',
+    googleFormsUrl: 'https://smart-masar-recruitment.onrender.com/',
     summaryAr: 'وصف مطور AI',
     responsibilitiesAr: ['تدريب النماذج'],
     qualificationsAr: ['علوم حاسوب'],
@@ -87,7 +87,7 @@ test('validateJobInput validates required fields', () => {
   const valid = validateJobInput({
     titleAr: 'مهندس برمجيات',
     titleEn: 'Software Engineer',
-    googleFormsUrl: 'https://docs.google.com/forms/d/e/.../viewform',
+    googleFormsUrl: 'https://smart-masar-recruitment.onrender.com/',
   });
   assert.strictEqual(valid.valid, true);
   assert.strictEqual(valid.errors.length, 0);
@@ -98,7 +98,7 @@ test('toggleJobStatus alternates between active and closed', () => {
   assert.strictEqual(toggleJobStatus('closed'), 'active');
 });
 
-test('INITIAL_JOBS has Accountant and HR Specialist pointing to https://forms.gle/ZKfYUcUxoW6YgcKw6', async () => {
+test('INITIAL_JOBS has Accountant and HR Specialist pointing to https://smart-masar-recruitment.onrender.com/', async () => {
   const { INITIAL_JOBS } = await import('../data/initialData');
   assert.strictEqual(INITIAL_JOBS.length, 2);
 
@@ -106,7 +106,7 @@ test('INITIAL_JOBS has Accountant and HR Specialist pointing to https://forms.gl
   assert.ok(accountant, 'Accountant vacancy must exist');
   assert.strictEqual(accountant.titleEn, 'Accountant');
   assert.strictEqual(accountant.departmentId, 'dept-finance');
-  assert.strictEqual(accountant.googleFormsUrl, 'https://forms.gle/ZKfYUcUxoW6YgcKw6');
+  assert.strictEqual(accountant.googleFormsUrl, 'https://smart-masar-recruitment.onrender.com/');
   assert.strictEqual(accountant.status, 'active');
 
   const hr = INITIAL_JOBS.find((j) => j.id === 'job-hr-specialist-02');
@@ -117,7 +117,7 @@ test('INITIAL_JOBS has Accountant and HR Specialist pointing to https://forms.gl
   assert.strictEqual(hr.locationAr, 'العقبة، الأردن — Aqaba, Jordan');
   assert.strictEqual(hr.employmentTypeAr, 'دوام كامل — Full-Time');
   assert.strictEqual(hr.status, 'active');
-  assert.strictEqual(hr.googleFormsUrl, 'https://forms.gle/ZKfYUcUxoW6YgcKw6');
+  assert.strictEqual(hr.googleFormsUrl, 'https://smart-masar-recruitment.onrender.com/');
   assert.ok(hr.summaryAr.includes('recruitment'), 'Summary must mention recruitment');
   assert.ok(hr.qualificationsAr.some((q) => q.includes('Bachelor')), 'Qualifications must mention Bachelor degree');
 });

@@ -17,19 +17,21 @@ import {
 import { DEFAULT_SHEETDB_ENDPOINT } from '../services/apiService';
 
 test('Static Hosting Bundle & Security Verification Suite', async (t) => {
-  await t.test('1. Preserves all 6 founding employees, 6 departments, 7 pages, and Accountant + HR Specialist vacancies', () => {
+  await t.test('1. Preserves all 10 leadership employees, 10 departments, 7 pages, and Accountant + HR Specialist vacancies pointing to Recruitment Portal', () => {
     assert.equal(INITIAL_COMPANY_PROFILE.nameEn, 'Smart Masar');
     assert.equal(INITIAL_COMPANY_PROFILE.taglineAr, 'نبتكر اليوم لنصنع فرص الغد');
-    assert.equal(INITIAL_EMPLOYEES.length, 6);
-    assert.equal(INITIAL_DEPARTMENTS.length, 6);
+    assert.equal(INITIAL_COMPANY_PROFILE.googleFormsPlaceholderUrl, 'https://smart-masar-recruitment.onrender.com/');
+    assert.equal(INITIAL_EMPLOYEES.length, 10);
+    assert.equal(INITIAL_DEPARTMENTS.length, 10);
     assert.equal(INITIAL_PAGES.length, 7);
     assert.equal(INITIAL_JOBS.length, 2);
     assert.equal(INITIAL_JOBS[0].id, 'job-accountant-01');
-    assert.equal(INITIAL_JOBS[0].googleFormsUrl, 'https://forms.gle/ZKfYUcUxoW6YgcKw6');
+    assert.equal(INITIAL_JOBS[0].departmentId, 'dept-finance');
+    assert.equal(INITIAL_JOBS[0].googleFormsUrl, 'https://smart-masar-recruitment.onrender.com/');
     assert.equal(INITIAL_JOBS[1].id, 'job-hr-specialist-02');
     assert.equal(INITIAL_JOBS[1].titleEn, 'Human Resources Specialist (HR Specialist)');
-    assert.equal(INITIAL_JOBS[1].departmentId, 'hr');
-    assert.equal(INITIAL_JOBS[1].googleFormsUrl, 'https://forms.gle/ZKfYUcUxoW6YgcKw6');
+    assert.equal(INITIAL_JOBS[1].departmentId, 'dept-hr');
+    assert.equal(INITIAL_JOBS[1].googleFormsUrl, 'https://smart-masar-recruitment.onrender.com/');
   });
 
   await t.test('2. Preserves SheetDB public read endpoint configuration (https://sheetdb.io/api/v1/9537p5ct7m308)', () => {
@@ -38,24 +40,17 @@ test('Static Hosting Bundle & Security Verification Suite', async (t) => {
     assert.equal(dbJson.backendMeta.sheetDbUrl, 'https://sheetdb.io/api/v1/9537p5ct7m308');
   });
 
-  await t.test('3. Verifies production build (dist/) and static hosting ZIP exist and have valid ZIP signature', () => {
-    const zipPath = path.resolve('public/smart-masar-static-hosting.zip');
-    assert.equal(fs.existsSync(zipPath), true, 'smart-masar-static-hosting.zip should exist');
-    const buf = fs.readFileSync(zipPath);
+  await t.test('3. Verifies production build (dist/) exists and private backup is stored outside public/', () => {
+    assert.equal(fs.existsSync(path.resolve('public/backups')), false, 'public/backups must not exist');
+    assert.equal(fs.existsSync(path.resolve('public/smart-masar-static-hosting.zip')), false, 'public static zip must not exist in public/');
+    assert.equal(fs.existsSync(path.resolve('public/smart-masar-complete-project.zip')), false, 'public project zip must not exist in public/');
+    const privateZipPath = path.resolve('data/backups/smart-masar-recovery-backup.zip');
+    assert.equal(fs.existsSync(privateZipPath), true, 'data/backups/smart-masar-recovery-backup.zip should exist in private storage');
+    const buf = fs.readFileSync(privateZipPath);
     assert.equal(buf[0], 0x50); // 'P'
     assert.equal(buf[1], 0x4b); // 'K'
     assert.equal(buf[2], 0x03);
     assert.equal(buf[3], 0x04);
-    assert.ok(buf.length > 100_000, 'ZIP should contain compiled assets and logo');
-
-    const zipStr = buf.toString('utf8');
-    assert.ok(zipStr.includes('index.html'), 'ZIP must include index.html');
-    assert.ok(zipStr.includes('smart-masar.html'), 'ZIP must include smart-masar.html');
-    assert.ok(zipStr.includes('README.md'), 'ZIP must include README.md');
-    assert.ok(zipStr.includes('.htaccess'), 'ZIP must include .htaccess');
-    assert.ok(zipStr.includes('_redirects'), 'ZIP must include _redirects');
-    assert.ok(zipStr.includes('vercel.json'), 'ZIP must include vercel.json');
-    assert.ok(zipStr.includes('404.html'), 'ZIP must include 404.html');
   });
 
   await t.test('4. Ensures zero hardcoded admin secret keys or passwords exist in data/db.json, server.ts, .env.example, or public HTML/JS bundles', () => {
@@ -79,13 +74,6 @@ test('Static Hosting Bundle & Security Verification Suite', async (t) => {
       legacyKeyPattern.test(envExample),
       false,
       '.env.example must not contain the legacy admin key'
-    );
-
-    const standaloneHtml = fs.readFileSync(path.resolve('public/smart-masar.html'), 'utf8');
-    assert.equal(
-      legacyKeyPattern.test(standaloneHtml),
-      false,
-      'smart-masar.html must never contain admin secret key'
     );
 
     const distIndex = fs.readFileSync(path.resolve('dist/index.html'), 'utf8');

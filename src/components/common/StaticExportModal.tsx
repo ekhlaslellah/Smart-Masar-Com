@@ -334,9 +334,9 @@ export const StaticExportModal: React.FC<StaticExportModalProps> = ({ isOpen, on
                       <td className="p-3 text-slate-600">تعمل الرئيسية، من نحن، الخدمات، الفريق، الهيكل التنظيمي، الوظائف، والتواصل مع التجاوب الكامل للهاتف (390px).</td>
                     </tr>
                     <tr className="bg-[#F8FAFC]">
-                      <td className="p-3 font-bold text-[#142B4F]">سجلات الموظفين الـ 6 والأقسام الـ 5 وشاغر المحاسب</td>
+                      <td className="p-3 font-bold text-[#142B4F]">سجلات الموظفين والأقسام والشواغر الوظيفية</td>
                       <td className="p-3 text-emerald-700 font-bold">تعمل بالكامل 100%</td>
-                      <td className="p-3 text-slate-600">مدمجة داخل الحزمة وتظهر فوراً، مع عمل رابط التقديم عبر Google Forms بشكل مباشر.</td>
+                      <td className="p-3 text-slate-600">مدمجة داخل الحزمة وتظهر فوراً، مع عمل رابط التقديم عبر بوابة التوظيف الرسمية (Recruitment Portal) بشكل مباشر.</td>
                     </tr>
                     <tr className="bg-white">
                       <td className="p-3 font-bold text-[#142B4F]">قراءة البيانات المحدثة من Google Sheets (SheetDB)</td>
