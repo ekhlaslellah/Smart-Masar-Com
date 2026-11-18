@@ -5,6 +5,176 @@
 
 import { Department, Employee, OrgNode } from '../types';
 
+export type EmployeeRoleCategory =
+  | 'executive'
+  | 'advisor'
+  | 'department_lead'
+  | 'specialist';
+
+/**
+ * Safely parses a boolean value from Google Sheets / SheetDB strings or booleans,
+ * falling back to `defaultValue` when undefined, null, or blank string.
+ */
+export function parseEmployeeBoolean(
+  val: unknown,
+  defaultValue: boolean
+): boolean {
+  if (typeof val === 'boolean') return val;
+  if (typeof val === 'number') return val !== 0;
+  if (typeof val === 'string') {
+    const trimmed = val.trim().toLowerCase();
+    if (!trimmed) return defaultValue;
+    if (trimmed === 'true' || trimmed === '1' || trimmed === 'yes') return true;
+    if (trimmed === 'false' || trimmed === '0' || trimmed === 'no') return false;
+  }
+  return defaultValue;
+}
+
+/**
+ * Normalizes an employee record with explicit, backward-compatible defaults for
+ * the 4 independent visibility & privacy options:
+ * - showOnTeamPage: default true
+ * - showOnOrgChart: default true
+ * - showPublicEmail: default false (protects personal emails unless explicitly enabled)
+ * - showPublicProfile: default true
+ */
+export function normalizeEmployeeVisibility(emp: Employee): Employee {
+  const cleanManagerId =
+    emp.managerId && String(emp.managerId).trim().length > 0
+      ? String(emp.managerId).trim()
+      : null;
+
+  return {
+    ...emp,
+    managerId: cleanManagerId,
+    isConfirmedPosition: parseEmployeeBoolean(emp.isConfirmedPosition, true),
+    order: Number(emp.order) || 1,
+    showOnTeamPage: parseEmployeeBoolean(emp.showOnTeamPage, true),
+    showOnOrgChart: parseEmployeeBoolean(emp.showOnOrgChart, true),
+    showPublicEmail: parseEmployeeBoolean(emp.showPublicEmail, false),
+    showPublicProfile: parseEmployeeBoolean(emp.showPublicProfile, true),
+  };
+}
+
+/**
+ * Masks private fields (such as personal email when `showPublicEmail` is false)
+ * so that public views and unauthenticated API responses never leak private data.
+ */
+export function sanitizeEmployeeForPublicView(emp: Employee): Employee {
+  const normalized = normalizeEmployeeVisibility(emp);
+  return {
+    ...normalized,
+    email: normalized.showPublicEmail ? normalized.email || '' : '',
+    bioAr: normalized.showPublicProfile ? normalized.bioAr || '' : '',
+  };
+}
+
+/**
+ * Classifies an employee's organizational role category from their title, department, and reporting line.
+ * Supports Executive Leadership, Advisory Roles, Department/Management Leads, and Specialists.
+ */
+export function getEmployeeRoleCategory(
+  emp: Employee,
+  _allEmployees?: Employee[]
+): EmployeeRoleCategory {
+  const titleAr = (emp.jobTitleAr || '').toLowerCase();
+  const titleEn = (emp.jobTitleEn || '').toLowerCase();
+  const deptId = (emp.departmentId || '').toLowerCase();
+
+  // 1. Root Executive / CEO
+  if (
+    emp.id === 'emp-ahmed-alabed' ||
+    (!emp.managerId &&
+      (deptId === 'exec' ||
+        titleAr.includes('الرئيس التنفيذي') ||
+        titleAr.includes('المدير العام') ||
+        titleEn.includes('chief executive') ||
+        titleEn.includes('ceo')))
+  ) {
+    return 'executive';
+  }
+
+  // 2. Advisory / Consultant positions (e.g., Executive Advisor)
+  if (
+    titleAr.includes('مستشار') ||
+    titleAr.includes('مستشارة') ||
+    titleEn.includes('advisor') ||
+    titleEn.includes('consultant') ||
+    deptId.includes('advisory')
+  ) {
+    return 'advisor';
+  }
+
+  // 3. Department Heads & Directors
+  if (
+    titleAr.includes('رئيس') ||
+    titleAr.includes('رئيسة') ||
+    titleAr.includes('مدير') ||
+    titleAr.includes('مديرة') ||
+    titleEn.includes('head of') ||
+    titleEn.includes('director') ||
+    titleEn.includes('chief') ||
+    titleEn.includes('lead')
+  ) {
+    return 'department_lead';
+  }
+
+  // 4. Specialist / Staff / Other
+  return 'specialist';
+}
+
+const ROLE_CATEGORY_RANK: Record<EmployeeRoleCategory, number> = {
+  executive: 0,
+  advisor: 1,
+  department_lead: 2,
+  specialist: 3,
+};
+
+/**
+ * Sorts employees in a logical leadership order:
+ * 1. Executive Leadership (CEO)
+ * 2. Executive Advisors
+ * 3. Department Heads & Directors (ordered by `order`)
+ * 4. Specialists & Staff (ordered by `order`)
+ */
+export function sortEmployeesByHierarchy(employees: Employee[]): Employee[] {
+  return [...employees]
+    .map(normalizeEmployeeVisibility)
+    .sort((a, b) => {
+      const rankA = ROLE_CATEGORY_RANK[getEmployeeRoleCategory(a)];
+      const rankB = ROLE_CATEGORY_RANK[getEmployeeRoleCategory(b)];
+      if (rankA !== rankB) return rankA - rankB;
+      const orderA = Number(a.order) || 999;
+      const orderB = Number(b.order) || 999;
+      if (orderA !== orderB) return orderA - orderB;
+      return a.nameAr.localeCompare(b.nameAr, 'ar');
+    });
+}
+
+/**
+ * Returns only employees enabled for display on the public Team page (`showOnTeamPage !== false`),
+ * sorted in logical leadership order.
+ */
+export function getVisibleTeamEmployees(employees: Employee[]): Employee[] {
+  return sortEmployeesByHierarchy(
+    (employees || []).filter(
+      (emp) => normalizeEmployeeVisibility(emp).showOnTeamPage !== false
+    )
+  );
+}
+
+/**
+ * Returns only employees enabled for display on the public Organizational Chart (`showOnOrgChart !== false`),
+ * sorted in logical leadership order.
+ */
+export function getVisibleOrgChartEmployees(employees: Employee[]): Employee[] {
+  return sortEmployeesByHierarchy(
+    (employees || []).filter(
+      (emp) => normalizeEmployeeVisibility(emp).showOnOrgChart !== false
+    )
+  );
+}
+
 /**
  * Builds a hierarchical organizational tree from a flat list of employees.
  */
@@ -12,23 +182,28 @@ export function buildOrgTree(
   employees: Employee[],
   departments: Department[]
 ): OrgNode | null {
-  if (!employees || employees.length === 0) return null;
+  const visible = getVisibleOrgChartEmployees(employees);
+  if (!visible || visible.length === 0) return null;
 
   const deptMap = new Map<string, Department>();
   departments.forEach((d) => deptMap.set(d.id, d));
 
   // Find root employee (managerId is null or root ID)
-  let rootEmp = employees.find((e) => e.managerId === null);
+  let rootEmp = visible.find((e) => !e.managerId);
   if (!rootEmp) {
-    // Fallback: Dr. Ahmed Alabed or first employee
-    rootEmp = employees.find((e) => e.id === 'emp-ahmed-alabed') || employees[0];
+    rootEmp = visible.find((e) => e.id === 'emp-ahmed-alabed') || visible[0];
   }
 
+  const visited = new Set<string>([rootEmp.id]);
+
   const buildSubtree = (emp: Employee, level: number): OrgNode => {
-    const children = employees
-      .filter((e) => e.managerId === emp.id && e.id !== emp.id)
-      .sort((a, b) => a.order - b.order)
-      .map((child) => buildSubtree(child, level + 1));
+    const children = visible
+      .filter((e) => e.managerId === emp.id && !visited.has(e.id))
+      .sort((a, b) => (a.order || 999) - (b.order || 999))
+      .map((child) => {
+        visited.add(child.id);
+        return buildSubtree(child, level + 1);
+      });
 
     return {
       ...emp,
@@ -47,14 +222,26 @@ export function buildOrgTree(
 export function getDepartmentStats(
   employees: Employee[],
   departments: Department[]
-): Array<{ department: Department; count: number; confirmedCount: number }> {
+): Array<{
+  department: Department;
+  count: number;
+  confirmedCount: number;
+  visibleTeamCount: number;
+  visibleOrgCount: number;
+}> {
   return departments.map((dept) => {
-    const deptEmployees = employees.filter((e) => e.departmentId === dept.id);
+    const deptEmployees = employees
+      .map(normalizeEmployeeVisibility)
+      .filter((e) => e.departmentId === dept.id);
     const confirmedCount = deptEmployees.filter((e) => e.isConfirmedPosition).length;
+    const visibleTeamCount = deptEmployees.filter((e) => e.showOnTeamPage !== false).length;
+    const visibleOrgCount = deptEmployees.filter((e) => e.showOnOrgChart !== false).length;
     return {
       department: dept,
       count: deptEmployees.length,
       confirmedCount,
+      visibleTeamCount,
+      visibleOrgCount,
     };
   });
 }
@@ -88,32 +275,333 @@ export function validateEmployee(data: Partial<Employee>): {
 }
 
 /**
- * Filters employee list by search term and department.
+ * Filters employee list by search term, department, and optional role category.
+ * Respects `showOnTeamPage !== false` by default so hidden employees do not appear on public filters.
  */
 export function filterTeam(
   employees: Employee[],
   searchTerm: string = '',
-  departmentId: string = 'all'
+  departmentId: string = 'all',
+  roleCategory:
+    | 'all'
+    | EmployeeRoleCategory
+    | 'leadership_advisory'
+    | 'executive_advisor' = 'all',
+  onlyVisibleOnTeamPage: boolean = true
 ): Employee[] {
   const cleanSearch = searchTerm.trim().toLowerCase();
+  const baseList = onlyVisibleOnTeamPage
+    ? getVisibleTeamEmployees(employees)
+    : sortEmployeesByHierarchy(employees);
 
-  return employees.filter((emp) => {
+  return baseList.filter((emp) => {
     const matchesDept = departmentId === 'all' || emp.departmentId === departmentId;
     if (!matchesDept) return false;
+
+    if (roleCategory !== 'all') {
+      const cat = getEmployeeRoleCategory(emp);
+      if (
+        roleCategory === 'leadership_advisory' ||
+        roleCategory === 'executive_advisor'
+      ) {
+        if (cat !== 'executive' && cat !== 'advisor') return false;
+      } else if (cat !== roleCategory) {
+        return false;
+      }
+    }
 
     if (!cleanSearch) return true;
 
     const matchNameAr = emp.nameAr.toLowerCase().includes(cleanSearch);
-    const matchNameEn = emp.nameEn.toLowerCase().includes(cleanSearch);
+    const matchNameEn = (emp.nameEn || '').toLowerCase().includes(cleanSearch);
     const matchTitleAr = emp.jobTitleAr.toLowerCase().includes(cleanSearch);
-    const matchTitleEn = emp.jobTitleEn.toLowerCase().includes(cleanSearch);
+    const matchTitleEn = (emp.jobTitleEn || '').toLowerCase().includes(cleanSearch);
 
     return matchNameAr || matchNameEn || matchTitleAr || matchTitleEn;
   });
 }
 
 // ============================================================================
-// INTERACTIVE ORGANIZATIONAL STRUCTURE DATA (CEO + 9 DEPT HEADS + 18 STAFF)
+// DYNAMIC ORGANIZATIONAL STRUCTURE BUILDER (FROM TEAM & DEPARTMENTS DATABASE)
+// ============================================================================
+
+export interface DynamicOrgUnit {
+  department: Department;
+  code: string;
+  unitType: 'advisory' | 'department';
+  lead: Employee | null;
+  head: Employee | null;
+  members: Employee[];
+}
+
+export type DynamicOrgDepartmentUnit = DynamicOrgUnit;
+
+export interface DynamicOrgStructure {
+  ceo: Employee | null;
+  executiveDepartment: Department | undefined;
+  advisoryUnits: DynamicOrgUnit[];
+  departmentUnits: DynamicOrgUnit[];
+  independentRoles: Employee[];
+  summary: {
+    totalDatabaseEmployees: number;
+    totalVisibleMembers: number;
+    totalExecutives: number;
+    totalAdvisors: number;
+    totalDepartmentLeads: number;
+    totalSpecialists: number;
+    totalDepartments: number;
+  };
+}
+
+/**
+ * Dynamically builds the live organizational structure exclusively from `Team` (`employees`)
+ * and `Departments` (`departments`), supporting:
+ * - Root Executive Leadership (CEO)
+ * - Executive Advisory roles & offices (e.g. Eng. Razan Jaber)
+ * - Departmental & Governance Leadership units (e.g. 9 Department Heads + Director of Corporate Governance Ahmad Bakr)
+ * - Direct reports / team specialists within each department
+ * - Non-department-head independent or cross-functional roles
+ */
+export function buildDynamicOrgStructure(
+  employees: Employee[],
+  departments: Department[]
+): DynamicOrgStructure {
+  const allNormalized = (employees || []).map(normalizeEmployeeVisibility);
+  const visible = getVisibleOrgChartEmployees(allNormalized);
+  const deptMap = new Map<string, Department>();
+  (departments || []).forEach((d) => deptMap.set(d.id, d));
+
+  // 1. Identify Root Executive (CEO)
+  let ceo: Employee | null =
+    visible.find((e) => getEmployeeRoleCategory(e) === 'executive') ||
+    visible.find((e) => !e.managerId) ||
+    null;
+
+  const assignedEmployeeIds = new Set<string>();
+  if (ceo) {
+    assignedEmployeeIds.add(ceo.id);
+  }
+
+  const executiveDepartment =
+    (ceo && deptMap.get(ceo.departmentId)) || deptMap.get('exec');
+
+  // 2. Build Advisory Units & Departmental Units from `Departments` and `Team`
+  const advisoryUnits: DynamicOrgUnit[] = [];
+  const departmentUnits: DynamicOrgUnit[] = [];
+
+  const nonExecDepartments = (departments || []).filter((d) => d.id !== 'exec');
+  let deptCounter = 1;
+  let advCounter = 1;
+
+  for (const dept of nonExecDepartments) {
+    const deptEmps = visible.filter(
+      (e) => e.departmentId === dept.id && !assignedEmployeeIds.has(e.id)
+    );
+
+    const isAdvisoryDept =
+      dept.id.toLowerCase().includes('advisory') ||
+      dept.nameAr.includes('مستشار') ||
+      dept.nameEn.toLowerCase().includes('advisory') ||
+      (deptEmps.length > 0 &&
+        deptEmps.every((e) => getEmployeeRoleCategory(e) === 'advisor'));
+
+    // Pick unit lead (Head, Director, Advisor, or person reporting directly to CEO)
+    let lead: Employee | null = null;
+    if (deptEmps.length > 0) {
+      lead =
+        deptEmps.find(
+          (e) =>
+            getEmployeeRoleCategory(e) === 'department_lead' ||
+            getEmployeeRoleCategory(e) === 'advisor'
+        ) ||
+        deptEmps.find((e) => !ceo || e.managerId === ceo.id) ||
+        deptEmps[0];
+      assignedEmployeeIds.add(lead.id);
+    }
+
+    // Members in this department or reporting directly to this lead
+    const members = visible.filter(
+      (e) =>
+        !assignedEmployeeIds.has(e.id) &&
+        (e.departmentId === dept.id || (lead && e.managerId === lead.id))
+    );
+    members.forEach((m) => assignedEmployeeIds.add(m.id));
+
+    if (isAdvisoryDept) {
+      if (lead || members.length > 0) {
+        advisoryUnits.push({
+          department: dept,
+          code: `A${advCounter++}`,
+          unitType: 'advisory',
+          lead,
+          head: lead,
+          members,
+        });
+      }
+    } else {
+      const code = String(deptCounter++).padStart(2, '0');
+      departmentUnits.push({
+        department: dept,
+        code,
+        unitType: 'department',
+        lead,
+        head: lead,
+        members,
+      });
+    }
+  }
+
+  // 3. Check for any visible Advisory employees not in a dedicated advisory department
+  const remainingAdvisors = visible.filter(
+    (e) => !assignedEmployeeIds.has(e.id) && getEmployeeRoleCategory(e) === 'advisor'
+  );
+  for (const adv of remainingAdvisors) {
+    assignedEmployeeIds.add(adv.id);
+    const directReports = visible.filter(
+      (e) => !assignedEmployeeIds.has(e.id) && e.managerId === adv.id
+    );
+    directReports.forEach((r) => assignedEmployeeIds.add(r.id));
+    advisoryUnits.push({
+      department: deptMap.get(adv.departmentId) || {
+        id: adv.departmentId || `adv-${adv.id}`,
+        nameAr: adv.jobTitleAr,
+        nameEn: adv.jobTitleEn || 'Executive Advisory',
+        iconName: 'Lightbulb',
+        badgeBg: '#2563EB',
+      },
+      code: `A${advCounter++}`,
+      unitType: 'advisory',
+      lead: adv,
+      head: adv,
+      members: directReports,
+    });
+  }
+
+  // 4. Any remaining visible employees (e.g. non-head roles in `exec` or custom departments)
+  const independentRoles = visible.filter((e) => !assignedEmployeeIds.has(e.id));
+  independentRoles.forEach((e) => assignedEmployeeIds.add(e.id));
+
+  const totalExecutives = ceo ? 1 : 0;
+  const totalAdvisors = advisoryUnits.reduce(
+    (acc, u) => acc + (u.lead ? 1 : 0) + u.members.length,
+    0
+  );
+  const totalDepartmentLeads = departmentUnits.filter((u) => Boolean(u.lead)).length;
+  const totalSpecialists =
+    departmentUnits.reduce((acc, u) => acc + u.members.length, 0) +
+    independentRoles.length;
+
+  return {
+    ceo,
+    executiveDepartment,
+    advisoryUnits,
+    departmentUnits,
+    independentRoles,
+    summary: {
+      totalDatabaseEmployees: allNormalized.length,
+      totalVisibleMembers: visible.length,
+      totalExecutives,
+      totalAdvisors,
+      totalDepartmentLeads,
+      totalSpecialists,
+      totalDepartments: (departments || []).length,
+    },
+  };
+}
+
+/**
+ * Filters dynamic organizational units by search query across department names, lead names/titles, and member names/titles.
+ */
+export function filterDynamicOrgUnits(
+  units: DynamicOrgUnit[],
+  query: string
+): DynamicOrgUnit[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return units;
+
+  return units.filter((unit) => {
+    const matchDept =
+      unit.department.nameAr.toLowerCase().includes(q) ||
+      unit.department.nameEn.toLowerCase().includes(q);
+    const matchLead =
+      Boolean(unit.lead) &&
+      (unit.lead!.nameAr.toLowerCase().includes(q) ||
+        (unit.lead!.nameEn || '').toLowerCase().includes(q) ||
+        unit.lead!.jobTitleAr.toLowerCase().includes(q) ||
+        (unit.lead!.jobTitleEn || '').toLowerCase().includes(q));
+    const matchMember = unit.members.some(
+      (m) =>
+        m.nameAr.toLowerCase().includes(q) ||
+        (m.nameEn || '').toLowerCase().includes(q) ||
+        m.jobTitleAr.toLowerCase().includes(q) ||
+        (m.jobTitleEn || '').toLowerCase().includes(q)
+    );
+    return matchDept || matchLead || matchMember;
+  });
+}
+
+// ============================================================================
+// GOOGLE SHEETS / SHEETDB SAFE COLUMN MIGRATION PLAN FOR `Team` TAB
+// ============================================================================
+
+export const TEAM_EXISTING_COLUMNS = [
+  'id',
+  'nameAr',
+  'nameEn',
+  'jobTitleAr',
+  'jobTitleEn',
+  'departmentId',
+  'managerId',
+  'avatarUrl',
+  'image_url',
+  'image_file_id',
+  'image_alt_ar',
+  'initials',
+  'bioAr',
+  'email',
+  'isConfirmedPosition',
+  'order',
+] as const;
+
+export const TEAM_NEW_VISIBILITY_COLUMNS = [
+  {
+    columnName: 'showOnTeamPage',
+    columnLetter: 'Q',
+    columnIndex: 17,
+    type: 'BOOLEAN',
+    defaultValue: 'TRUE',
+    descriptionAr: 'إظهار أو إخفاء بطاقة الموظف في صفحة فريق العمل العامة (/team)',
+  },
+  {
+    columnName: 'showOnOrgChart',
+    columnLetter: 'R',
+    columnIndex: 18,
+    type: 'BOOLEAN',
+    defaultValue: 'TRUE',
+    descriptionAr: 'إظهار أو إخفاء الموظف في المخطط الهيكلي التفاعلي (/organization)',
+  },
+  {
+    columnName: 'showPublicEmail',
+    columnLetter: 'S',
+    columnIndex: 19,
+    type: 'BOOLEAN',
+    defaultValue: 'FALSE',
+    descriptionAr:
+      'التحكم بعرض البريد الإلكتروني للعامة (الافتراضي FALSE لحماية البريد الشخصي من التسرب)',
+  },
+  {
+    columnName: 'showPublicProfile',
+    columnLetter: 'T',
+    columnIndex: 20,
+    type: 'BOOLEAN',
+    defaultValue: 'TRUE',
+    descriptionAr:
+      'السماح بفتح نافذة الملف الشخصي التفصيلي عند النقر على البطاقة العامة',
+  },
+] as const;
+
+// ============================================================================
+// SEPARATED TRAINING SIMULATION STRUCTURE (NOT MIXED WITH LIVE TEAM DATABASE)
 // ============================================================================
 
 export interface OrgStaffMember {
@@ -467,11 +955,11 @@ export const SMART_MASAR_ORG_STRUCTURE: SmartMasarOrgStructure = {
       head: {
         id: 'head-haneen',
         linkedEmployeeId: 'emp-haneen-ziad',
-        nameEn: 'Haneen Ziad',
-        nameAr: 'حنين زياد',
+        nameEn: 'Haneen Al-Kasaji',
+        nameAr: 'حنين الكسجي',
         titleEn: 'Head of Customer Experience & Services',
         titleAr: 'رئيسة قسم تجربة وخدمات العملاء',
-        initials: 'HZ',
+        initials: 'HK',
         email: 'haneen@smartmasar.edu',
         bioAr:
           'الارتقاء بتجربة المستفيدين والعملاء، وضمان جودة الدعم والخدمات الرقمية المقدمة.',
@@ -543,9 +1031,11 @@ export const SMART_MASAR_ORG_STRUCTURE: SmartMasarOrgStructure = {
 };
 
 /**
- * Returns summary metrics for the Smart Masar organizational structure.
+ * Returns summary metrics for the separated training simulation structure.
  */
-export function getOrgStructureSummary(structure: SmartMasarOrgStructure = SMART_MASAR_ORG_STRUCTURE) {
+export function getOrgStructureSummary(
+  structure: SmartMasarOrgStructure = SMART_MASAR_ORG_STRUCTURE
+) {
   const totalExecutives = 1;
   const totalDepartmentHeads = structure.departments.length;
   const totalStaff = structure.departments.reduce((acc, d) => acc + d.staff.length, 0);
@@ -558,7 +1048,7 @@ export function getOrgStructureSummary(structure: SmartMasarOrgStructure = SMART
 }
 
 /**
- * Filters organizational department units by search term across head and staff names/titles (AR/EN).
+ * Filters training simulation department units by search term across head and staff names/titles (AR/EN).
  */
 export function filterOrgDepartments(
   departments: OrgDepartmentUnit[],

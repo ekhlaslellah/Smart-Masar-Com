@@ -39,7 +39,10 @@
     "logo_url": "/assets/aistudio/D666B97C-619E-459D-8A6A-33BEDB06BB76_d5572475.png",
     "logo_file_id": "",
     "logo_alt_ar": "شعار شركة سمارت مسار - Smart Masar",
-    "drive_folder_id": "1ss80vbtewFJ09876Re5uIH2g3Xu7tB0l"
+    "drive_folder_id": "1ss80vbtewFJ09876Re5uIH2g3Xu7tB0l",
+    "services_drive_folder_id": "1qS_b1gOnR66V9WoPxjgj69IoGn5Yc_f3",
+    "google_spreadsheet_id": "1-7tcV3S0YMuee7mpFvqtUj9SCsC1acb-_qrw5uqa1yE",
+    "sheetdb_endpoint": "https://sheetdb.io/api/v1/9537p5ct7m308"
   },
   "departments": [
     {
@@ -111,9 +114,45 @@
       "nameEn": "Quality & Performance",
       "iconName": "ShieldCheck",
       "badgeBg": "#101B32"
+    },
+    {
+      "id": "dept-governance-compliance",
+      "nameAr": "إدارة الحوكمة والامتثال المؤسسي",
+      "nameEn": "Corporate Governance & Compliance",
+      "iconName": "ShieldCheck",
+      "badgeBg": "#203B65"
+    },
+    {
+      "id": "dept-exec-digital-advisory",
+      "nameAr": "مكتب مستشارة المدير التنفيذي للتطوير والتحول الرقمي",
+      "nameEn": "Executive Development & Digital Transformation Advisory",
+      "iconName": "Lightbulb",
+      "badgeBg": "#2563EB"
     }
   ],
   "employees": [
+    {
+      "id": "emp-razan-jaber",
+      "nameAr": "م.رزان جابر",
+      "nameEn": "Razan Jaber",
+      "jobTitleAr": "مستشارة المدير التنفيذي للتطوير والتحول الرقمي",
+      "jobTitleEn": "Executive Advisor for Development & Digital Transformation",
+      "departmentId": "dept-exec-digital-advisory",
+      "managerId": "emp-ahmed-alabed",
+      "avatarUrl": "/api/images/drive/11PCfK-Lzezlhz2Ey5Gzlhd2odgRukt7C",
+      "image_url": "/api/images/drive/11PCfK-Lzezlhz2Ey5Gzlhd2odgRukt7C",
+      "image_file_id": "11PCfK-Lzezlhz2Ey5Gzlhd2odgRukt7C",
+      "image_alt_ar": "صورة المهندسة رزان جابر",
+      "initials": "RJ",
+      "bioAr": "",
+      "email": "",
+      "isConfirmedPosition": true,
+      "order": 11,
+      "showOnTeamPage": true,
+      "showOnOrgChart": true,
+      "showPublicEmail": false,
+      "showPublicProfile": true
+    },
     {
       "id": "emp-ahmed-alabed",
       "nameAr": "د. أحمد العابد",
@@ -128,9 +167,13 @@
       "image_alt_ar": "صورة د. أحمد العابد - الرئيس التنفيذي",
       "initials": "AA",
       "bioAr": "يقود الرؤية الاستراتيجية لشركة سمارت مسار، ويشرف على التكامل بين قطاعات التكنولوجيا والذكاء الاصطناعي والتطوير المؤسسي.",
-      "email": "ceo@smartmasar.edu",
+      "email": "alabed_ahmad@yahoo.com",
       "isConfirmedPosition": true,
-      "order": 1
+      "order": 1,
+      "showOnTeamPage": true,
+      "showOnOrgChart": true,
+      "showPublicEmail": false,
+      "showPublicProfile": true
     },
     {
       "id": "emp-ekhlaslellah-alshalabi",
@@ -146,9 +189,13 @@
       "image_alt_ar": "صورة إخلاص لله الشلبي - رئيسة قسم التطوير المؤسسي والتدريب",
       "initials": "EA",
       "bioAr": "قيادة خطط التطوير المؤسسي وبناء قدرات الكوادر وتصميم البرامج التدريبية المتقدمة.",
-      "email": "ekhlaslellah@smartmasar.edu",
+      "email": "ekhlasllahna@gmail.com",
       "isConfirmedPosition": true,
-      "order": 2
+      "order": 2,
+      "showOnTeamPage": true,
+      "showOnOrgChart": true,
+      "showPublicEmail": false,
+      "showPublicProfile": true
     },
     {
       "id": "emp-rahaf-alsharafat",
@@ -164,9 +211,13 @@
       "image_alt_ar": "صورة رهف الشرفات - رئيسة قسم الموارد البشرية",
       "initials": "RS",
       "bioAr": "الإشراف على استراتيجيات رأس المال البشري، الاستقطاب الرقمي، وبيئة العمل المحفزة.",
-      "email": "rahaf@smartmasar.edu",
+      "email": "rahfalshorfat94@gmail.com",
       "isConfirmedPosition": true,
-      "order": 3
+      "order": 3,
+      "showOnTeamPage": true,
+      "showOnOrgChart": true,
+      "showPublicEmail": false,
+      "showPublicProfile": true
     },
     {
       "id": "emp-shorouq-alsharafat",
@@ -182,9 +233,13 @@
       "image_alt_ar": "صورة شروق الشرفات - رئيسة قسم التسويق والعلاقات العامة",
       "initials": "SS",
       "bioAr": "قيادة الهوية المؤسسية، الحملات الرقمية، وبناء الصورة الذهنية والعلاقات العامة للشركة.",
-      "email": "shorouq@smartmasar.edu",
+      "email": "shroogsameralshrtoufaat@gmail.com",
       "isConfirmedPosition": true,
-      "order": 4
+      "order": 4,
+      "showOnTeamPage": true,
+      "showOnOrgChart": true,
+      "showPublicEmail": false,
+      "showPublicProfile": true
     },
     {
       "id": "emp-ekram-alsharafat",
@@ -200,9 +255,13 @@
       "image_alt_ar": "صورة إكرام الشرفات - رئيسة قسم المالية والمحاسبة",
       "initials": "ES",
       "bioAr": "إدارة التخطيط المالي، الميزانيات السنوية، والرقابة المحاسبية وفق المعايير الدولية.",
-      "email": "ikram@smartmasar.edu",
+      "email": "ekram.surafat98@icloud.com",
       "isConfirmedPosition": true,
-      "order": 5
+      "order": 5,
+      "showOnTeamPage": true,
+      "showOnOrgChart": true,
+      "showPublicEmail": false,
+      "showPublicProfile": true
     },
     {
       "id": "emp-amani-akram",
@@ -218,9 +277,13 @@
       "image_alt_ar": "صورة أماني أكرم - رئيسة قسم التكنولوجيا والذكاء الاصطناعي",
       "initials": "AA",
       "bioAr": "قيادة هندسة البرمجيات السحابية، تطوير نماذج الذكاء الاصطناعي، والابتكار التقني.",
-      "email": "amani@smartmasar.edu",
+      "email": "amanyzyoudi@gmail.com",
       "isConfirmedPosition": true,
-      "order": 6
+      "order": 6,
+      "showOnTeamPage": true,
+      "showOnOrgChart": true,
+      "showPublicEmail": false,
+      "showPublicProfile": true
     },
     {
       "id": "emp-doaa-tareq",
@@ -236,9 +299,13 @@
       "image_alt_ar": "صورة دعاء طارق - رئيسة قسم العمليات والمشاريع",
       "initials": "DT",
       "bioAr": "الإشراف على تنفيذ المشاريع التقنية، كفاءة العمليات التشغيلية، وضبط الجداول الزمنية.",
-      "email": "doaa@smartmasar.edu",
+      "email": "sadaqadoaa3@gmail.com",
       "isConfirmedPosition": true,
-      "order": 7
+      "order": 7,
+      "showOnTeamPage": true,
+      "showOnOrgChart": true,
+      "showPublicEmail": false,
+      "showPublicProfile": true
     },
     {
       "id": "emp-roaa",
@@ -254,27 +321,35 @@
       "image_alt_ar": "صورة رؤى - رئيسة قسم تطوير الأعمال والشراكات",
       "initials": "RO",
       "bioAr": "بناء الشراكات الاستراتيجية، استكشاف فرص النمو، وتوسيع نطاق الحلول الرقمية للمؤسسات.",
-      "email": "roaa@smartmasar.edu",
+      "email": "haneen.alkasaji2@gmail.com",
       "isConfirmedPosition": true,
-      "order": 8
+      "order": 8,
+      "showOnTeamPage": true,
+      "showOnOrgChart": true,
+      "showPublicEmail": false,
+      "showPublicProfile": true
     },
     {
       "id": "emp-haneen-ziad",
-      "nameAr": "حنين زياد",
-      "nameEn": "Haneen Ziad",
+      "nameAr": "حنين الكسجي",
+      "nameEn": "Haneen Al-Kasaji",
       "jobTitleAr": "رئيسة قسم تجربة وخدمات العملاء",
       "jobTitleEn": "Head of Customer Experience & Services",
       "departmentId": "dept-cx",
       "managerId": "emp-ahmed-alabed",
-      "avatarUrl": "",
-      "image_url": "",
-      "image_file_id": "",
-      "image_alt_ar": "صورة حنين زياد - رئيسة قسم تجربة وخدمات العملاء",
-      "initials": "HZ",
+      "avatarUrl": "/api/images/drive/1QQmU3xoFvlxU3cyBxvizGkNodlueLe5j",
+      "image_url": "/api/images/drive/1QQmU3xoFvlxU3cyBxvizGkNodlueLe5j",
+      "image_file_id": "1QQmU3xoFvlxU3cyBxvizGkNodlueLe5j",
+      "image_alt_ar": "صورة حنين الكسجي - رئيسة قسم تجربة وخدمات العملاء",
+      "initials": "HK",
       "bioAr": "الارتقاء بتجربة المستفيدين والعملاء، وضمان جودة الدعم والخدمات الرقمية المقدمة.",
-      "email": "haneen@smartmasar.edu",
+      "email": "haneen.alkasaji2@gmail.com",
       "isConfirmedPosition": true,
-      "order": 9
+      "order": 9,
+      "showOnTeamPage": true,
+      "showOnOrgChart": true,
+      "showPublicEmail": false,
+      "showPublicProfile": true
     },
     {
       "id": "emp-sumaya-alsharafat",
@@ -290,9 +365,35 @@
       "image_alt_ar": "صورة سمية الشرفات - رئيسة قسم الجودة والأداء",
       "initials": "SA",
       "bioAr": "قيادة منظومة ضمان الجودة الشاملة، قياس مؤشرات الأداء المؤسسي (KPIs)، والامتثال المعياري.",
-      "email": "sumaya@smartmasar.edu",
+      "email": "sumia132002@gmail.com",
       "isConfirmedPosition": true,
-      "order": 10
+      "order": 10,
+      "showOnTeamPage": true,
+      "showOnOrgChart": true,
+      "showPublicEmail": false,
+      "showPublicProfile": true
+    },
+    {
+      "id": "emp-ahmed-bakr",
+      "nameAr": "أحمد بكر",
+      "nameEn": "Ahmad Bakr",
+      "jobTitleAr": "مدير الحوكمة والامتثال المؤسسي",
+      "jobTitleEn": "Director of Corporate Governance & Compliance",
+      "departmentId": "dept-governance-compliance",
+      "managerId": "emp-ahmed-alabed",
+      "avatarUrl": "/api/images/drive/1SUfiPV9vIx5DAso8XAFiZyPi4Uj_ezgA",
+      "image_url": "/api/images/drive/1SUfiPV9vIx5DAso8XAFiZyPi4Uj_ezgA",
+      "image_file_id": "1SUfiPV9vIx5DAso8XAFiZyPi4Uj_ezgA",
+      "image_alt_ar": "الصورة الرمزية لأحمد بكر",
+      "initials": "AB",
+      "bioAr": "",
+      "email": "Ahmadbaker875@gmail.com",
+      "isConfirmedPosition": true,
+      "order": 12,
+      "showOnTeamPage": true,
+      "showOnOrgChart": true,
+      "showPublicEmail": false,
+      "showPublicProfile": true
     }
   ],
   "jobs": [
@@ -389,8 +490,8 @@
         "معالجة الوثائق واستخراج البيانات آلياً"
       ],
       "iconName": "Cpu",
-      "image_url": "/api/images/drive/1OSRJbC2DaGI3HwW-eBnB6eJfQ6OYkpJk",
-      "image_file_id": "1OSRJbC2DaGI3HwW-eBnB6eJfQ6OYkpJk",
+      "image_url": "/api/images/drive/1fVlHpCZ9oXuuSMAMqlIJyWbm_EtUF7BJ",
+      "image_file_id": "1fVlHpCZ9oXuuSMAMqlIJyWbm_EtUF7BJ",
       "image_alt_ar": "حلول الذكاء الاصطناعي في سمارت مسار"
     },
     {
@@ -405,8 +506,8 @@
         "معايير أمان عالية وضمان استمرارية التشغيل"
       ],
       "iconName": "Code",
-      "image_url": "/api/images/drive/1mQt7QVAeAyhqqDmLfjytjwmI92LLOw8s",
-      "image_file_id": "1mQt7QVAeAyhqqDmLfjytjwmI92LLOw8s",
+      "image_url": "/api/images/drive/1CBTbuWc22-xmYBL-RkwSayG9G2IxfViK",
+      "image_file_id": "1CBTbuWc22-xmYBL-RkwSayG9G2IxfViK",
       "image_alt_ar": "تطوير البرمجيات والأنظمة السحابية"
     },
     {
@@ -421,8 +522,8 @@
         "ربط القنوات الرقمية وتحسين تجربة المستفيدين"
       ],
       "iconName": "Share2",
-      "image_url": "/api/images/drive/1Lw_el-yaInfRPBoHxYPvYp9Pa-TVV5LU",
-      "image_file_id": "1Lw_el-yaInfRPBoHxYPvYp9Pa-TVV5LU",
+      "image_url": "/api/images/drive/1mQt7QVAeAyhqqDmLfjytjwmI92LLOw8s",
+      "image_file_id": "1mQt7QVAeAyhqqDmLfjytjwmI92LLOw8s",
       "image_alt_ar": "استراتيجيات التحول الرقمي المؤسسي"
     },
     {
@@ -437,8 +538,8 @@
         "تقارير فورية ومؤشرات قياس الأداء KPI"
       ],
       "iconName": "Sliders",
-      "image_url": "/api/images/drive/1XwZs85oTMeRT6ZCZpoCyFEyw52OHosNm",
-      "image_file_id": "1XwZs85oTMeRT6ZCZpoCyFEyw52OHosNm",
+      "image_url": "/api/images/drive/1JsBjtwre8jyOTtrc-HtGpafq3keKCqlU",
+      "image_file_id": "1JsBjtwre8jyOTtrc-HtGpafq3keKCqlU",
       "image_alt_ar": "أتمتة العمليات التشغيلية والإدارية"
     }
   ],
@@ -449,8 +550,8 @@
       "titleAr": "الرئيسية — سمارت مسار",
       "titleEn": "Homepage",
       "subtitleAr": "نبتكر اليوم لنصنع فرص الغد",
-      "hero_image_url": "",
-      "hero_image_file_id": "",
+      "hero_image_url": "/api/images/drive/1IaivDjlHz_8SXFX2fXRG0Haw9xO2Uv-y",
+      "hero_image_file_id": "1IaivDjlHz_8SXFX2fXRG0Haw9xO2Uv-y",
       "hero_image_alt_ar": "صورة الواجهة الرئيسية لشركة سمارت مسار"
     },
     {
@@ -459,8 +560,8 @@
       "titleAr": "عن الشركة (من نحن)",
       "titleEn": "About Smart Masar",
       "subtitleAr": "نبتكر الحلول الذكية لنصنع آفاق الغد",
-      "hero_image_url": "",
-      "hero_image_file_id": "",
+      "hero_image_url": "/api/images/drive/1Orhkx3deVg4QLE_VG8bMCAV0tE4p9gFQ",
+      "hero_image_file_id": "1Orhkx3deVg4QLE_VG8bMCAV0tE4p9gFQ",
       "hero_image_alt_ar": "صورة بانر صفحة من نحن"
     },
     {
@@ -469,8 +570,8 @@
       "titleAr": "خدماتنا التقنية",
       "titleEn": "Technology Services",
       "subtitleAr": "حلول متقدمة في الذكاء الاصطناعي وهندسة التحول الرقمي",
-      "hero_image_url": "",
-      "hero_image_file_id": "",
+      "hero_image_url": "/api/images/drive/1Sr9T2VBNjzI2YrfdKeosE-GDAZ_09ddf",
+      "hero_image_file_id": "1Sr9T2VBNjzI2YrfdKeosE-GDAZ_09ddf",
       "hero_image_alt_ar": "صورة بانر صفحة الخدمات التقنية"
     },
     {
@@ -479,8 +580,8 @@
       "titleAr": "فريق العمل والكوادر",
       "titleEn": "Our Team",
       "subtitleAr": "فريق العمل والكوادر التأسيسية",
-      "hero_image_url": "",
-      "hero_image_file_id": "",
+      "hero_image_url": "/api/images/drive/1qtVh7dQXqPHG88ujuA5ITYg1ORAkYTqK",
+      "hero_image_file_id": "1qtVh7dQXqPHG88ujuA5ITYg1ORAkYTqK",
       "hero_image_alt_ar": "صورة بانر صفحة فريق العمل"
     },
     {
@@ -489,8 +590,8 @@
       "titleAr": "الهيكل التنظيمي التفاعلي",
       "titleEn": "Organization Chart",
       "subtitleAr": "الهيكل التنظيمي لشركة سمارت مسار",
-      "hero_image_url": "",
-      "hero_image_file_id": "",
+      "hero_image_url": "/api/images/drive/12xK0BWdSjiJvlUegwBblS1E9PkEu-Pxc",
+      "hero_image_file_id": "12xK0BWdSjiJvlUegwBblS1E9PkEu-Pxc",
       "hero_image_alt_ar": "صورة بانر صفحة الهيكل التنظيمي"
     },
     {
@@ -499,8 +600,8 @@
       "titleAr": "فرص العمل والتوظيف",
       "titleEn": "Careers & Vacancies",
       "subtitleAr": "فرص العمل وبناء المسار المهني مع سمارت مسار",
-      "hero_image_url": "",
-      "hero_image_file_id": "",
+      "hero_image_url": "/api/images/drive/1bhZNxyKkwPdVufzlKzhdnIjWZm8iPya_",
+      "hero_image_file_id": "1bhZNxyKkwPdVufzlKzhdnIjWZm8iPya_",
       "hero_image_alt_ar": "صورة بانر صفحة الوظائف والشواغر"
     },
     {
@@ -515,13 +616,11 @@
     }
   ],
   "backendMeta": {
-    "webAppUrl": "",
+    "webAppUrl": "Admin123456$",
     "sheetDbUrl": "https://sheetdb.io/api/v1/9537p5ct7m308",
-    "spreadsheetId": "1-7tcV3S0YMuee7mpFvqtUj9SCsC1acb-_qrw5uqa1yE",
     "driveFolderId": "1ss80vbtewFJ09876Re5uIH2g3Xu7tB0l",
-    "servicesDriveFolderId": "1qS_b1gOnR66V9WoPxjgj69IoGn5Yc_f3",
     "lastSheetDbStatus": "متصل بنجاح بـ SheetDB (ملف \"قاعدة بيانات سمارت مسار\" — Spreadsheet ID: 1-7tcV3S0YMuee7mpFvqtUj9SCsC1acb-_qrw5uqa1yE) — كافة الأوراق الست (Team، Services، Pages، SiteSettings، Departments، Jobs) موجودة ومهيأة.",
-    "externalSource": "sheetdb_connected_empty_rows",
+    "externalSource": "sheetdb_live",
     "availableSheets": [
       "Team",
       "Services",
@@ -530,6 +629,8 @@
       "Departments",
       "Jobs"
     ],
-    "missingRequiredSheets": []
+    "missingRequiredSheets": [],
+    "servicesDriveFolderId": "1qS_b1gOnR66V9WoPxjgj69IoGn5Yc_f3",
+    "spreadsheetId": "1-7tcV3S0YMuee7mpFvqtUj9SCsC1acb-_qrw5uqa1yE"
   }
 }

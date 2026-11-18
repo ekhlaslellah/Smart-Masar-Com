@@ -19,7 +19,7 @@ interface EmployeeAvatarProps {
 export const EmployeeAvatar: React.FC<EmployeeAvatarProps> = ({
   employee,
   className = '',
-  imgClassName = 'w-full h-full object-cover',
+  imgClassName = 'w-full h-full object-cover object-top',
 }) => {
   const resolvedUrl = resolvePublicImageUrl(
     employee.image_url || employee.avatarUrl,

@@ -185,12 +185,27 @@ export async function fetchDirectSheetDbPublicData(
               emp.image_url || emp.avatarUrl,
               emp.image_file_id
             );
+            const isTruthy = (val: unknown, def: boolean) => {
+              if (typeof val === 'boolean') return val;
+              if (typeof val === 'string' && val.trim() !== '') {
+                return val.trim().toLowerCase() === 'true' || val.trim() === '1';
+              }
+              return def;
+            };
+            const showPublicEmail = isTruthy(emp.showPublicEmail, false);
             return {
               ...emp,
-              isConfirmedPosition:
-                emp.isConfirmedPosition === true ||
-                String(emp.isConfirmedPosition).toLowerCase() === 'true',
+              managerId:
+                emp.managerId && String(emp.managerId).trim() !== ''
+                  ? String(emp.managerId).trim()
+                  : null,
+              isConfirmedPosition: isTruthy(emp.isConfirmedPosition, true),
               order: Number(emp.order) || 1,
+              showOnTeamPage: isTruthy(emp.showOnTeamPage, true),
+              showOnOrgChart: isTruthy(emp.showOnOrgChart, true),
+              showPublicEmail,
+              showPublicProfile: isTruthy(emp.showPublicProfile, true),
+              email: showPublicEmail ? emp.email || '' : '',
               avatarUrl: img,
               image_url: img,
             };

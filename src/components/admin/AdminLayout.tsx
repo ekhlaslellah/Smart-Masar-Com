@@ -44,7 +44,7 @@ export const AdminLayout: React.FC = () => {
   const [loginKeyInput, setLoginKeyInput] = useState('');
   const [loginError, setLoginError] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
-  const { backendConfig, setBackendConfig } = useApp();
+  const { backendConfig, setBackendConfig, refreshFromServer } = useApp();
 
   useEffect(() => {
     let mounted = true;
@@ -52,6 +52,7 @@ export const AdminLayout: React.FC = () => {
       if (!mounted) return;
       if (res.authenticated) {
         setAuthStatus('authenticated');
+        void refreshFromServer();
       } else {
         setAuthStatus('unauthenticated');
       }
@@ -89,6 +90,7 @@ export const AdminLayout: React.FC = () => {
       });
       setLoginKeyInput('');
       setAuthStatus('authenticated');
+      await refreshFromServer();
     } else {
       setLoginError(result.error || 'مفتاح صلاحية المسؤول غير صحيح. يرجى التحقق والمحاولة مجدداً.');
     }
@@ -102,6 +104,7 @@ export const AdminLayout: React.FC = () => {
     });
     setLoginKeyInput('');
     setAuthStatus('unauthenticated');
+    await refreshFromServer();
   };
 
   const navItems = [

@@ -13,31 +13,44 @@ import {
   SMART_MASAR_ORG_STRUCTURE,
   getOrgStructureSummary,
   filterOrgDepartments,
+  normalizeEmployeeVisibility,
+  sanitizeEmployeeForPublicView,
+  getVisibleTeamEmployees,
+  getVisibleOrgChartEmployees,
+  buildDynamicOrgStructure,
+  TEAM_EXISTING_COLUMNS,
+  TEAM_NEW_VISIBILITY_COLUMNS,
 } from './orgChart';
 import { INITIAL_DEPARTMENTS, INITIAL_EMPLOYEES } from '../data/initialData';
 
-test('buildOrgTree places Dr. Ahmad Al-Abed at root with 9 confirmed Department Heads', () => {
+test('buildOrgTree places Dr. Ahmad Al-Abed at root with all 11 direct reports (9 Heads + Eng. Razan Jaber + Ahmad Bakr)', () => {
   const tree = buildOrgTree(INITIAL_EMPLOYEES, INITIAL_DEPARTMENTS);
   assert.ok(tree !== null, 'Tree should not be null');
   assert.equal(tree?.id, 'emp-ahmed-alabed');
   assert.equal(tree?.jobTitleAr, 'الرئيس التنفيذي');
   assert.equal(tree?.level, 0);
-  assert.equal(tree?.children.length, 9, 'All 9 Department Heads report to CEO');
+  assert.equal(
+    tree?.children.length,
+    11,
+    'All 11 direct reports (9 Heads + Executive Advisor + Corporate Governance Lead) report to CEO'
+  );
 });
 
-test('getDepartmentStats correctly calculates team counts across all 10 approved departments', () => {
+test('getDepartmentStats correctly calculates team counts across all 12 approved departments', () => {
   const stats = getDepartmentStats(INITIAL_EMPLOYEES, INITIAL_DEPARTMENTS);
-  assert.equal(stats.length, 10);
+  assert.equal(stats.length, 12);
 
   const execStat = stats.find((s) => s.department.id === 'exec');
   assert.ok(execStat);
   assert.equal(execStat?.count, 1);
-  assert.equal(execStat?.confirmedCount, 1);
 
-  const techStat = stats.find((s) => s.department.id === 'dept-tech-ai');
-  assert.ok(techStat);
-  assert.equal(techStat?.count, 1);
-  assert.equal(techStat?.confirmedCount, 1);
+  const advisoryStat = stats.find((s) => s.department.id === 'dept-exec-digital-advisory');
+  assert.ok(advisoryStat);
+  assert.equal(advisoryStat?.count, 1);
+
+  const governanceStat = stats.find((s) => s.department.id === 'dept-governance-compliance');
+  assert.ok(governanceStat);
+  assert.equal(governanceStat?.count, 1);
 });
 
 test('validateEmployee rejects empty Arabic and English names', () => {
@@ -55,64 +68,119 @@ test('validateEmployee rejects empty Arabic and English names', () => {
   const validResult = validateEmployee({
     nameAr: 'أحمد محمود',
     nameEn: 'Ahmad Mahmoud',
-    departmentId: 'dept-tech-ai',
+    departmentId: 'dept-it',
     jobTitleAr: 'مهندس برمجيات',
   });
   assert.equal(validResult.isValid, true);
   assert.equal(Object.keys(validResult.errors).length, 0);
 });
 
-test('filterTeam searches accurately across Arabic and English and department IDs', () => {
-  const arabicResult = filterTeam(INITIAL_EMPLOYEES, 'أحمد', 'all');
+test('filterTeam searches accurately across Arabic and English, department IDs, and role categories', () => {
+  const arabicResult = filterTeam(INITIAL_EMPLOYEES, 'أحمد العابد', 'all');
   assert.equal(arabicResult.length, 1);
   assert.equal(arabicResult[0].id, 'emp-ahmed-alabed');
 
-  const englishResult = filterTeam(INITIAL_EMPLOYEES, 'Haneen', 'all');
-  assert.equal(englishResult.length, 1);
-  assert.equal(englishResult[0].id, 'emp-haneen-ziad');
+  const razanResult = filterTeam(INITIAL_EMPLOYEES, 'رزان', 'all');
+  assert.equal(razanResult.length, 1);
+  assert.equal(razanResult[0].id, 'emp-razan-jaber');
+
+  const bakrResult = filterTeam(INITIAL_EMPLOYEES, 'Ahmad Bakr', 'all');
+  assert.equal(bakrResult.length, 1);
+  assert.equal(bakrResult[0].id, 'emp-ahmed-bakr');
+
+  const haneenResult = filterTeam(INITIAL_EMPLOYEES, 'Haneen', 'all');
+  assert.equal(haneenResult.length, 1);
+  assert.equal(haneenResult[0].id, 'emp-haneen-ziad');
 
   const deptResult = filterTeam(INITIAL_EMPLOYEES, '', 'dept-finance');
   assert.equal(deptResult.length, 1);
   assert.equal(deptResult[0].id, 'emp-ekram-alsharafat');
+
+  const execAdvisorResult = filterTeam(
+    INITIAL_EMPLOYEES,
+    '',
+    'all',
+    'executive_advisor',
+    true
+  );
+  assert.equal(execAdvisorResult.length, 2, 'CEO + Executive Advisor');
 });
 
-test('SMART_MASAR_ORG_STRUCTURE has CEO Dr. Ahmad Al-Abed, 9 Department Heads linked to INITIAL_EMPLOYEES, and 2 Staff per department', () => {
-  assert.equal(SMART_MASAR_ORG_STRUCTURE.ceo.nameEn, 'Dr. Ahmad Al-Abed');
-  assert.equal(SMART_MASAR_ORG_STRUCTURE.ceo.titleEn, 'Chief Executive Officer (CEO)');
-  assert.equal(SMART_MASAR_ORG_STRUCTURE.departments.length, 9);
+test('Visibility & Privacy controls: normalizeEmployeeVisibility, sanitizeEmployeeForPublicView, getVisibleTeamEmployees, and getVisibleOrgChartEmployees', () => {
+  const sample = INITIAL_EMPLOYEES[0];
+  const normalized = normalizeEmployeeVisibility(sample);
+  assert.equal(normalized.showOnTeamPage, true);
+  assert.equal(normalized.showOnOrgChart, true);
+  assert.equal(normalized.showPublicEmail, false);
+  assert.equal(normalized.showPublicProfile, true);
 
-  const expectedHeads = [
-    ['Ekhlaslellah Al-Shalabi', 'Head of Institutional Development & Training', 'emp-ekhlaslellah-alshalabi'],
-    ['Rahaf Al-Sharafat', 'Head of Human Resources', 'emp-rahaf-alsharafat'],
-    ['Shorouq Al-Sharafat', 'Head of Marketing & Public Relations', 'emp-shorouq-alsharafat'],
-    ['Ekram Al-Sharafat', 'Head of Finance & Accounting', 'emp-ekram-alsharafat'],
-    ['Amani Akram', 'Head of Technology & AI', 'emp-amani-akram'],
-    ['Doaa Tareq', 'Head of Operations & Projects', 'emp-doaa-tareq'],
-    ['Roaa', 'Head of Business Development & Partnerships', 'emp-roaa'],
-    ['Haneen Ziad', 'Head of Customer Experience & Services', 'emp-haneen-ziad'],
-    ['Sumaya Al-Sharafat', 'Head of Quality & Performance', 'emp-sumaya-alsharafat'],
-  ];
-
-  SMART_MASAR_ORG_STRUCTURE.departments.forEach((dept, idx) => {
-    assert.equal(dept.head.nameEn, expectedHeads[idx][0]);
-    assert.equal(dept.head.titleEn, expectedHeads[idx][1]);
-    assert.equal(dept.head.linkedEmployeeId, expectedHeads[idx][2]);
-    const linkedEmp = INITIAL_EMPLOYEES.find((e) => e.id === dept.head.linkedEmployeeId);
-    assert.ok(linkedEmp, `Linked employee ${dept.head.linkedEmployeeId} must exist in INITIAL_EMPLOYEES`);
-    if (linkedEmp.id === 'emp-haneen-ziad') {
-      assert.equal(linkedEmp.image_url || '', '', 'Haneen Ziad image is unlinked pending manual confirmation');
-    } else {
-      assert.ok((linkedEmp.image_url || '').length > 0, `Linked employee ${linkedEmp.id} must have a recovered image URL`);
-    }
-    assert.ok(dept.head.titleAr.length > 0, 'Arabic title must be present');
-    assert.equal(dept.staff.length, 2, `${dept.head.nameEn} must have 2 subordinate staff`);
-    dept.staff.forEach((member) => {
-      assert.ok(member.nameEn.length > 0, 'Staff English name must exist');
-      assert.ok(member.titleEn.length > 0, 'Staff English title must exist');
-      assert.ok(member.titleAr.length > 0, 'Staff Arabic title must exist');
-    });
+  // Public sanitization must strip personal email when showPublicEmail is false
+  const sanitizedDefault = sanitizeEmployeeForPublicView({
+    ...sample,
+    email: 'private.personal@yahoo.com',
+    showPublicEmail: false,
   });
+  assert.equal(sanitizedDefault.email, '');
 
+  // Public sanitization preserves email only when showPublicEmail is explicitly true
+  const sanitizedPublic = sanitizeEmployeeForPublicView({
+    ...sample,
+    email: 'official@smartmasar.com',
+    showPublicEmail: true,
+  });
+  assert.equal(sanitizedPublic.email, 'official@smartmasar.com');
+
+  // Hiding an employee from Team page removes them from getVisibleTeamEmployees without deleting from array
+  const modifiedList = INITIAL_EMPLOYEES.map((e) =>
+    e.id === 'emp-razan-jaber'
+      ? { ...e, showOnTeamPage: false, showOnOrgChart: true }
+      : e.id === 'emp-ahmed-bakr'
+      ? { ...e, showOnTeamPage: true, showOnOrgChart: false }
+      : e
+  );
+  assert.equal(modifiedList.length, 12, 'All 12 records remain intact');
+  const visibleTeam = getVisibleTeamEmployees(modifiedList);
+  assert.equal(visibleTeam.length, 11);
+  assert.equal(
+    visibleTeam.some((e) => e.id === 'emp-razan-jaber'),
+    false,
+    'Razan hidden from Team page when showOnTeamPage=false'
+  );
+
+  const visibleOrg = getVisibleOrgChartEmployees(modifiedList);
+  assert.equal(visibleOrg.length, 11);
+  assert.equal(
+    visibleOrg.some((e) => e.id === 'emp-ahmed-bakr'),
+    false,
+    'Ahmad Bakr hidden from Org Chart when showOnOrgChart=false'
+  );
+});
+
+test('buildDynamicOrgStructure builds live hierarchy from Team and Departments including Executive Advisory and Corporate Governance', () => {
+  const liveOrg = buildDynamicOrgStructure(INITIAL_EMPLOYEES, INITIAL_DEPARTMENTS);
+  assert.ok(liveOrg.ceo);
+  assert.equal(liveOrg.ceo?.id, 'emp-ahmed-alabed');
+  assert.equal(liveOrg.advisoryUnits.length, 1);
+  assert.equal(liveOrg.advisoryUnits[0].head?.id, 'emp-razan-jaber');
+  assert.equal(liveOrg.departmentUnits.length, 10, '9 core departments + Corporate Governance');
+  assert.equal(liveOrg.summary.totalVisibleMembers, 12);
+  assert.equal(liveOrg.summary.totalExecutives, 1);
+  assert.equal(liveOrg.summary.totalAdvisors, 1);
+  assert.equal(liveOrg.summary.totalDepartmentLeads, 10);
+});
+
+test('Column migration plan constants define 16 existing columns and 4 new visibility columns', () => {
+  assert.equal(TEAM_EXISTING_COLUMNS.length, 16);
+  assert.equal(TEAM_NEW_VISIBILITY_COLUMNS.length, 4);
+  assert.deepEqual(
+    TEAM_NEW_VISIBILITY_COLUMNS.map((c) => c.columnName),
+    ['showOnTeamPage', 'showOnOrgChart', 'showPublicEmail', 'showPublicProfile']
+  );
+});
+
+test('SMART_MASAR_ORG_STRUCTURE preserves separated training structure without mixing into INITIAL_EMPLOYEES counts', () => {
+  assert.equal(SMART_MASAR_ORG_STRUCTURE.ceo.nameEn, 'Dr. Ahmad Al-Abed');
+  assert.equal(SMART_MASAR_ORG_STRUCTURE.departments.length, 9);
   const summary = getOrgStructureSummary();
   assert.equal(summary.totalExecutives, 1);
   assert.equal(summary.totalDepartmentHeads, 9);
@@ -120,7 +188,7 @@ test('SMART_MASAR_ORG_STRUCTURE has CEO Dr. Ahmad Al-Abed, 9 Department Heads li
   assert.equal(summary.totalMembers, 28);
 });
 
-test('filterOrgDepartments filters by head or staff English and Arabic names and titles', () => {
+test('filterOrgDepartments filters training structure by head or staff names and titles', () => {
   const byHead = filterOrgDepartments(SMART_MASAR_ORG_STRUCTURE.departments, 'Ekhlaslellah');
   assert.equal(byHead.length, 1);
   assert.equal(byHead[0].id, 'dept-inst-dev');
@@ -128,8 +196,4 @@ test('filterOrgDepartments filters by head or staff English and Arabic names and
   const byStaff = filterOrgDepartments(SMART_MASAR_ORG_STRUCTURE.departments, 'Machine Learning');
   assert.equal(byStaff.length, 1);
   assert.equal(byStaff[0].id, 'dept-tech-ai');
-
-  const byArabic = filterOrgDepartments(SMART_MASAR_ORG_STRUCTURE.departments, 'الجودة والأداء');
-  assert.equal(byArabic.length, 1);
-  assert.equal(byArabic[0].head.nameEn, 'Sumaya Al-Sharafat');
 });

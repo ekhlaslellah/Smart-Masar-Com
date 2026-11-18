@@ -14,7 +14,8 @@ interface PageHeroImageProps {
 
 export const PageHeroImage: React.FC<PageHeroImageProps> = ({ pageId, className = '' }) => {
   const { pages } = useApp();
-  const pageMeta = pages.find((p) => p.id === pageId);
+  const normalizedId = pageId.replace(/^page-/, '');
+  const pageMeta = pages.find((p) => p.id === pageId || p.id === normalizedId);
   const resolvedUrl = resolvePublicImageUrl(
     pageMeta?.hero_image_url,
     pageMeta?.hero_image_file_id

@@ -9,6 +9,7 @@ export interface Department {
   nameEn: string;
   iconName: string;
   badgeBg: string;
+  descriptionAr?: string;
 }
 
 export interface Employee {
@@ -28,6 +29,10 @@ export interface Employee {
   email?: string;
   isConfirmedPosition: boolean; // false for "قيد التعيين" (Position to be assigned)
   order: number;
+  showOnTeamPage?: boolean; // Default: true — controls visibility on /team
+  showOnOrgChart?: boolean; // Default: true — controls visibility on /organization
+  showPublicEmail?: boolean; // Default: false — controls whether email is shown publicly
+  showPublicProfile?: boolean; // Default: true — controls whether detailed profile modal can be opened publicly
 }
 
 export interface JobVacancy {

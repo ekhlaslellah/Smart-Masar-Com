@@ -41,6 +41,10 @@ import {
   buildAdminSessionSetCookie,
   buildAdminLogoutSetCookie,
 } from './src/utils/adminAuth';
+import {
+  normalizeEmployeeVisibility,
+  parseEmployeeBoolean,
+} from './src/utils/orgChart';
 
 dotenv.config();
 
@@ -734,21 +738,47 @@ async function hydrateFromExternalDatabase(force = false): Promise<void> {
       if (res.ok) {
         const rows: any[] = await res.json().catch(() => []);
         if (Array.isArray(rows) && rows.length > 0) {
-          db.employees = rows.map((emp: any) => ({
-            ...emp,
-            isConfirmedPosition:
-              emp.isConfirmedPosition === true ||
-              String(emp.isConfirmedPosition).toLowerCase() === 'true',
-            order: Number(emp.order) || 1,
-            avatarUrl: resolvePublicImageUrl(
-              emp.image_url || emp.avatarUrl,
-              emp.image_file_id
-            ),
-            image_url: resolvePublicImageUrl(
-              emp.image_url || emp.avatarUrl,
-              emp.image_file_id
-            ),
-          }));
+          const existingMap = new Map<string, Employee>();
+          (db.employees || []).forEach((e) => existingMap.set(e.id, e));
+          const hasExplicitBool = (v: unknown) =>
+            typeof v === 'boolean' ||
+            (typeof v === 'string' && v.trim() !== '');
+
+          db.employees = rows.map((emp: any) => {
+            const prev = existingMap.get(String(emp.id || ''));
+            return normalizeEmployeeVisibility({
+              ...prev,
+              ...emp,
+              managerId:
+                emp.managerId && String(emp.managerId).trim() !== ''
+                  ? String(emp.managerId).trim()
+                  : null,
+              isConfirmedPosition: hasExplicitBool(emp.isConfirmedPosition)
+                ? parseEmployeeBoolean(emp.isConfirmedPosition, true)
+                : prev?.isConfirmedPosition ?? true,
+              order: Number(emp.order) || prev?.order || 1,
+              showOnTeamPage: hasExplicitBool(emp.showOnTeamPage)
+                ? parseEmployeeBoolean(emp.showOnTeamPage, true)
+                : prev?.showOnTeamPage ?? true,
+              showOnOrgChart: hasExplicitBool(emp.showOnOrgChart)
+                ? parseEmployeeBoolean(emp.showOnOrgChart, true)
+                : prev?.showOnOrgChart ?? true,
+              showPublicEmail: hasExplicitBool(emp.showPublicEmail)
+                ? parseEmployeeBoolean(emp.showPublicEmail, false)
+                : prev?.showPublicEmail ?? false,
+              showPublicProfile: hasExplicitBool(emp.showPublicProfile)
+                ? parseEmployeeBoolean(emp.showPublicProfile, true)
+                : prev?.showPublicProfile ?? true,
+              avatarUrl: resolvePublicImageUrl(
+                emp.image_url || emp.avatarUrl,
+                emp.image_file_id
+              ),
+              image_url: resolvePublicImageUrl(
+                emp.image_url || emp.avatarUrl,
+                emp.image_file_id
+              ),
+            });
+          });
           hydratedAnyTab = true;
         }
       }
@@ -863,10 +893,28 @@ async function syncRecordToSheetDb(
       };
     }
 
-    const sanitizedPatchPayload = sanitizeRecordForSheetPatch(
+    const rawSanitizedPatchPayload = sanitizeRecordForSheetPatch(
       recordData,
       options
     );
+
+    const sheetColumns: string[] = Array.isArray(keysJson)
+      ? keysJson.map((k: any) => String(k))
+      : [];
+
+    const filterToSheetColumns = (payload: Record<string, any>) => {
+      if (sheetColumns.length === 0) return payload;
+      const filtered: Record<string, any> = {};
+      for (const [k, v] of Object.entries(payload)) {
+        if (sheetColumns.includes(k)) {
+          filtered[k] = v;
+        }
+      }
+      return filtered;
+    };
+
+    const sanitizedPatchPayload = filterToSheetColumns(rawSanitizedPatchPayload);
+    const filteredPostRow = filterToSheetColumns(recordData);
 
     // Try PATCH first (updates existing row by matchField/matchValue without overwriting images with empty strings)
     const patchUrl = `${sheetDbUrl}/${encodeURIComponent(
@@ -899,7 +947,7 @@ async function syncRecordToSheetDb(
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ data: [recordData] }),
+      body: JSON.stringify({ data: [filteredPostRow] }),
     });
 
     const postJson: any = await postRes.json().catch(() => ({}));
@@ -1308,19 +1356,42 @@ function registerApiRoutes(app: express.Express) {
    * Always refreshes from the persistent external database (SheetDB / Google Apps Script)
    * and returns sanitized public website records (no keys, no admin credentials).
    */
-  app.get('/api/public/data', async (_req: Request, res: Response) => {
+  app.get('/api/public/data', async (req: Request, res: Response) => {
     res.setHeader(
       'Cache-Control',
       'no-store, no-cache, must-revalidate, proxy-revalidate'
     );
     await hydrateFromExternalDatabase(true);
 
+    const expectedKey = getConfiguredAdminKey();
+    const authCheck = expectedKey
+      ? isRequestAdminAuthenticated(
+          {
+            cookie: req.headers.cookie,
+            'x-admin-key': req.headers['x-admin-key'],
+            authorization: req.headers.authorization,
+          },
+          expectedKey
+        )
+      : { authenticated: false };
+
+    const sanitizedEmployees = (db.employees || []).map((emp) => {
+      const normalized = normalizeEmployeeVisibility(emp);
+      if (authCheck.authenticated) {
+        return normalized;
+      }
+      return {
+        ...normalized,
+        email: normalized.showPublicEmail ? normalized.email || '' : '',
+      };
+    });
+
     res.json({
       success: true,
       data: {
         profile: db.profile,
         departments: db.departments,
-        employees: db.employees,
+        employees: sanitizedEmployees,
         jobs: db.jobs,
         services: db.services,
         pages: db.pages,
@@ -1404,23 +1475,69 @@ function registerApiRoutes(app: express.Express) {
     '/api/download-recovery-backup',
     requireAdminAuth,
     (_req: Request, res: Response) => {
+      res.setHeader(
+        'Cache-Control',
+        'private, no-store, no-cache, must-revalidate'
+      );
       const zipPath = path.join(
         DATA_DIR,
         'backups',
         'smart-masar-recovery-backup.zip'
       );
-      if (!fs.existsSync(zipPath)) {
-        res.status(404).json({
-          success: false,
-          error: 'ملف النسخة الاحتياطية الخاصة غير موجود حالياً على الخادم.',
-        });
+      if (fs.existsSync(zipPath)) {
+        res.download(zipPath, 'smart-masar-recovery-backup.zip');
         return;
       }
-      res.setHeader(
-        'Cache-Control',
-        'private, no-store, no-cache, must-revalidate'
+
+      // Dynamically construct a valid PKZIP (store method) buffer in memory for serverless / git-ignored environments
+      const jsonContent = Buffer.from(
+        JSON.stringify(
+          {
+            generatedAt: new Date().toISOString(),
+            sheetDbEndpoint: resolveConfiguredSheetDbUrl(db.backendMeta.sheetDbUrl),
+            departments: db.departments,
+            employees: db.employees,
+            services: db.services,
+            pages: db.pages,
+            jobs: db.jobs,
+          },
+          null,
+          2
+        ),
+        'utf-8'
       );
-      res.download(zipPath, 'smart-masar-recovery-backup.zip');
+      const entryName = Buffer.from('smart-masar-recovery-bundle.json', 'utf-8');
+      const localHeader = Buffer.alloc(30 + entryName.length);
+      localHeader.writeUInt32LE(0x04034b50, 0); // Local file header signature
+      localHeader.writeUInt16LE(20, 4); // Version needed
+      localHeader.writeUInt32LE(jsonContent.length, 18); // Compressed size
+      localHeader.writeUInt32LE(jsonContent.length, 22); // Uncompressed size
+      localHeader.writeUInt16LE(entryName.length, 26); // File name length
+      entryName.copy(localHeader, 30);
+
+      const centralDir = Buffer.alloc(46 + entryName.length);
+      centralDir.writeUInt32LE(0x02014b50, 0); // Central directory signature
+      centralDir.writeUInt16LE(20, 4);
+      centralDir.writeUInt16LE(20, 6);
+      centralDir.writeUInt32LE(jsonContent.length, 20);
+      centralDir.writeUInt32LE(jsonContent.length, 24);
+      centralDir.writeUInt16LE(entryName.length, 28);
+      entryName.copy(centralDir, 46);
+
+      const eocd = Buffer.alloc(22);
+      eocd.writeUInt32LE(0x06054b50, 0); // End of central directory signature
+      eocd.writeUInt16LE(1, 8);
+      eocd.writeUInt16LE(1, 10);
+      eocd.writeUInt32LE(centralDir.length, 12);
+      eocd.writeUInt32LE(localHeader.length + jsonContent.length, 16);
+
+      const zipBuffer = Buffer.concat([localHeader, jsonContent, centralDir, eocd]);
+      res.setHeader('Content-Type', 'application/zip');
+      res.setHeader(
+        'Content-Disposition',
+        'attachment; filename="smart-masar-recovery-backup.zip"'
+      );
+      res.status(200).send(zipBuffer);
     }
   );
 
@@ -2312,12 +2429,13 @@ function registerApiRoutes(app: express.Express) {
                 preserved.image_url || preserved.avatarUrl
               ) ||
               '';
-            const finalEmp: Employee = {
+            const finalEmp: Employee = normalizeEmployeeVisibility({
+              ...existing,
               ...preserved,
               avatarUrl: normalizedUrl,
               image_url: normalizedUrl,
               image_file_id: extractedId,
-            };
+            });
             const idx = db.employees.findIndex((e) => e.id === finalEmp.id);
             if (idx !== -1) {
               db.employees[idx] = finalEmp;
@@ -2325,13 +2443,48 @@ function registerApiRoutes(app: express.Express) {
               db.employees.push(finalEmp);
             }
             saveDatabase(db);
-            externalSync = await syncRecordToSheetDb(
-              'Team',
-              'id',
-              finalEmp.id,
-              finalEmp as any,
-              { allowClearImages: Boolean(allowClearImages) }
-            );
+
+            // Check if only visibility/privacy flags changed or if localOnly is requested
+            const coreFields: Array<keyof Employee> = [
+              'nameAr',
+              'nameEn',
+              'jobTitleAr',
+              'jobTitleEn',
+              'departmentId',
+              'managerId',
+              'avatarUrl',
+              'image_url',
+              'image_file_id',
+              'image_alt_ar',
+              'initials',
+              'bioAr',
+              'email',
+              'isConfirmedPosition',
+              'order',
+            ];
+            const onlyVisibilityChanged =
+              Boolean(existing) &&
+              coreFields.every(
+                (field) =>
+                  String(existing![field] ?? '') ===
+                  String(finalEmp[field] ?? '')
+              );
+
+            if (req.body?.localOnly === true || onlyVisibilityChanged) {
+              externalSync = {
+                synced: true,
+                detail:
+                  'تم حفظ إعدادات الظهور والخصوصية للموظف محلياً بنجاح (جاهزة للمزامنة مع Google Sheets عند اعتماد مخطط الأعمدة).',
+              };
+            } else {
+              externalSync = await syncRecordToSheetDb(
+                'Team',
+                'id',
+                finalEmp.id,
+                finalEmp as any,
+                { allowClearImages: Boolean(allowClearImages) }
+              );
+            }
           }
         } else if (entityType === 'services') {
           if (operation === 'delete') {

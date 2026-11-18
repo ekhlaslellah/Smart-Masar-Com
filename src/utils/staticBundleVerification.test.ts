@@ -17,12 +17,12 @@ import {
 import { DEFAULT_SHEETDB_ENDPOINT } from '../services/apiService';
 
 test('Static Hosting Bundle & Security Verification Suite', async (t) => {
-  await t.test('1. Preserves all 10 leadership employees, 10 departments, 7 pages, and Accountant + HR Specialist vacancies pointing to Recruitment Portal', () => {
+  await t.test('1. Preserves all 12 leadership & advisory employees, 12 departments, 7 pages, and Accountant + HR Specialist vacancies pointing to Recruitment Portal', () => {
     assert.equal(INITIAL_COMPANY_PROFILE.nameEn, 'Smart Masar');
     assert.equal(INITIAL_COMPANY_PROFILE.taglineAr, 'نبتكر اليوم لنصنع فرص الغد');
     assert.equal(INITIAL_COMPANY_PROFILE.googleFormsPlaceholderUrl, 'https://smart-masar-recruitment.onrender.com/');
-    assert.equal(INITIAL_EMPLOYEES.length, 10);
-    assert.equal(INITIAL_DEPARTMENTS.length, 10);
+    assert.equal(INITIAL_EMPLOYEES.length, 12);
+    assert.equal(INITIAL_DEPARTMENTS.length, 12);
     assert.equal(INITIAL_PAGES.length, 7);
     assert.equal(INITIAL_JOBS.length, 2);
     assert.equal(INITIAL_JOBS[0].id, 'job-accountant-01');
@@ -44,13 +44,10 @@ test('Static Hosting Bundle & Security Verification Suite', async (t) => {
     assert.equal(fs.existsSync(path.resolve('public/backups')), false, 'public/backups must not exist');
     assert.equal(fs.existsSync(path.resolve('public/smart-masar-static-hosting.zip')), false, 'public static zip must not exist in public/');
     assert.equal(fs.existsSync(path.resolve('public/smart-masar-complete-project.zip')), false, 'public project zip must not exist in public/');
-    const privateZipPath = path.resolve('data/backups/smart-masar-recovery-backup.zip');
-    assert.equal(fs.existsSync(privateZipPath), true, 'data/backups/smart-masar-recovery-backup.zip should exist in private storage');
-    const buf = fs.readFileSync(privateZipPath);
-    assert.equal(buf[0], 0x50); // 'P'
-    assert.equal(buf[1], 0x4b); // 'K'
-    assert.equal(buf[2], 0x03);
-    assert.equal(buf[3], 0x04);
+    const privateManifestPath = path.resolve('data/backups/recoverable-images-manifest.json');
+    assert.equal(fs.existsSync(privateManifestPath), true, 'data/backups/recoverable-images-manifest.json should exist in private storage');
+    const privateImagesDir = path.resolve('data/backups/drive-images');
+    assert.equal(fs.existsSync(privateImagesDir), true, 'data/backups/drive-images should exist in private storage');
   });
 
   await t.test('4. Ensures zero hardcoded admin secret keys or passwords exist in data/db.json, server.ts, .env.example, or public HTML/JS bundles', () => {

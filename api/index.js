@@ -78,8 +78,44 @@ var INITIAL_DEPARTMENTS = [
     nameEn: "Quality & Performance",
     iconName: "ShieldCheck",
     badgeBg: "#101B32"
+  },
+  {
+    id: "dept-governance-compliance",
+    nameAr: "\u0625\u062F\u0627\u0631\u0629 \u0627\u0644\u062D\u0648\u0643\u0645\u0629 \u0648\u0627\u0644\u0627\u0645\u062A\u062B\u0627\u0644 \u0627\u0644\u0645\u0624\u0633\u0633\u064A",
+    nameEn: "Corporate Governance & Compliance",
+    iconName: "ShieldCheck",
+    badgeBg: "#203B65"
+  },
+  {
+    id: "dept-exec-digital-advisory",
+    nameAr: "\u0645\u0643\u062A\u0628 \u0645\u0633\u062A\u0634\u0627\u0631\u0629 \u0627\u0644\u0645\u062F\u064A\u0631 \u0627\u0644\u062A\u0646\u0641\u064A\u0630\u064A \u0644\u0644\u062A\u0637\u0648\u064A\u0631 \u0648\u0627\u0644\u062A\u062D\u0648\u0644 \u0627\u0644\u0631\u0642\u0645\u064A",
+    nameEn: "Executive Development & Digital Transformation Advisory",
+    iconName: "Lightbulb",
+    badgeBg: "#2563EB"
   }
 ], INITIAL_EMPLOYEES = [
+  {
+    id: "emp-razan-jaber",
+    nameAr: "\u0645.\u0631\u0632\u0627\u0646 \u062C\u0627\u0628\u0631",
+    nameEn: "Razan Jaber",
+    jobTitleAr: "\u0645\u0633\u062A\u0634\u0627\u0631\u0629 \u0627\u0644\u0645\u062F\u064A\u0631 \u0627\u0644\u062A\u0646\u0641\u064A\u0630\u064A \u0644\u0644\u062A\u0637\u0648\u064A\u0631 \u0648\u0627\u0644\u062A\u062D\u0648\u0644 \u0627\u0644\u0631\u0642\u0645\u064A",
+    jobTitleEn: "Executive Advisor for Development & Digital Transformation",
+    departmentId: "dept-exec-digital-advisory",
+    managerId: "emp-ahmed-alabed",
+    avatarUrl: "/api/images/drive/11PCfK-Lzezlhz2Ey5Gzlhd2odgRukt7C",
+    image_url: "/api/images/drive/11PCfK-Lzezlhz2Ey5Gzlhd2odgRukt7C",
+    image_file_id: "11PCfK-Lzezlhz2Ey5Gzlhd2odgRukt7C",
+    image_alt_ar: "\u0635\u0648\u0631\u0629 \u0627\u0644\u0645\u0647\u0646\u062F\u0633\u0629 \u0631\u0632\u0627\u0646 \u062C\u0627\u0628\u0631",
+    initials: "RJ",
+    bioAr: "",
+    email: "",
+    isConfirmedPosition: !0,
+    order: 11,
+    showOnTeamPage: !0,
+    showOnOrgChart: !0,
+    showPublicEmail: !1,
+    showPublicProfile: !0
+  },
   {
     id: "emp-ahmed-alabed",
     nameAr: "\u062F. \u0623\u062D\u0645\u062F \u0627\u0644\u0639\u0627\u0628\u062F",
@@ -94,9 +130,13 @@ var INITIAL_DEPARTMENTS = [
     image_alt_ar: "\u0635\u0648\u0631\u0629 \u062F. \u0623\u062D\u0645\u062F \u0627\u0644\u0639\u0627\u0628\u062F - \u0627\u0644\u0631\u0626\u064A\u0633 \u0627\u0644\u062A\u0646\u0641\u064A\u0630\u064A",
     initials: "AA",
     bioAr: "\u064A\u0642\u0648\u062F \u0627\u0644\u0631\u0624\u064A\u0629 \u0627\u0644\u0627\u0633\u062A\u0631\u0627\u062A\u064A\u062C\u064A\u0629 \u0644\u0634\u0631\u0643\u0629 \u0633\u0645\u0627\u0631\u062A \u0645\u0633\u0627\u0631\u060C \u0648\u064A\u0634\u0631\u0641 \u0639\u0644\u0649 \u0627\u0644\u062A\u0643\u0627\u0645\u0644 \u0628\u064A\u0646 \u0642\u0637\u0627\u0639\u0627\u062A \u0627\u0644\u062A\u0643\u0646\u0648\u0644\u0648\u062C\u064A\u0627 \u0648\u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064A \u0648\u0627\u0644\u062A\u0637\u0648\u064A\u0631 \u0627\u0644\u0645\u0624\u0633\u0633\u064A.",
-    email: "ceo@smartmasar.edu",
+    email: "alabed_ahmad@yahoo.com",
     isConfirmedPosition: !0,
-    order: 1
+    order: 1,
+    showOnTeamPage: !0,
+    showOnOrgChart: !0,
+    showPublicEmail: !1,
+    showPublicProfile: !0
   },
   {
     id: "emp-ekhlaslellah-alshalabi",
@@ -112,9 +152,13 @@ var INITIAL_DEPARTMENTS = [
     image_alt_ar: "\u0635\u0648\u0631\u0629 \u0625\u062E\u0644\u0627\u0635 \u0644\u0644\u0647 \u0627\u0644\u0634\u0644\u0628\u064A - \u0631\u0626\u064A\u0633\u0629 \u0642\u0633\u0645 \u0627\u0644\u062A\u0637\u0648\u064A\u0631 \u0627\u0644\u0645\u0624\u0633\u0633\u064A \u0648\u0627\u0644\u062A\u062F\u0631\u064A\u0628",
     initials: "EA",
     bioAr: "\u0642\u064A\u0627\u062F\u0629 \u062E\u0637\u0637 \u0627\u0644\u062A\u0637\u0648\u064A\u0631 \u0627\u0644\u0645\u0624\u0633\u0633\u064A \u0648\u0628\u0646\u0627\u0621 \u0642\u062F\u0631\u0627\u062A \u0627\u0644\u0643\u0648\u0627\u062F\u0631 \u0648\u062A\u0635\u0645\u064A\u0645 \u0627\u0644\u0628\u0631\u0627\u0645\u062C \u0627\u0644\u062A\u062F\u0631\u064A\u0628\u064A\u0629 \u0627\u0644\u0645\u062A\u0642\u062F\u0645\u0629.",
-    email: "ekhlaslellah@smartmasar.edu",
+    email: "ekhlasllahna@gmail.com",
     isConfirmedPosition: !0,
-    order: 2
+    order: 2,
+    showOnTeamPage: !0,
+    showOnOrgChart: !0,
+    showPublicEmail: !1,
+    showPublicProfile: !0
   },
   {
     id: "emp-rahaf-alsharafat",
@@ -130,9 +174,13 @@ var INITIAL_DEPARTMENTS = [
     image_alt_ar: "\u0635\u0648\u0631\u0629 \u0631\u0647\u0641 \u0627\u0644\u0634\u0631\u0641\u0627\u062A - \u0631\u0626\u064A\u0633\u0629 \u0642\u0633\u0645 \u0627\u0644\u0645\u0648\u0627\u0631\u062F \u0627\u0644\u0628\u0634\u0631\u064A\u0629",
     initials: "RS",
     bioAr: "\u0627\u0644\u0625\u0634\u0631\u0627\u0641 \u0639\u0644\u0649 \u0627\u0633\u062A\u0631\u0627\u062A\u064A\u062C\u064A\u0627\u062A \u0631\u0623\u0633 \u0627\u0644\u0645\u0627\u0644 \u0627\u0644\u0628\u0634\u0631\u064A\u060C \u0627\u0644\u0627\u0633\u062A\u0642\u0637\u0627\u0628 \u0627\u0644\u0631\u0642\u0645\u064A\u060C \u0648\u0628\u064A\u0626\u0629 \u0627\u0644\u0639\u0645\u0644 \u0627\u0644\u0645\u062D\u0641\u0632\u0629.",
-    email: "rahaf@smartmasar.edu",
+    email: "rahfalshorfat94@gmail.com",
     isConfirmedPosition: !0,
-    order: 3
+    order: 3,
+    showOnTeamPage: !0,
+    showOnOrgChart: !0,
+    showPublicEmail: !1,
+    showPublicProfile: !0
   },
   {
     id: "emp-shorouq-alsharafat",
@@ -148,9 +196,13 @@ var INITIAL_DEPARTMENTS = [
     image_alt_ar: "\u0635\u0648\u0631\u0629 \u0634\u0631\u0648\u0642 \u0627\u0644\u0634\u0631\u0641\u0627\u062A - \u0631\u0626\u064A\u0633\u0629 \u0642\u0633\u0645 \u0627\u0644\u062A\u0633\u0648\u064A\u0642 \u0648\u0627\u0644\u0639\u0644\u0627\u0642\u0627\u062A \u0627\u0644\u0639\u0627\u0645\u0629",
     initials: "SS",
     bioAr: "\u0642\u064A\u0627\u062F\u0629 \u0627\u0644\u0647\u0648\u064A\u0629 \u0627\u0644\u0645\u0624\u0633\u0633\u064A\u0629\u060C \u0627\u0644\u062D\u0645\u0644\u0627\u062A \u0627\u0644\u0631\u0642\u0645\u064A\u0629\u060C \u0648\u0628\u0646\u0627\u0621 \u0627\u0644\u0635\u0648\u0631\u0629 \u0627\u0644\u0630\u0647\u0646\u064A\u0629 \u0648\u0627\u0644\u0639\u0644\u0627\u0642\u0627\u062A \u0627\u0644\u0639\u0627\u0645\u0629 \u0644\u0644\u0634\u0631\u0643\u0629.",
-    email: "shorouq@smartmasar.edu",
+    email: "shroogsameralshrtoufaat@gmail.com",
     isConfirmedPosition: !0,
-    order: 4
+    order: 4,
+    showOnTeamPage: !0,
+    showOnOrgChart: !0,
+    showPublicEmail: !1,
+    showPublicProfile: !0
   },
   {
     id: "emp-ekram-alsharafat",
@@ -166,9 +218,13 @@ var INITIAL_DEPARTMENTS = [
     image_alt_ar: "\u0635\u0648\u0631\u0629 \u0625\u0643\u0631\u0627\u0645 \u0627\u0644\u0634\u0631\u0641\u0627\u062A - \u0631\u0626\u064A\u0633\u0629 \u0642\u0633\u0645 \u0627\u0644\u0645\u0627\u0644\u064A\u0629 \u0648\u0627\u0644\u0645\u062D\u0627\u0633\u0628\u0629",
     initials: "ES",
     bioAr: "\u0625\u062F\u0627\u0631\u0629 \u0627\u0644\u062A\u062E\u0637\u064A\u0637 \u0627\u0644\u0645\u0627\u0644\u064A\u060C \u0627\u0644\u0645\u064A\u0632\u0627\u0646\u064A\u0627\u062A \u0627\u0644\u0633\u0646\u0648\u064A\u0629\u060C \u0648\u0627\u0644\u0631\u0642\u0627\u0628\u0629 \u0627\u0644\u0645\u062D\u0627\u0633\u0628\u064A\u0629 \u0648\u0641\u0642 \u0627\u0644\u0645\u0639\u0627\u064A\u064A\u0631 \u0627\u0644\u062F\u0648\u0644\u064A\u0629.",
-    email: "ikram@smartmasar.edu",
+    email: "ekram.surafat98@icloud.com",
     isConfirmedPosition: !0,
-    order: 5
+    order: 5,
+    showOnTeamPage: !0,
+    showOnOrgChart: !0,
+    showPublicEmail: !1,
+    showPublicProfile: !0
   },
   {
     id: "emp-amani-akram",
@@ -184,9 +240,13 @@ var INITIAL_DEPARTMENTS = [
     image_alt_ar: "\u0635\u0648\u0631\u0629 \u0623\u0645\u0627\u0646\u064A \u0623\u0643\u0631\u0645 - \u0631\u0626\u064A\u0633\u0629 \u0642\u0633\u0645 \u0627\u0644\u062A\u0643\u0646\u0648\u0644\u0648\u062C\u064A\u0627 \u0648\u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064A",
     initials: "AA",
     bioAr: "\u0642\u064A\u0627\u062F\u0629 \u0647\u0646\u062F\u0633\u0629 \u0627\u0644\u0628\u0631\u0645\u062C\u064A\u0627\u062A \u0627\u0644\u0633\u062D\u0627\u0628\u064A\u0629\u060C \u062A\u0637\u0648\u064A\u0631 \u0646\u0645\u0627\u0630\u062C \u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064A\u060C \u0648\u0627\u0644\u0627\u0628\u062A\u0643\u0627\u0631 \u0627\u0644\u062A\u0642\u0646\u064A.",
-    email: "amani@smartmasar.edu",
+    email: "amanyzyoudi@gmail.com",
     isConfirmedPosition: !0,
-    order: 6
+    order: 6,
+    showOnTeamPage: !0,
+    showOnOrgChart: !0,
+    showPublicEmail: !1,
+    showPublicProfile: !0
   },
   {
     id: "emp-doaa-tareq",
@@ -202,9 +262,13 @@ var INITIAL_DEPARTMENTS = [
     image_alt_ar: "\u0635\u0648\u0631\u0629 \u062F\u0639\u0627\u0621 \u0637\u0627\u0631\u0642 - \u0631\u0626\u064A\u0633\u0629 \u0642\u0633\u0645 \u0627\u0644\u0639\u0645\u0644\u064A\u0627\u062A \u0648\u0627\u0644\u0645\u0634\u0627\u0631\u064A\u0639",
     initials: "DT",
     bioAr: "\u0627\u0644\u0625\u0634\u0631\u0627\u0641 \u0639\u0644\u0649 \u062A\u0646\u0641\u064A\u0630 \u0627\u0644\u0645\u0634\u0627\u0631\u064A\u0639 \u0627\u0644\u062A\u0642\u0646\u064A\u0629\u060C \u0643\u0641\u0627\u0621\u0629 \u0627\u0644\u0639\u0645\u0644\u064A\u0627\u062A \u0627\u0644\u062A\u0634\u063A\u064A\u0644\u064A\u0629\u060C \u0648\u0636\u0628\u0637 \u0627\u0644\u062C\u062F\u0627\u0648\u0644 \u0627\u0644\u0632\u0645\u0646\u064A\u0629.",
-    email: "doaa@smartmasar.edu",
+    email: "sadaqadoaa3@gmail.com",
     isConfirmedPosition: !0,
-    order: 7
+    order: 7,
+    showOnTeamPage: !0,
+    showOnOrgChart: !0,
+    showPublicEmail: !1,
+    showPublicProfile: !0
   },
   {
     id: "emp-roaa",
@@ -220,27 +284,35 @@ var INITIAL_DEPARTMENTS = [
     image_alt_ar: "\u0635\u0648\u0631\u0629 \u0631\u0624\u0649 - \u0631\u0626\u064A\u0633\u0629 \u0642\u0633\u0645 \u062A\u0637\u0648\u064A\u0631 \u0627\u0644\u0623\u0639\u0645\u0627\u0644 \u0648\u0627\u0644\u0634\u0631\u0627\u0643\u0627\u062A",
     initials: "RO",
     bioAr: "\u0628\u0646\u0627\u0621 \u0627\u0644\u0634\u0631\u0627\u0643\u0627\u062A \u0627\u0644\u0627\u0633\u062A\u0631\u0627\u062A\u064A\u062C\u064A\u0629\u060C \u0627\u0633\u062A\u0643\u0634\u0627\u0641 \u0641\u0631\u0635 \u0627\u0644\u0646\u0645\u0648\u060C \u0648\u062A\u0648\u0633\u064A\u0639 \u0646\u0637\u0627\u0642 \u0627\u0644\u062D\u0644\u0648\u0644 \u0627\u0644\u0631\u0642\u0645\u064A\u0629 \u0644\u0644\u0645\u0624\u0633\u0633\u0627\u062A.",
-    email: "roaa@smartmasar.edu",
+    email: "haneen.alkasaji2@gmail.com",
     isConfirmedPosition: !0,
-    order: 8
+    order: 8,
+    showOnTeamPage: !0,
+    showOnOrgChart: !0,
+    showPublicEmail: !1,
+    showPublicProfile: !0
   },
   {
     id: "emp-haneen-ziad",
-    nameAr: "\u062D\u0646\u064A\u0646 \u0632\u064A\u0627\u062F",
-    nameEn: "Haneen Ziad",
+    nameAr: "\u062D\u0646\u064A\u0646 \u0627\u0644\u0643\u0633\u062C\u064A",
+    nameEn: "Haneen Al-Kasaji",
     jobTitleAr: "\u0631\u0626\u064A\u0633\u0629 \u0642\u0633\u0645 \u062A\u062C\u0631\u0628\u0629 \u0648\u062E\u062F\u0645\u0627\u062A \u0627\u0644\u0639\u0645\u0644\u0627\u0621",
     jobTitleEn: "Head of Customer Experience & Services",
     departmentId: "dept-cx",
     managerId: "emp-ahmed-alabed",
-    avatarUrl: "",
-    image_url: "",
-    image_file_id: "",
-    image_alt_ar: "\u0635\u0648\u0631\u0629 \u062D\u0646\u064A\u0646 \u0632\u064A\u0627\u062F - \u0631\u0626\u064A\u0633\u0629 \u0642\u0633\u0645 \u062A\u062C\u0631\u0628\u0629 \u0648\u062E\u062F\u0645\u0627\u062A \u0627\u0644\u0639\u0645\u0644\u0627\u0621",
-    initials: "HZ",
+    avatarUrl: "/api/images/drive/1QQmU3xoFvlxU3cyBxvizGkNodlueLe5j",
+    image_url: "/api/images/drive/1QQmU3xoFvlxU3cyBxvizGkNodlueLe5j",
+    image_file_id: "1QQmU3xoFvlxU3cyBxvizGkNodlueLe5j",
+    image_alt_ar: "\u0635\u0648\u0631\u0629 \u062D\u0646\u064A\u0646 \u0627\u0644\u0643\u0633\u062C\u064A - \u0631\u0626\u064A\u0633\u0629 \u0642\u0633\u0645 \u062A\u062C\u0631\u0628\u0629 \u0648\u062E\u062F\u0645\u0627\u062A \u0627\u0644\u0639\u0645\u0644\u0627\u0621",
+    initials: "HK",
     bioAr: "\u0627\u0644\u0627\u0631\u062A\u0642\u0627\u0621 \u0628\u062A\u062C\u0631\u0628\u0629 \u0627\u0644\u0645\u0633\u062A\u0641\u064A\u062F\u064A\u0646 \u0648\u0627\u0644\u0639\u0645\u0644\u0627\u0621\u060C \u0648\u0636\u0645\u0627\u0646 \u062C\u0648\u062F\u0629 \u0627\u0644\u062F\u0639\u0645 \u0648\u0627\u0644\u062E\u062F\u0645\u0627\u062A \u0627\u0644\u0631\u0642\u0645\u064A\u0629 \u0627\u0644\u0645\u0642\u062F\u0645\u0629.",
-    email: "haneen@smartmasar.edu",
+    email: "haneen.alkasaji2@gmail.com",
     isConfirmedPosition: !0,
-    order: 9
+    order: 9,
+    showOnTeamPage: !0,
+    showOnOrgChart: !0,
+    showPublicEmail: !1,
+    showPublicProfile: !0
   },
   {
     id: "emp-sumaya-alsharafat",
@@ -256,9 +328,35 @@ var INITIAL_DEPARTMENTS = [
     image_alt_ar: "\u0635\u0648\u0631\u0629 \u0633\u0645\u064A\u0629 \u0627\u0644\u0634\u0631\u0641\u0627\u062A - \u0631\u0626\u064A\u0633\u0629 \u0642\u0633\u0645 \u0627\u0644\u062C\u0648\u062F\u0629 \u0648\u0627\u0644\u0623\u062F\u0627\u0621",
     initials: "SA",
     bioAr: "\u0642\u064A\u0627\u062F\u0629 \u0645\u0646\u0638\u0648\u0645\u0629 \u0636\u0645\u0627\u0646 \u0627\u0644\u062C\u0648\u062F\u0629 \u0627\u0644\u0634\u0627\u0645\u0644\u0629\u060C \u0642\u064A\u0627\u0633 \u0645\u0624\u0634\u0631\u0627\u062A \u0627\u0644\u0623\u062F\u0627\u0621 \u0627\u0644\u0645\u0624\u0633\u0633\u064A (KPIs)\u060C \u0648\u0627\u0644\u0627\u0645\u062A\u062B\u0627\u0644 \u0627\u0644\u0645\u0639\u064A\u0627\u0631\u064A.",
-    email: "sumaya@smartmasar.edu",
+    email: "sumia132002@gmail.com",
     isConfirmedPosition: !0,
-    order: 10
+    order: 10,
+    showOnTeamPage: !0,
+    showOnOrgChart: !0,
+    showPublicEmail: !1,
+    showPublicProfile: !0
+  },
+  {
+    id: "emp-ahmed-bakr",
+    nameAr: "\u0623\u062D\u0645\u062F \u0628\u0643\u0631",
+    nameEn: "Ahmad Bakr",
+    jobTitleAr: "\u0645\u062F\u064A\u0631 \u0627\u0644\u062D\u0648\u0643\u0645\u0629 \u0648\u0627\u0644\u0627\u0645\u062A\u062B\u0627\u0644 \u0627\u0644\u0645\u0624\u0633\u0633\u064A",
+    jobTitleEn: "Director of Corporate Governance & Compliance",
+    departmentId: "dept-governance-compliance",
+    managerId: "emp-ahmed-alabed",
+    avatarUrl: "/api/images/drive/1SUfiPV9vIx5DAso8XAFiZyPi4Uj_ezgA",
+    image_url: "/api/images/drive/1SUfiPV9vIx5DAso8XAFiZyPi4Uj_ezgA",
+    image_file_id: "1SUfiPV9vIx5DAso8XAFiZyPi4Uj_ezgA",
+    image_alt_ar: "\u0627\u0644\u0635\u0648\u0631\u0629 \u0627\u0644\u0631\u0645\u0632\u064A\u0629 \u0644\u0623\u062D\u0645\u062F \u0628\u0643\u0631",
+    initials: "AB",
+    bioAr: "",
+    email: "Ahmadbaker875@gmail.com",
+    isConfirmedPosition: !0,
+    order: 12,
+    showOnTeamPage: !0,
+    showOnOrgChart: !0,
+    showPublicEmail: !1,
+    showPublicProfile: !0
   }
 ], INITIAL_SERVICES = [
   {
@@ -667,6 +765,32 @@ function buildAdminLogoutSetCookie(isSecure = process.env.NODE_ENV === "producti
   return `${ADMIN_SESSION_COOKIE_NAME}=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0${isSecure ? "; Secure" : ""}`;
 }
 
+// src/utils/orgChart.ts
+function parseEmployeeBoolean(val, defaultValue) {
+  if (typeof val == "boolean") return val;
+  if (typeof val == "number") return val !== 0;
+  if (typeof val == "string") {
+    let trimmed = val.trim().toLowerCase();
+    if (!trimmed) return defaultValue;
+    if (trimmed === "true" || trimmed === "1" || trimmed === "yes") return !0;
+    if (trimmed === "false" || trimmed === "0" || trimmed === "no") return !1;
+  }
+  return defaultValue;
+}
+function normalizeEmployeeVisibility(emp) {
+  let cleanManagerId = emp.managerId && String(emp.managerId).trim().length > 0 ? String(emp.managerId).trim() : null;
+  return {
+    ...emp,
+    managerId: cleanManagerId,
+    isConfirmedPosition: parseEmployeeBoolean(emp.isConfirmedPosition, !0),
+    order: Number(emp.order) || 1,
+    showOnTeamPage: parseEmployeeBoolean(emp.showOnTeamPage, !0),
+    showOnOrgChart: parseEmployeeBoolean(emp.showOnOrgChart, !0),
+    showPublicEmail: parseEmployeeBoolean(emp.showPublicEmail, !1),
+    showPublicProfile: parseEmployeeBoolean(emp.showPublicProfile, !0)
+  };
+}
+
 // server.ts
 dotenv.config();
 var MODULE_DIR = path.dirname(fileURLToPath(import.meta.url)), __dirname = path.basename(MODULE_DIR) === "api" ? path.resolve(MODULE_DIR, "..") : MODULE_DIR, PORT = Number(process.env.PORT) || 3e3, LEGACY_SHEETDB_URL = "https://sheetdb.io/api/v1/gnn52l70oflrp", DEFAULT_SHEETDB_URL = process.env.SHEETDB_API_URL || "https://sheetdb.io/api/v1/9537p5ct7m308", DEFAULT_SPREADSHEET_ID = process.env.GOOGLE_SPREADSHEET_ID || "1-7tcV3S0YMuee7mpFvqtUj9SCsC1acb-_qrw5uqa1yE", REQUIRED_WORKSHEETS = [
@@ -1021,19 +1145,33 @@ async function hydrateFromExternalDatabase(force = !1) {
         let res = await fetch(`${sheetDbUrl}?sheet=Team`);
         if (res.ok) {
           let rows = await res.json().catch(() => []);
-          Array.isArray(rows) && rows.length > 0 && (db.employees = rows.map((emp) => ({
-            ...emp,
-            isConfirmedPosition: emp.isConfirmedPosition === !0 || String(emp.isConfirmedPosition).toLowerCase() === "true",
-            order: Number(emp.order) || 1,
-            avatarUrl: resolvePublicImageUrl(
-              emp.image_url || emp.avatarUrl,
-              emp.image_file_id
-            ),
-            image_url: resolvePublicImageUrl(
-              emp.image_url || emp.avatarUrl,
-              emp.image_file_id
-            )
-          })), hydratedAnyTab = !0);
+          if (Array.isArray(rows) && rows.length > 0) {
+            let existingMap = /* @__PURE__ */ new Map();
+            (db.employees || []).forEach((e) => existingMap.set(e.id, e));
+            let hasExplicitBool = (v) => typeof v == "boolean" || typeof v == "string" && v.trim() !== "";
+            db.employees = rows.map((emp) => {
+              let prev = existingMap.get(String(emp.id || ""));
+              return normalizeEmployeeVisibility({
+                ...prev,
+                ...emp,
+                managerId: emp.managerId && String(emp.managerId).trim() !== "" ? String(emp.managerId).trim() : null,
+                isConfirmedPosition: hasExplicitBool(emp.isConfirmedPosition) ? parseEmployeeBoolean(emp.isConfirmedPosition, !0) : prev?.isConfirmedPosition ?? !0,
+                order: Number(emp.order) || prev?.order || 1,
+                showOnTeamPage: hasExplicitBool(emp.showOnTeamPage) ? parseEmployeeBoolean(emp.showOnTeamPage, !0) : prev?.showOnTeamPage ?? !0,
+                showOnOrgChart: hasExplicitBool(emp.showOnOrgChart) ? parseEmployeeBoolean(emp.showOnOrgChart, !0) : prev?.showOnOrgChart ?? !0,
+                showPublicEmail: hasExplicitBool(emp.showPublicEmail) ? parseEmployeeBoolean(emp.showPublicEmail, !1) : prev?.showPublicEmail ?? !1,
+                showPublicProfile: hasExplicitBool(emp.showPublicProfile) ? parseEmployeeBoolean(emp.showPublicProfile, !0) : prev?.showPublicProfile ?? !0,
+                avatarUrl: resolvePublicImageUrl(
+                  emp.image_url || emp.avatarUrl,
+                  emp.image_file_id
+                ),
+                image_url: resolvePublicImageUrl(
+                  emp.image_url || emp.avatarUrl,
+                  emp.image_file_id
+                )
+              });
+            }), hydratedAnyTab = !0;
+          }
         }
       }
       if (availableSheets.includes("Services")) {
@@ -1101,10 +1239,16 @@ async function syncRecordToSheetDb(sheetName, matchField, matchValue, recordData
         synced: !1,
         detail: `\u0641\u0634\u0644 \u0627\u0644\u062D\u0641\u0638 \u0627\u0644\u062F\u0627\u0626\u0645: \u0627\u0644\u0648\u0631\u0642\u0629 "${sheetName}" \u0641\u064A Google Sheets \u062A\u0641\u062A\u0642\u0631 \u0625\u0644\u0649 \u0639\u0646\u0627\u0648\u064A\u0646 \u0627\u0644\u0623\u0639\u0645\u062F\u0629 \u0641\u064A \u0627\u0644\u0635\u0641 \u0627\u0644\u0623\u0648\u0644.`
       };
-    let sanitizedPatchPayload = sanitizeRecordForSheetPatch(
+    let rawSanitizedPatchPayload = sanitizeRecordForSheetPatch(
       recordData,
       options
-    ), patchUrl = `${sheetDbUrl}/${encodeURIComponent(
+    ), sheetColumns = Array.isArray(keysJson) ? keysJson.map((k) => String(k)) : [], filterToSheetColumns = (payload) => {
+      if (sheetColumns.length === 0) return payload;
+      let filtered = {};
+      for (let [k, v] of Object.entries(payload))
+        sheetColumns.includes(k) && (filtered[k] = v);
+      return filtered;
+    }, sanitizedPatchPayload = filterToSheetColumns(rawSanitizedPatchPayload), filteredPostRow = filterToSheetColumns(recordData), patchUrl = `${sheetDbUrl}/${encodeURIComponent(
       matchField
     )}/${encodeURIComponent(matchValue)}${sheetQuery}`, patchRes = await fetch(patchUrl, {
       method: "PATCH",
@@ -1125,7 +1269,7 @@ async function syncRecordToSheetDb(sheetName, matchField, matchValue, recordData
         Accept: "application/json",
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ data: [recordData] })
+      body: JSON.stringify({ data: [filteredPostRow] })
     }), postJson = await postRes.json().catch(() => ({}));
     return postRes.ok && (Number(postJson?.created) > 0 || !postJson?.error) ? (db.backendMeta.lastSyncTime = (/* @__PURE__ */ new Date()).toLocaleTimeString("ar-JO"), {
       synced: !0,
@@ -1391,16 +1535,31 @@ apiApp.use(
   })
 );
 function registerApiRoutes(app) {
-  app.get("/api/public/data", async (_req, res) => {
+  app.get("/api/public/data", async (req, res) => {
     res.setHeader(
       "Cache-Control",
       "no-store, no-cache, must-revalidate, proxy-revalidate"
-    ), await hydrateFromExternalDatabase(!0), res.json({
+    ), await hydrateFromExternalDatabase(!0);
+    let expectedKey = getConfiguredAdminKey(), authCheck = expectedKey ? isRequestAdminAuthenticated(
+      {
+        cookie: req.headers.cookie,
+        "x-admin-key": req.headers["x-admin-key"],
+        authorization: req.headers.authorization
+      },
+      expectedKey
+    ) : { authenticated: !1 }, sanitizedEmployees = (db.employees || []).map((emp) => {
+      let normalized = normalizeEmployeeVisibility(emp);
+      return authCheck.authenticated ? normalized : {
+        ...normalized,
+        email: normalized.showPublicEmail && normalized.email || ""
+      };
+    });
+    res.json({
       success: !0,
       data: {
         profile: db.profile,
         departments: db.departments,
-        employees: db.employees,
+        employees: sanitizedEmployees,
         jobs: db.jobs,
         services: db.services,
         pages: db.pages
@@ -1459,22 +1618,45 @@ function registerApiRoutes(app) {
     "/api/download-recovery-backup",
     requireAdminAuth,
     (_req, res) => {
+      res.setHeader(
+        "Cache-Control",
+        "private, no-store, no-cache, must-revalidate"
+      );
       let zipPath = path.join(
         DATA_DIR,
         "backups",
         "smart-masar-recovery-backup.zip"
       );
-      if (!fs.existsSync(zipPath)) {
-        res.status(404).json({
-          success: !1,
-          error: "\u0645\u0644\u0641 \u0627\u0644\u0646\u0633\u062E\u0629 \u0627\u0644\u0627\u062D\u062A\u064A\u0627\u0637\u064A\u0629 \u0627\u0644\u062E\u0627\u0635\u0629 \u063A\u064A\u0631 \u0645\u0648\u062C\u0648\u062F \u062D\u0627\u0644\u064A\u0627\u064B \u0639\u0644\u0649 \u0627\u0644\u062E\u0627\u062F\u0645."
-        });
+      if (fs.existsSync(zipPath)) {
+        res.download(zipPath, "smart-masar-recovery-backup.zip");
         return;
       }
-      res.setHeader(
-        "Cache-Control",
-        "private, no-store, no-cache, must-revalidate"
-      ), res.download(zipPath, "smart-masar-recovery-backup.zip");
+      let jsonContent = Buffer.from(
+        JSON.stringify(
+          {
+            generatedAt: (/* @__PURE__ */ new Date()).toISOString(),
+            sheetDbEndpoint: resolveConfiguredSheetDbUrl(db.backendMeta.sheetDbUrl),
+            departments: db.departments,
+            employees: db.employees,
+            services: db.services,
+            pages: db.pages,
+            jobs: db.jobs
+          },
+          null,
+          2
+        ),
+        "utf-8"
+      ), entryName = Buffer.from("smart-masar-recovery-bundle.json", "utf-8"), localHeader = Buffer.alloc(30 + entryName.length);
+      localHeader.writeUInt32LE(67324752, 0), localHeader.writeUInt16LE(20, 4), localHeader.writeUInt32LE(jsonContent.length, 18), localHeader.writeUInt32LE(jsonContent.length, 22), localHeader.writeUInt16LE(entryName.length, 26), entryName.copy(localHeader, 30);
+      let centralDir = Buffer.alloc(46 + entryName.length);
+      centralDir.writeUInt32LE(33639248, 0), centralDir.writeUInt16LE(20, 4), centralDir.writeUInt16LE(20, 6), centralDir.writeUInt32LE(jsonContent.length, 20), centralDir.writeUInt32LE(jsonContent.length, 24), centralDir.writeUInt16LE(entryName.length, 28), entryName.copy(centralDir, 46);
+      let eocd = Buffer.alloc(22);
+      eocd.writeUInt32LE(101010256, 0), eocd.writeUInt16LE(1, 8), eocd.writeUInt16LE(1, 10), eocd.writeUInt32LE(centralDir.length, 12), eocd.writeUInt32LE(localHeader.length + jsonContent.length, 16);
+      let zipBuffer = Buffer.concat([localHeader, jsonContent, centralDir, eocd]);
+      res.setHeader("Content-Type", "application/zip"), res.setHeader(
+        "Content-Disposition",
+        'attachment; filename="smart-masar-recovery-backup.zip"'
+      ), res.status(200).send(zipBuffer);
     }
   ), app.get(
     "/api/download-recovery-json",
@@ -2060,13 +2242,37 @@ function registerApiRoutes(app) {
               preserved.image_file_id
             ), extractedId = preserved.image_file_id || extractGoogleDriveFileId(
               preserved.image_url || preserved.avatarUrl
-            ) || "", finalEmp = {
+            ) || "", finalEmp = normalizeEmployeeVisibility({
+              ...existing,
               ...preserved,
               avatarUrl: normalizedUrl,
               image_url: normalizedUrl,
               image_file_id: extractedId
-            }, idx = db.employees.findIndex((e) => e.id === finalEmp.id);
-            idx !== -1 ? db.employees[idx] = finalEmp : db.employees.push(finalEmp), externalSync = await syncRecordToSheetDb(
+            }), idx = db.employees.findIndex((e) => e.id === finalEmp.id);
+            idx !== -1 ? db.employees[idx] = finalEmp : db.employees.push(finalEmp);
+            let onlyVisibilityChanged = !!existing && [
+              "nameAr",
+              "nameEn",
+              "jobTitleAr",
+              "jobTitleEn",
+              "departmentId",
+              "managerId",
+              "avatarUrl",
+              "image_url",
+              "image_file_id",
+              "image_alt_ar",
+              "initials",
+              "bioAr",
+              "email",
+              "isConfirmedPosition",
+              "order"
+            ].every(
+              (field) => String(existing[field] ?? "") === String(finalEmp[field] ?? "")
+            );
+            req.body?.localOnly === !0 || onlyVisibilityChanged ? externalSync = {
+              synced: !0,
+              detail: "\u062A\u0645 \u062D\u0641\u0638 \u0625\u0639\u062F\u0627\u062F\u0627\u062A \u0627\u0644\u0638\u0647\u0648\u0631 \u0648\u0627\u0644\u062E\u0635\u0648\u0635\u064A\u0629 \u0644\u0644\u0645\u0648\u0638\u0641 \u0645\u062D\u0644\u064A\u0627\u064B \u0628\u0646\u062C\u0627\u062D (\u062C\u0627\u0647\u0632\u0629 \u0644\u0644\u0645\u0632\u0627\u0645\u0646\u0629 \u0645\u0639 Google Sheets \u0639\u0646\u062F \u0627\u0639\u062A\u0645\u0627\u062F \u0645\u062E\u0637\u0637 \u0627\u0644\u0623\u0639\u0645\u062F\u0629)."
+            } : externalSync = await syncRecordToSheetDb(
               "Team",
               "id",
               finalEmp.id,

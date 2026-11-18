@@ -231,6 +231,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       image_alt_ar: empData.image_alt_ar || `صورة ${empData.nameAr}`,
       initials: empData.initials || initials,
       order: employees.length + 1,
+      showOnTeamPage: empData.showOnTeamPage !== false,
+      showOnOrgChart: empData.showOnOrgChart !== false,
+      showPublicEmail: Boolean(empData.showPublicEmail),
+      showPublicProfile: empData.showPublicProfile !== false,
     };
     setEmployees((prev) => {
       const next = [...prev, newEmp];
@@ -253,13 +257,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         } else if (updates.avatarUrl && !updates.image_url) {
           merged.image_url = updates.avatarUrl;
         }
+        merged.showOnTeamPage = merged.showOnTeamPage !== false;
+        merged.showOnOrgChart = merged.showOnOrgChart !== false;
+        merged.showPublicEmail = Boolean(merged.showPublicEmail);
+        merged.showPublicProfile = merged.showPublicProfile !== false;
         updatedEmp = merged;
         return merged;
       });
       if (updatedEmp) {
+        if (selectedEmployee && selectedEmployee.id === id) {
+          const nextSelected = updatedEmp as Employee;
+          setSelectedEmployee(
+            nextSelected.showPublicProfile === false ? null : nextSelected
+          );
+        }
         void persistSingleRecord(
           { entityType: 'team', operation: 'upsert', record: updatedEmp },
-          'تم تحديث بيانات الموظف وتأكيد الحفظ في Google Sheets بنجاح'
+          'تم تحديث بيانات وإعدادات ظهور الموظف بنجاح'
         );
       }
       return next;
